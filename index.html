@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Remoto LUIS R</title>
+    <style>
+        body { background: #0a0a0a; color: #fff; font-family: Arial; padding: 20px; text-align: center; }
+        input, button { padding: 12px; margin: 8px 0; border-radius: 30px; border: none; width: 100%; max-width: 400px; display: block; margin: 10px auto; }
+        input { background: #1e1e2a; color: white; }
+        button { background: #ffd700; color: #000; font-weight: bold; cursor: pointer; }
+        .container { max-width: 500px; margin: auto; }
+        .success { color: #4ade80; margin-top: 15px; }
+        .error { color: #f87171; margin-top: 15px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>🔐 Panel Remoto LUIS R</h2>
+    <p>Envía listas IPTV a tus dispositivos</p>
+    
+    <input type="text" id="listaNombre" placeholder="📛 Nombre de la lista">
+    <input type="text" id="listaUrl" placeholder="🔗 URL de la lista M3U o Xtream">
+    <input type="text" id="listaUser" placeholder="👤 Usuario (solo Xtream)">
+    <input type="password" id="listaPass" placeholder="🔑 Contraseña (solo Xtream)">
+    
+    <button onclick="enviarLista()">📡 ENVIAR LISTA</button>
+    <div id="estado"></div>
+</div>
+
+<script>
+const GIST_ID = "827482b1bcbe3ab734fc5ec9973225a5";
+const GIST_TOKEN = "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";
+
+async function enviarLista() {
+    const nombre = document.getElementById('listaNombre').value.trim();
+    const url = document.getElementById('listaUrl').value.trim();
+    const user = document.getElementById('listaUser').value.trim();
+    const pass = document.getElementById('listaPass').value.trim();
+    
+    if(!nombre || !url) {
+        document.getElementById('estado').innerHTML = '<div class="error">❌ Completa nombre y URL</div>';
+        return;
+    }
+    
+    document.getElementById('estado').innerHTML = '<div>⏳ Enviando...</div>';
+    
+    try {
+        const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+            headers: { 'Authorization': `Bearer ${GIST_TOKEN}` }
+        });
+        
+        let listas = [];
+        if(res.ok) {
+            const data = await res.json();
+            if(data.files && data.files['listas_remotas.json'] && data.files['listas_remotas.json'].content) {
+                listas = JSON.parse(data.files['listas_remotas.json'].content);
+            }
+        }
+        
+        const nuevaLista = { name: nombre, m3uUrl: url, type: "m3u", active: false };
+        if(user && pass) {
+            nuevaLista.type = "xtream";
+            nuevaLista.url = url;
+            nuevaLista.user = user;
+            nuevaLista.pass = pass;
+        }
+        
+        listas.push(nuevaLista);
+        
+        const update = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${GIST_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                files: { 'listas_remotas.json': { content: JSON.stringify(listas, null, 2) } }
+            })
+        });
+        
+        if(update.ok) {
+            document.getElementById('estado').innerHTML = '<div class="success">✅ Lista enviada correctamente</div>';
+            document.getElementById('listaNombre').value = '';
+            document.getElementById('listaUrl').value = '';
+            document.getElementById('listaUser').value = '';
+            document.getElementById('listaPass').value = '';
+        } else {
+            document.getElementById('estado').innerHTML = '<div class="error">❌ Error al enviar. Verifica el token.</div>';
+        }
+    } catch(e) {
+        document.getElementById('estado').innerHTML = '<div class="error">❌ Error de conexión</div>';
+    }
+}
+</script>
+</body>
+</html>
