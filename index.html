@@ -3,652 +3,536 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0a0a0a">
     <title>🦂 LUIS R 🦉</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; transition: background 0.3s, color 0.3s; }
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        body{background:#0a0a0a;color:#fff;font-family:system-ui;padding:15px;transition:all 0.3s}
+        body.light{background:#f0f0f0;color:#000}
+        body.light .sidebar{background:rgba(255,255,255,0.9)}
+        body.light .channel-item{background:#e0e0e0;color:#000}
+        body[data-theme="gold"]{--main:#ffd700}
+        body[data-theme="red"]{--main:#e50914}
+        body[data-theme="green"]{--main:#10b981}
+        body[data-theme="blue"]{--main:#3b82f6}
+        body[data-theme="purple"]{--main:#8b5cf6}
+        body[data-theme="pink"]{--main:#ec4899}
+        body[data-theme="cyan"]{--main:#06b6d4}
+        body[data-theme="orange"]{--main:#f59e0b}
+        body[data-theme="amber"]{--main:#ff8c00}
+        body[data-theme="teal"]{--main:#14b8a6}
         
-        body[data-theme="gold"] { --main: #ffd700; --main-dark: #ccaa00; }
-        body[data-theme="purple"] { --main: #8b5cf6; --main-dark: #6d28d9; }
-        body[data-theme="cyan"] { --main: #06b6d4; --main-dark: #0891b2; }
-        body[data-theme="amber"] { --main: #f59e0b; --main-dark: #d97706; }
-        body[data-theme="pink"] { --main: #ec4899; --main-dark: #db2777; }
-        body[data-theme="emerald"] { --main: #10b981; --main-dark: #059669; }
-        body[data-theme="indigo"] { --main: #6366f1; --main-dark: #4f46e5; }
-        body[data-theme="rose"] { --main: #f43f5e; --main-dark: #e11d48; }
-        body[data-theme="teal"] { --main: #14b8a6; --main-dark: #0d9488; }
-        body[data-theme="orange"] { --main: #ff8c00; --main-dark: #ea580c; }
-        
-        body.light { background: #f0f0f0; color: #000; }
-        body.light .sidebar { background: rgba(255,255,255,0.9); }
-        body.light .channel-item { background: #e0e0e0; color: #000; }
-        body.light .device-card { background: #e0e0e0; }
-        
-        @keyframes neonPulse { 0% { text-shadow: 0 0 2px var(--main, #ffd700); opacity: 0.95; } 50% { text-shadow: 0 0 6px var(--main, #ffd700); opacity: 1; } 100% { text-shadow: 0 0 2px var(--main, #ffd700); opacity: 0.95; } }
-        
-        .header { background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 100%); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid rgba(255,215,0,0.3); position: sticky; top: 0; z-index: 100; }
-        .logo-area { display: flex; align-items: center; gap: 12px; }
-        .logo-emojis { font-size: 26px; animation: neonPulse 2s ease-in-out infinite; }
-        .logo-text { font-weight: 800; font-size: 22px; background: linear-gradient(135deg, #ffd700, #ffaa00); -webkit-background-clip: text; background-clip: text; color: transparent; animation: neonPulse 2s ease-in-out infinite; }
-        
-        .btn { background: #1e1e2a; border: none; padding: 8px 16px; border-radius: 30px; color: #fff; font-weight: 600; cursor: pointer; transition: 0.2s; min-height: 44px; }
-        .btn:active { transform: scale(0.97); }
-        .btn-primary { background: var(--main, #ffd700); color: #000; }
-        
-        .device-card { background: linear-gradient(135deg, #1a1a2e, #0f0f1a); border-radius: 24px; padding: 16px; text-align: center; border: 1px solid var(--main, #ffd700); margin-bottom: 10px; }
-        .device-title { font-size: 12px; color: #aaa; margin-bottom: 5px; }
-        .device-value { font-size: 18px; font-weight: bold; font-family: monospace; letter-spacing: 1px; color: var(--main, #ffd700); }
-        .qr-container { background: white; padding: 10px; border-radius: 16px; display: inline-block; margin: 10px auto; }
-        
-        .tabs { display: flex; gap: 12px; padding: 12px 20px; background: #0f0f0f; overflow-x: auto; border-bottom: 1px solid #1f1f1f; }
-        .tab { padding: 8px 18px; border-radius: 30px; background: #1e1e2a; cursor: pointer; font-size: 14px; white-space: nowrap; }
-        .tab.active { background: var(--main, #ffd700); color: #000; font-weight: bold; }
-        
-        .main { display: flex; flex-direction: column; padding: 15px; gap: 15px; height: calc(100vh - 130px); overflow: hidden; }
-        @media (min-width: 800px) { .main { flex-direction: row; } }
-        
-        .sidebar { background: rgba(15,15,20,0.9); backdrop-filter: blur(8px); border-radius: 28px; padding: 15px; overflow-y: auto; flex: 1; }
-        .player-area { background: #030303; border-radius: 28px; overflow: hidden; flex: 2; display: flex; flex-direction: column; }
-        video { width: 100%; max-height: 400px; background: #000; border-radius: 16px; }
-        
-        .channel-item { padding: 12px; margin: 5px 0; background: #1e1e2a; border-radius: 20px; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .channel-item:hover { background: var(--main, #ffd700); color: #000; transform: scale(1.01); }
-        
-        .player-controls { background: #111; padding: 8px 15px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; border-top: 1px solid #222; }
-        .control-btn { background: #1e1e2a; border: none; padding: 8px 12px; border-radius: 30px; color: #ddd; font-size: 11px; cursor: pointer; }
-        .control-btn:hover { background: var(--main, #ffd700); color: #000; }
-        .volume-slider { width: 80px; height: 4px; -webkit-appearance: none; background: var(--main, #ffd700); border-radius: 5px; }
-        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--main, #ffd700); cursor: pointer; }
-        
-        .now-playing { background: #111; padding: 10px 15px; font-size: 12px; color: #aaa; border-top: 1px solid #222; text-align: center; }
-        .search-input { width: 100%; padding: 10px 16px; background: #1e1e2a; border: 1px solid #333; border-radius: 30px; color: white; margin-bottom: 12px; }
-        
-        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.96); backdrop-filter: blur(12px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .modal-card { background: #121218; border-radius: 32px; width: 100%; max-width: 550px; max-height: 85vh; overflow-y: auto; padding: 24px; border: 1px solid var(--main, #ffd700); }
-        .modal-card h3 { color: var(--main, #ffd700); margin-bottom: 15px; text-align: center; }
-        .modal-card button { margin: 5px; width: calc(100% - 10px); }
-        .password-input { width: 100%; padding: 12px; background: #1e1e2a; border: 1px solid var(--main, #ffd700); border-radius: 30px; color: white; text-align: center; font-size: 18px; letter-spacing: 4px; }
-        .codigo-box { background: #1e1e2a; padding: 12px; border-radius: 16px; font-family: monospace; font-size: 18px; text-align: center; margin: 10px 0; }
-        
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--main, #ffd700); color: #000; padding: 10px 20px; border-radius: 30px; z-index: 2000; animation: fadeOut 2s forwards; font-weight: bold; }
-        @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
-        
-        /* Modo desarrollador */
-        .dev-overlay { position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: #0f0; font-family: monospace; font-size: 10px; padding: 5px 10px; border-radius: 8px; z-index: 1000; }
-        
-        @media (max-width: 800px) {
-            .logo-text { font-size: 16px; }
-            .logo-emojis { font-size: 20px; }
-            .btn { font-size: 11px; padding: 6px 10px; }
-            .tab { font-size: 12px; padding: 6px 12px; }
-            .control-btn { padding: 5px 8px; font-size: 10px; }
-        }
+        .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;background:#111;padding:12px 20px;border-radius:60px;margin-bottom:20px;border:2px solid var(--main,#ffd700)}
+        .logo{font-size:1.8rem;font-weight:bold;background:linear-gradient(135deg,var(--main,#ffd700),#ffaa00);-webkit-background-clip:text;background-clip:text;color:transparent;display:flex;align-items:center;gap:10px}
+        .btn{background:var(--main,#ffd700);border:none;padding:8px 20px;border-radius:40px;font-weight:bold;cursor:pointer;transition:0.2s}
+        .btn-secondary{background:#1e1e2a;color:var(--main,#ffd700);border:1px solid var(--main,#ffd700)}
+        .vpn-active{background:#10b981 !important;color:white;box-shadow:0 0 10px #10b981}
+        .vpn-status{font-size:11px;padding:4px 12px;border-radius:20px;background:#1e293b;display:inline-block;margin-left:10px}
+        .tabs{display:flex;gap:15px;overflow-x:auto;margin-bottom:20px}
+        .tab{background:#1e1e2a;padding:10px 24px;border-radius:40px;cursor:pointer;white-space:nowrap;transition:0.2s}
+        .tab.active{background:var(--main,#ffd700);color:#000}
+        .main{display:flex;flex-direction:column;gap:20px;height:calc(100vh - 160px);overflow:hidden}
+        @media (min-width:800px){.main{flex-direction:row}}
+        .sidebar{background:#111;border-radius:30px;padding:18px;overflow-y:auto;flex:1}
+        .player-area{background:#000;border-radius:30px;overflow:hidden;flex:2;display:flex;flex-direction:column}
+        video{width:100%;max-height:450px;background:#000}
+        .channel-item{background:#1e1e2a;padding:14px;margin:10px 0;border-radius:40px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:0.2s}
+        .channel-item:hover{transform:scale(1.01);background:var(--main,#ffd700);color:#000}
+        .channel-offline{opacity:0.5;background:#3a1a1a}
+        .player-controls{display:flex;gap:12px;padding:12px;background:#1a1a1a;flex-wrap:wrap;justify-content:center}
+        .control-btn{background:#1e1e2a;border:none;padding:8px 18px;border-radius:40px;color:white;cursor:pointer;transition:0.2s}
+        .control-btn:hover{background:var(--main,#ffd700);color:#000}
+        .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.96);backdrop-filter:blur(12px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
+        .modal-card{background:#121218;border-radius:40px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:28px;border:2px solid var(--main,#ffd700)}
+        .modal-card h3{color:var(--main,#ffd700);margin-bottom:20px;text-align:center}
+        .modal-card input,.modal-card textarea,.modal-card select{width:100%;padding:12px;margin-bottom:12px;background:#1e1e2a;border:1px solid #333;border-radius:30px;color:white}
+        .password-wrapper{position:relative;width:100%;margin-bottom:12px}
+        .password-wrapper input{width:100%;padding-right:45px}
+        .toggle-password{position:absolute;right:15px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;font-size:18px}
+        .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--main,#ffd700);color:#000;padding:8px 20px;border-radius:40px;z-index:3000;animation:fadeOut 2s forwards;font-weight:bold}
+        @keyframes fadeOut{0%{opacity:1}70%{opacity:1}100%{opacity:0;visibility:hidden}}
+        .loading{padding:20px;text-align:center}
+        .device-card{background:linear-gradient(135deg,#1a1a2e,#0f0f1a);border-radius:24px;padding:16px;margin:10px 0;border:1px solid var(--main,#ffd700);text-align:center}
+        .codigo-box{background:#1e1e2a;padding:12px;border-radius:16px;font-family:monospace;font-size:18px;text-align:center;margin:10px 0}
+        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+        .stat-card{background:#1e1e2a;padding:12px;border-radius:20px;text-align:center}
+        .settings-section{margin-bottom:20px;border-bottom:1px solid #333;padding-bottom:15px}
+        .settings-section h4{color:var(--main,#ffd700);margin-bottom:10px}
+        @media (max-width:800px){.logo{font-size:1.3rem}.btn{font-size:11px;padding:6px 12px}}
     </style>
 </head>
 <body data-theme="gold">
 
 <div class="header">
-    <div class="logo-area">
-        <span class="logo-emojis">🦂</span>
-        <span class="logo-text">LUIS R</span>
-        <span class="logo-emojis">🦉</span>
-    </div>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+    <div class="logo">🦂 LUIS R 🦉</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn" id="settingsBtn">⚙️ AJUSTES</button>
-        <button class="btn" id="voiceBtn">🎙️ VOZ</button>
-        <button class="btn" id="syncBtn">🔗 QR</button>
-        <button class="btn" id="serversBtn">📡 LISTAS</button>
         <button class="btn" id="addServerBtn">➕ SERVIDOR</button>
-        <span id="clock" style="font-family: monospace;"></span>
+        <button class="btn btn-secondary" id="serversBtn">📡 LISTAS</button>
+        <span id="clock"></span>
     </div>
 </div>
 
 <div class="tabs" id="tabs">
     <div class="tab active" data-tab="live">📺 LIVE</div>
     <div class="tab" data-tab="movies">🎬 PELIS</div>
-    <div class="tab" data-tab="series">📺 SERIES</div>
     <div class="tab" data-tab="fav">⭐ FAV</div>
-    <div class="tab" data-tab="history">📜 HIST</div>
-    <div class="tab" data-tab="dev">🛠️ DEV</div>
+    <div class="tab" data-tab="m3u">📁 M3U</div>
 </div>
 
 <div class="main">
     <div class="sidebar" id="sidebar">
-        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Buscar canales...">
-        <div id="categoriesContainer">Cargando...</div>
+        <div id="vpnStatusBadge" class="vpn-status" style="background:#1e293b; margin-bottom:10px;">🌐 Directo</div>
+        <input type="text" id="searchInput" placeholder="🔍 Buscar..." style="width:100%;padding:12px;border-radius:40px;border:none;background:#1e1e2a;color:white;margin-bottom:15px">
+        <div id="contentList">📡 Cargando...</div>
     </div>
     <div class="player-area">
-        <video id="video" controls autoplay playsinline webkit-playsinline></video>
+        <video id="video" controls autoplay playsinline></video>
         <div class="player-controls">
-            <button class="control-btn" id="rewindBtn">⏪ -10s</button>
-            <button class="control-btn" id="forwardBtn">⏩ +10s</button>
+            <button class="control-btn" id="backBtn">⏪ 10s</button>
+            <button class="control-btn" id="forwardBtn">⏩ 10s</button>
             <button class="control-btn" id="speedBtn">⚡ 1.0x</button>
             <button class="control-btn" id="pipBtn">📺 PiP</button>
-            <button class="control-btn" id="fullscreenBtn">⛶ Full</button>
-            <button class="control-btn" id="snapshotBtn">📸 Snap</button>
-            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="100">
         </div>
-        <div class="now-playing" id="nowPlaying">▶️ Selecciona un canal</div>
+        <div id="nowPlaying" style="padding:12px;text-align:center;background:#111">✅ Selecciona un canal</div>
     </div>
 </div>
 
-<div id="devOverlay" class="dev-overlay" style="display:none;"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
-    // ==================== GENERAR MAC Y CÓDIGO ÚNICOS ====================
+    // ==================== CONFIGURACIÓN GLOBAL ====================
+    let servers = [], activeServer = null, currentTab = 'live', hlsPlayer = null;
+    let favoritos = JSON.parse(localStorage.getItem('luis_favs') || '[]');
+    let stats = JSON.parse(localStorage.getItem('luis_stats') || '{"canalesVistos":0,"tiempoTotal":0,"ultimoAcceso":null}');
     let deviceMac = localStorage.getItem('device_mac');
     let deviceCode = localStorage.getItem('device_code');
     
     if (!deviceMac) {
-        deviceMac = 'LUIS:' + Math.random().toString(36).substring(2, 10).toUpperCase().match(/.{1,2}/g).join(':');
+        deviceMac = 'LUIS:' + Math.random().toString(36).substring(2,10).toUpperCase().match(/.{1,2}/g).join(':');
         localStorage.setItem('device_mac', deviceMac);
     }
     if (!deviceCode) {
-        deviceCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        deviceCode = Math.floor(100000 + Math.random() * 900000).toString();
         localStorage.setItem('device_code', deviceCode);
     }
     
-    // ==================== CONFIGURACIÓN GLOBAL ====================
-    let servidores = [];
-    let servidorActivo = null;
-    let categoriaActual = 'live';
-    let reproductorHLS = null;
-    let busqueda = '';
-    let favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
-    let historial = JSON.parse(localStorage.getItem('historial') || '[]');
-    let modoDev = localStorage.getItem('modoDev') === 'true';
-    let reconocimientoVoz = null;
-    
-    // Servidores precargados
-    const servidoresPrecargados = [
-        { id: 1, name: "LatinChannel - laura", url: "http://latinchannel.tv:8080", user: "laura.cal", pass: "cal130325", type: "xtream", active: true },
-        { id: 2, name: "LatinChannel - rafael", url: "http://latinchannel.tv:8080", user: "rafael.mazzilli", pass: "mazzilli1402", type: "xtream", active: false },
-        { id: 3, name: "TecnoMolly - Grupo", url: "http://app.tecnomolly.com:8080", user: "Grupoelite", pass: "6rxPVLJGR9tH", type: "xtream", active: false },
-        { id: 4, name: "DeluxePlay", url: "http://deluxeplay.live:8080", user: "ukiendsm", pass: "Rz8466bBlm", type: "xtream", active: false },
-        { id: 5, name: "NerdTV", url: "http://api.nerdtv.xyz", user: "MarcGutt", pass: "Marc100720", type: "xtream", active: false }
+    // ==================== PROXY ANTI-BLOQUEO ====================
+    const PROXIES = [
+        "",
+        "https://cors-anywhere.herokuapp.com/",
+        "https://api.allorigins.win/raw?url=",
+        "https://proxy.cors.sh/"
     ];
     
-    function cargarServidores() {
-        const saved = localStorage.getItem('luisr_servers');
-        if (saved) {
-            try { servidores = JSON.parse(saved); } catch(e) { servidores = []; }
+    async function fetchWithProxy(url) {
+        for (let proxy of PROXIES) {
+            try {
+                const res = await fetch(proxy + url);
+                if (res.ok) return await res.text();
+            } catch(e) {}
         }
-        if (!servidores.length) servidores = servidoresPrecargados;
-        servidorActivo = servidores.find(s => s.active) || servidores[0];
+        const res = await fetch(url);
+        if (res.ok) return await res.text();
+        throw new Error("No se pudo cargar");
     }
     
-    function guardarServidores() {
-        localStorage.setItem('luisr_servers', JSON.stringify(servidores));
+    // ==================== SERVIDORES PREDETERMINADOS ====================
+    const DEFAULT_SERVERS = [
+        { id:1, name:"Latin 1 (Laura)", url:"http://latinchannel.tv:8080", user:"laura.cal", pass:"cal130325", type:"xtream", created: new Date().toISOString() },
+        { id:2, name:"Latin 2 (Rafael)", url:"http://latinchannel.tv:8080", user:"rafael.mazzilli", pass:"mazzilli1402", type:"xtream", created: new Date().toISOString() },
+        { id:3, name:"TecnoMolly (Grupo)", url:"http://app.tecnomolly.com:8080", user:"Grupoelite", pass:"6rxPVLJGR9tH", type:"xtream", created: new Date().toISOString() }
+    ];
+
+    function loadServers() {
+        let saved = localStorage.getItem('luis_servers');
+        servers = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_SERVERS));
+        activeServer = servers[0];
+        renderView();
     }
+    function saveServers() { localStorage.setItem('luis_servers', JSON.stringify(servers)); }
     
-    function setServidorActivo(id) {
-        servidores = servidores.map(s => ({ ...s, active: s.id === id }));
-        servidorActivo = servidores.find(s => s.active);
-        guardarServidores();
-        cargarCategorias();
-        mostrarToast(`✅ Servidor: ${servidorActivo.name}`);
-    }
-    
-    function apiUrl(action, params = '') {
-        if (!servidorActivo || servidorActivo.type !== 'xtream') return '';
-        return `${servidorActivo.url}/player_api.php?username=${servidorActivo.user}&password=${servidorActivo.pass}&action=${action}${params}`;
-    }
-    
-    async function fetchAPI(url) {
-        try {
-            const res = await fetch(url);
-            if (!res.ok) return null;
-            return await res.json();
-        } catch(e) { return null; }
-    }
-    
-    // ==================== REPRODUCTOR ====================
-    function reproducirUrl(url, titulo) {
-        const video = document.getElementById('video');
-        const nowPlaying = document.getElementById('nowPlaying');
-        
-        if (reproductorHLS) { reproductorHLS.destroy(); reproductorHLS = null; }
-        video.pause();
-        video.removeAttribute('src');
-        video.load();
-        
-        nowPlaying.innerHTML = `⏳ Cargando: ${titulo}...`;
-        if (modoDev) document.getElementById('devOverlay').innerHTML = `📊 URL: ${url.substring(0, 80)}...`;
-        
-        historial = [{ titulo, url, fecha: new Date().toLocaleTimeString() }, ...historial].slice(0, 30);
-        localStorage.setItem('historial', JSON.stringify(historial));
-        
-        if (url.includes('.m3u8') && Hls.isSupported()) {
-            const hls = new Hls({ enableWorker: true, debug: modoDev });
-            hls.loadSource(url);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                video.play().catch(e => nowPlaying.innerHTML = `🔊 ${titulo}`);
-                nowPlaying.innerHTML = `▶️ ${titulo}`;
-                if (modoDev) document.getElementById('devOverlay').innerHTML += `<br>✅ HLS cargado`;
-            });
-            hls.on(Hls.Events.ERROR, (e, d) => { 
-                nowPlaying.innerHTML = `❌ Error en ${titulo}`;
-                if (modoDev) document.getElementById('devOverlay').innerHTML += `<br>❌ Error HLS: ${d.type}`;
-            });
-            reproductorHLS = hls;
-        } else {
-            video.src = url;
-            video.play().catch(e => nowPlaying.innerHTML = `🔊 ${titulo} (toca play)`);
-            nowPlaying.innerHTML = `▶️ ${titulo}`;
-        }
-    }
-    
-    // ==================== CATEGORÍAS ====================
-    async function cargarCategorias() {
-        const container = document.getElementById('categoriesContainer');
-        
-        if (categoriaActual === 'fav') { mostrarFavoritos(); return; }
-        if (categoriaActual === 'history') { mostrarHistorial(); return; }
-        if (categoriaActual === 'dev') { mostrarModoDev(); return; }
-        if (categoriaActual === 'qr') { mostrarQR(); return; }
-        
-        container.innerHTML = '<div class="codigo-box">Cargando...</div>';
-        if (!servidorActivo) return;
-        
-        let endpoint = '';
-        if (categoriaActual === 'live') endpoint = apiUrl('get_live_categories');
-        else if (categoriaActual === 'movies') endpoint = apiUrl('get_vod_categories');
-        else if (categoriaActual === 'series') endpoint = apiUrl('get_series_categories');
-        if (!endpoint) { container.innerHTML = '<div class="error">Selecciona un servidor</div>'; return; }
-        
-        const data = await fetchAPI(endpoint);
-        if (!data || !Array.isArray(data)) {
-            container.innerHTML = '<div class="error">Error de conexión</div>';
-            return;
-        }
-        
-        let html = '';
-        for (const cat of data) {
-            html += `<div class="categoria" data-cat-id="${cat.category_id}" style="margin-bottom: 10px;">
-                        <div style="background:#18181e; padding:12px; border-radius:20px; cursor:pointer; font-weight:bold;" onclick="toggleCategoria(this)">📁 ${cat.category_name} ▼</div>
-                        <div class="cat-content" style="display:none; padding-left:10px;"></div>
-                     </div>`;
-        }
-        container.innerHTML = html;
-        if (busqueda) filtrarCanales();
-    }
-    
-    window.toggleCategoria = async function(header) {
-        const content = header.nextElementSibling;
-        content.style.display = content.style.display === 'none' ? 'block' : 'none';
-        if (content.style.display === 'block' && !content.innerHTML.trim()) {
-            const catId = header.parentElement.getAttribute('data-cat-id');
-            let endpoint = '';
-            if (categoriaActual === 'live') endpoint = apiUrl('get_live_streams', `&category_id=${catId}`);
-            else if (categoriaActual === 'movies') endpoint = apiUrl('get_vod_streams', `&category_id=${catId}`);
-            else if (categoriaActual === 'series') endpoint = apiUrl('get_series', `&category_id=${catId}`);
-            if (!endpoint) return;
-            const data = await fetchAPI(endpoint);
-            if (!data || !Array.isArray(data)) { content.innerHTML = '<p class="error">Sin canales</p>'; return; }
-            let html = '';
-            for (const item of data) {
-                const name = item.name || item.title || 'Sin nombre';
-                let url = '';
-                if (categoriaActual === 'live') url = `${servidorActivo.url}/live/${servidorActivo.user}/${servidorActivo.pass}/${item.stream_id}.m3u8`;
-                else if (categoriaActual === 'movies') url = `${servidorActivo.url}/movie/${servidorActivo.user}/${servidorActivo.pass}/${item.stream_id}.${item.container_extension || 'mp4'}`;
-                html += `<div class="channel-item" onclick='reproducirUrl("${url.replace(/['"]/g, '\\"')}", "${name.replace(/['"]/g, '\\"')}")'>📺 ${name}<button class="control-btn" onclick="event.stopPropagation(); agregarAFavoritos('${name.replace(/'/g, "\\'")}', '${url.replace(/'/g, "\\'")}')" style="background:none;">⭐</button></div>`;
-            }
-            content.innerHTML = html;
-        }
+    // ==================== VPN TRIPLE ====================
+    const VPN_PROVIDERS = {
+        nordvpn: { name: "NordVPN", icon: "🔵", servers: [{ name: "US - New York" }, { name: "US - Los Angeles" }] },
+        surfshark: { name: "Surfshark", icon: "🦈", servers: [{ name: "US - Los Angeles" }, { name: "US - New York" }] },
+        windscribe: { name: "Windscribe", icon: "🌬️", servers: [{ name: "US - East" }, { name: "US - West" }] }
     };
     
-    function agregarAFavoritos(nombre, url) {
-        if (!favoritos.find(f => f.url === url)) {
-            favoritos.push({ nombre, url });
-            localStorage.setItem('favoritos', JSON.stringify(favoritos));
-            mostrarToast(`⭐ ${nombre} añadido a favoritos`);
+    let vpnActivo = false, vpnProvider = localStorage.getItem('vpn_provider');
+    
+    function updateVPNStatusUI() {
+        const badge = document.getElementById('vpnStatusBadge');
+        if (vpnActivo && vpnProvider) {
+            badge.innerHTML = `${VPN_PROVIDERS[vpnProvider]?.icon} ${VPN_PROVIDERS[vpnProvider]?.name} ON`;
+            badge.style.background = '#10b981';
         } else {
-            mostrarToast(`❌ ${nombre} ya está en favoritos`);
+            badge.innerHTML = '🌐 Directo';
+            badge.style.background = '#1e293b';
         }
-    }
-    
-    function mostrarFavoritos() {
-        const container = document.getElementById('categoriesContainer');
-        if (!favoritos.length) { container.innerHTML = '<div class="error">No hay favoritos</div>'; return; }
-        let html = '<div class="codigo-box">⭐ FAVORITOS</div>';
-        for (const fav of favoritos) {
-            html += `<div class="channel-item" onclick='reproducirUrl("${fav.url.replace(/['"]/g, '\\"')}", "${fav.nombre.replace(/['"]/g, '\\"')}")'>⭐ ${fav.nombre}</div>`;
-        }
-        html += `<button class="btn" onclick="favoritos=[]; localStorage.setItem('favoritos','[]'); mostrarFavoritos();" style="margin-top:10px;">🗑️ LIMPIAR FAVORITOS</button>`;
-        container.innerHTML = html;
-    }
-    
-    function mostrarHistorial() {
-        const container = document.getElementById('categoriesContainer');
-        if (!historial.length) { container.innerHTML = '<div class="error">No hay historial</div>'; return; }
-        let html = '<div class="codigo-box">📜 HISTORIAL</div>';
-        for (const h of historial) {
-            html += `<div class="channel-item" onclick='reproducirUrl("${h.url.replace(/['"]/g, '\\"')}", "${h.titulo.replace(/['"]/g, '\\"')}")'>▶️ ${h.titulo} <span style="float:right; font-size:11px;">${h.fecha}</span></div>`;
-        }
-        html += `<button class="btn" onclick="historial=[]; localStorage.setItem('historial','[]'); mostrarHistorial();" style="margin-top:10px;">🗑️ LIMPIAR HISTORIAL</button>`;
-        container.innerHTML = html;
-    }
-    
-    function mostrarModoDev() {
-        const container = document.getElementById('categoriesContainer');
-        const temas = ['gold', 'purple', 'cyan', 'amber', 'pink', 'emerald', 'indigo', 'rose', 'teal', 'orange'];
-        let html = `<div class="codigo-box">🛠️ MODO DESARROLLADOR</div>`;
-        html += `<div class="device-card"><strong>📱 MAC:</strong> ${deviceMac}<br><strong>🔑 Código:</strong> ${deviceCode}</div>`;
-        html += `<div class="device-card"><strong>📡 Servidor activo:</strong> ${servidorActivo?.name || 'Ninguno'}<br><strong>🔊 Modo Dev:</strong> ${modoDev ? 'ACTIVADO' : 'DESACTIVADO'}</div>`;
-        html += `<button class="btn" id="toggleDevBtn">${modoDev ? '🔴 DESACTIVAR MODO DEV' : '🟢 ACTIVAR MODO DEV'}</button>`;
-        html += `<div class="codigo-box">🎨 TEMAS DE COLOR</div>`;
-        for (const tema of temas) {
-            html += `<button class="btn" onclick="document.body.setAttribute('data-theme', '${tema}'); localStorage.setItem('theme', '${tema}'); mostrarToast('🎨 Tema cambiado a ${tema}')">🎨 ${tema.toUpperCase()}</button>`;
-        }
-        html += `<button class="btn" onclick="document.body.classList.toggle('light'); localStorage.setItem('lightMode', document.body.classList.contains('light'))">🌙 MODO CLARO/OSCURO</button>`;
-        html += `<button class="btn" id="clearCacheBtn">🗑️ LIMPIAR CACHÉ</button>`;
-        container.innerHTML = html;
-        
-        document.getElementById('toggleDevBtn')?.addEventListener('click', () => {
-            modoDev = !modoDev;
-            localStorage.setItem('modoDev', modoDev);
-            document.getElementById('devOverlay').style.display = modoDev ? 'block' : 'none';
-            mostrarToast(modoDev ? '🛠️ Modo Developer ACTIVADO' : '🛠️ Modo Developer DESACTIVADO');
-            mostrarModoDev();
-        });
-        document.getElementById('clearCacheBtn')?.addEventListener('click', () => {
-            localStorage.clear();
-            mostrarToast('🗑️ Caché limpiado. Reinicia la app');
-            setTimeout(() => location.reload(), 1500);
-        });
-    }
-    
-    function mostrarQR() {
-        const container = document.getElementById('categoriesContainer');
-        container.innerHTML = `
-            <div class="device-card">
-                <div class="device-title">📱 DIRECCIÓN MAC</div>
-                <div class="device-value">${deviceMac}</div>
-                <div class="device-title" style="margin-top: 15px;">🔑 CLAVE DEL DISPOSITIVO</div>
-                <div class="device-value">${deviceCode}</div>
-                <div id="qrCodeContainer" class="qr-container"></div>
-                <div style="font-size: 11px; margin-top: 10px;">Usa este código en el panel web</div>
-                <button class="btn" onclick="navigator.clipboard.writeText('MAC: ${deviceMac}\\nCódigo: ${deviceCode}')">📋 COPIAR DATOS</button>
-            </div>
-        `;
-        new QRCode(document.getElementById("qrCodeContainer"), {
-            text: `MAC: ${deviceMac}\nCódigo: ${deviceCode}`,
-            width: 180, height: 180
-        });
     }
     
     // ==================== CONTROL POR VOZ ====================
+    let recognition = null;
     function iniciarVoz() {
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            mostrarToast("❌ Reconocimiento de voz no soportado");
+            mostrarToast("❌ Voz no soportada");
             return;
         }
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
+        recognition = new SpeechRecognition();
         recognition.lang = 'es-ES';
         recognition.start();
         mostrarToast("🎙️ Escuchando...");
-        
         recognition.onresult = (event) => {
             const comando = event.results[0][0].transcript.toLowerCase();
-            mostrarToast(`🎙️ Comando: "${comando}"`);
-            
-            if (comando.includes('sube volumen') || comando.includes('más volumen')) {
-                const video = document.getElementById('video');
-                video.volume = Math.min(1, video.volume + 0.1);
-                document.getElementById('volumeSlider').value = video.volume * 100;
-                mostrarToast(`🔊 Volumen ${Math.round(video.volume * 100)}%`);
+            mostrarToast(`🎙️ "${comando}"`);
+            if (comando.includes('sube volumen')) {
+                let v = document.getElementById('video');
+                v.volume = Math.min(1, v.volume + 0.1);
             } else if (comando.includes('baja volumen')) {
-                const video = document.getElementById('video');
-                video.volume = Math.max(0, video.volume - 0.1);
-                document.getElementById('volumeSlider').value = video.volume * 100;
-                mostrarToast(`🔊 Volumen ${Math.round(video.volume * 100)}%`);
-            } else if (comando.includes('pausa') || comando.includes('detener')) {
+                let v = document.getElementById('video');
+                v.volume = Math.max(0, v.volume - 0.1);
+            } else if (comando.includes('pausa')) {
                 document.getElementById('video').pause();
-                mostrarToast("⏸️ Pausado");
-            } else if (comando.includes('reproducir') || comando.includes('play')) {
+            } else if (comando.includes('reproducir')) {
                 document.getElementById('video').play();
-                mostrarToast("▶️ Reproduciendo");
-            } else if (comando.includes('pantalla completa')) {
-                document.getElementById('video').requestFullscreen();
-                mostrarToast("⛶ Pantalla completa");
-            } else {
-                mostrarToast(`🎙️ Comando no reconocido: "${comando}"`);
             }
         };
-        
-        recognition.onerror = () => mostrarToast("❌ No se entendió el comando");
     }
     
-    // ==================== CONTROLES ====================
-    document.getElementById('rewindBtn').onclick = () => {
-        const video = document.getElementById('video');
-        video.currentTime = Math.max(0, video.currentTime - 10);
-        mostrarToast("⏪ Retrocedido 10s");
-    };
-    document.getElementById('forwardBtn').onclick = () => {
-        const video = document.getElementById('video');
-        video.currentTime = Math.min(video.duration, video.currentTime + 10);
-        mostrarToast("⏩ Adelantado 10s");
-    };
-    document.getElementById('speedBtn').onclick = () => {
-        const video = document.getElementById('video');
-        const speeds = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
-        let idx = speeds.indexOf(video.playbackRate);
-        idx = (idx + 1) % speeds.length;
-        video.playbackRate = speeds[idx];
-        document.getElementById('speedBtn').innerHTML = `⚡ ${speeds[idx]}x`;
-        mostrarToast(`Velocidad: ${speeds[idx]}x`);
-    };
-    document.getElementById('pipBtn').onclick = () => {
-        const video = document.getElementById('video');
-        if (video.requestPictureInPicture) video.requestPictureInPicture();
-        else mostrarToast("❌ PiP no soportado");
-    };
-    document.getElementById('fullscreenBtn').onclick = () => {
-        const video = document.getElementById('video');
-        if (video.requestFullscreen) video.requestFullscreen();
-        else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
-        mostrarToast("⛶ Pantalla completa");
-    };
-    document.getElementById('snapshotBtn').onclick = () => {
-        const video = document.getElementById('video');
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        canvas.toBlob(blob => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `snapshot_${Date.now()}.png`;
-            a.click();
-            URL.revokeObjectURL(url);
-            mostrarToast("📸 Captura guardada");
-        });
-    };
-    const volumeSlider = document.getElementById('volumeSlider');
-    volumeSlider.oninput = () => {
-        const video = document.getElementById('video');
-        video.volume = volumeSlider.value / 100;
-        localStorage.setItem('volume', volumeSlider.value);
-        mostrarToast(`🔊 Volumen ${volumeSlider.value}%`);
-    };
-    const savedVolume = localStorage.getItem('volume');
-    if (savedVolume) volumeSlider.value = savedVolume;
+    // ==================== DETECTOR DE LISTAS CAÍDAS ====================
+    async function checkChannelStatus(url) {
+        try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 3000);
+            const res = await fetch(url, { method: 'HEAD', signal: controller.signal });
+            clearTimeout(timeout);
+            return res.ok;
+        } catch(e) { return false; }
+    }
     
-    // ==================== MODALES ====================
+    // ==================== LIMPIADOR DE CANALES MUERTOS ====================
+    async function cleanDeadChannels() {
+        mostrarToast("🔍 Verificando canales...");
+        let deadCount = 0;
+        const items = document.querySelectorAll('.channel-item');
+        for (const item of items) {
+            const url = item.getAttribute('data-url');
+            if(url) {
+                const isAlive = await checkChannelStatus(url);
+                if(!isAlive) {
+                    item.classList.add('channel-offline');
+                    deadCount++;
+                }
+            }
+        }
+        mostrarToast(`🧹 ${deadCount} canales caídos detectados`);
+        if(deadCount > 0 && confirm(`¿Eliminar los ${deadCount} canales caídos?`)) {
+            document.querySelectorAll('.channel-offline').forEach(el => el.remove());
+            mostrarToast(`✅ ${deadCount} canales eliminados`);
+        }
+    }
+    
+    // ==================== RESPALDO AUTOMÁTICO ====================
+    function hacerBackup() {
+        const backup = {
+            servers: servers,
+            favoritos: favoritos,
+            stats: stats,
+            fecha: new Date().toISOString()
+        };
+        localStorage.setItem('luis_backup', JSON.stringify(backup));
+        mostrarToast("💾 Backup automático completado");
+    }
+    setInterval(hacerBackup, 7 * 24 * 60 * 60 * 1000);
+    
+    // ==================== REPRODUCTOR ====================
+    window.playStream = async function(url, title) {
+        const video = document.getElementById('video');
+        const now = document.getElementById('nowPlaying');
+        if (hlsPlayer) hlsPlayer.destroy();
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+        now.innerHTML = `⏳ Cargando ${title}...`;
+        stats.canalesVistos++;
+        localStorage.setItem('luis_stats', JSON.stringify(stats));
+        
+        let attempts = 0, maxAttempts = 2;
+        const tryPlay = () => {
+            if (url.includes('.m3u8') && Hls.isSupported()) {
+                let hls = new Hls({ enableWorker: true, maxBufferLength: 30 });
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => { video.play(); now.innerHTML = `▶️ ${title}`; });
+                hls.on(Hls.Events.ERROR, (ev, data) => {
+                    if (data.fatal && attempts < maxAttempts) { attempts++; now.innerHTML = `🔄 Reintento ${attempts}...`; setTimeout(tryPlay, 1500); }
+                    else if (data.fatal) now.innerHTML = `❌ Error en ${title}`;
+                });
+                hlsPlayer = hls;
+            } else {
+                video.src = url;
+                video.play().catch(() => now.innerHTML = `🔊 ${title}`);
+                now.innerHTML = `▶️ ${title}`;
+            }
+        };
+        tryPlay();
+    };
+    
+    // ==================== CARGAR CATEGORÍAS ====================
+    async function loadCategories() {
+        const container = document.getElementById('contentList');
+        if (currentTab === 'fav') { mostrarFavoritos(); return; }
+        if (currentTab === 'm3u') { mostrarM3U(); return; }
+        container.innerHTML = `<div class="loading">📡 ${activeServer.name}</div><div id="catsContainer"></div>`;
+        const catsContainer = document.getElementById('catsContainer');
+        if (!catsContainer) return;
+        
+        let endpoint = '';
+        if (currentTab === 'live') endpoint = `${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_live_categories`;
+        else if (currentTab === 'movies') endpoint = `${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_vod_categories`;
+        if (!endpoint) return;
+        try {
+            const res = await fetch(endpoint);
+            const data = await res.json();
+            if (!Array.isArray(data)) throw new Error();
+            let html = '';
+            for (let cat of data) {
+                html += `<div style="margin-bottom:12px;">
+                            <div style="background:#1e1e2a; padding:12px; border-radius:30px; cursor:pointer;" onclick="loadStreams(this, ${cat.category_id})">📁 ${cat.category_name} ▼</div>
+                            <div class="cat-content" style="display:none; margin-left:20px;"></div>
+                         </div>`;
+            }
+            catsContainer.innerHTML = html;
+        } catch(e) { catsContainer.innerHTML = '<div class="loading">❌ Error de conexión</div>'; }
+    }
+    
+    window.loadStreams = async function(header, catId) {
+        let contentDiv = header.nextElementSibling;
+        if (contentDiv.style.display === 'block') { contentDiv.style.display = 'none'; return; }
+        contentDiv.innerHTML = '<div class="loading">Cargando...</div>';
+        contentDiv.style.display = 'block';
+        let endpoint = '';
+        if (currentTab === 'live') endpoint = `${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_live_streams&category_id=${catId}`;
+        else if (currentTab === 'movies') endpoint = `${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_vod_streams&category_id=${catId}`;
+        try {
+            const res = await fetch(endpoint);
+            const data = await res.json();
+            if (!Array.isArray(data)) { contentDiv.innerHTML = '<div class="loading">Sin canales</div>'; return; }
+            let html = '';
+            for (let item of data) {
+                let name = item.name || item.title;
+                let streamUrl = '';
+                if (currentTab === 'live') streamUrl = `${activeServer.url}/live/${activeServer.user}/${activeServer.pass}/${item.stream_id}.m3u8`;
+                else if (currentTab === 'movies') {
+                    let ext = item.container_extension || 'mp4';
+                    streamUrl = `${activeServer.url}/movie/${activeServer.user}/${activeServer.pass}/${item.stream_id}.${ext}`;
+                }
+                streamUrl = encodeURI(streamUrl);
+                const isAlive = await checkChannelStatus(streamUrl);
+                html += `<div class="channel-item ${isAlive ? '' : 'channel-offline'}" data-url="${streamUrl}" onclick='playStream("${streamUrl}", "${name.replace(/['"]/g, '\\"')}")'>📺 ${name} ${isAlive ? '🟢' : '🔴'}</div>`;
+            }
+            contentDiv.innerHTML = html;
+        } catch(e) { contentDiv.innerHTML = '<div class="loading">Error al cargar</div>'; }
+    };
+    
+    function mostrarFavoritos() {
+        const container = document.getElementById('contentList');
+        if (!favoritos.length) { container.innerHTML = '<div class="loading">⭐ No hay favoritos</div>'; return; }
+        let html = '<div class="loading">⭐ MIS FAVORITOS</div>';
+        for (let fav of favoritos) {
+            html += `<div class="channel-item" onclick='playStream("${fav.url}", "${fav.name.replace(/['"]/g, '\\"')}")'>⭐ ${fav.name}</div>`;
+        }
+        container.innerHTML = html;
+    }
+    
+    function mostrarM3U() {
+        const container = document.getElementById('contentList');
+        container.innerHTML = `<textarea id="m3uUrl" rows="3" placeholder="https://ejemplo.com/lista.m3u" style="width:100%;padding:12px;border-radius:30px;background:#1e1e2a;color:white;border:none;"></textarea>
+                               <button class="btn" id="loadM3UBtn" style="margin-top:15px;">📡 CARGAR CANALES</button>
+                               <div id="m3uChannels" style="margin-top:20px;"></div>`;
+        document.getElementById('loadM3UBtn').onclick = async () => {
+            let url = document.getElementById('m3uUrl').value.trim();
+            if (!url) return alert("Pega una URL M3U");
+            try {
+                const text = await fetchWithProxy(url);
+                const lines = text.split('\n');
+                let channels = [];
+                for (let i=0; i<lines.length; i++) {
+                    if (lines[i].startsWith('#EXTINF:')) {
+                        let nameMatch = lines[i].match(/#EXTINF:.*?,(.*)$/);
+                        let name = nameMatch ? nameMatch[1] : 'Canal';
+                        let urlLine = '';
+                        for (let j=i+1; j<lines.length; j++) {
+                            if (lines[j].trim() && !lines[j].startsWith('#')) { urlLine = lines[j].trim(); break; }
+                        }
+                        if (urlLine) channels.push({ name, url: urlLine });
+                    }
+                }
+                let html = '<div class="loading">📺 CANALES M3U</div>';
+                for (let ch of channels) {
+                    const isAlive = await checkChannelStatus(ch.url);
+                    html += `<div class="channel-item ${isAlive ? '' : 'channel-offline'}" data-url="${ch.url}" onclick='playStream("${ch.url}", "${ch.name.replace(/['"]/g, '\\"')}")'>📺 ${ch.name} ${isAlive ? '🟢' : '🔴'}</div>`;
+                }
+                document.getElementById('m3uChannels').innerHTML = html;
+            } catch(e) { alert("Error al cargar M3U"); }
+        };
+    }
+    
+    // ==================== MODAL DE AJUSTES ====================
+    function showSettingsModal() {
+        let modal = document.createElement('div'); modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-card">
+                <h3>⚙️ AJUSTES AVANZADOS</h3>
+                <div class="settings-section">
+                    <h4>🎨 APARIENCIA</h4>
+                    <button id="themeGold" class="btn" style="background:#ffd700;">Oro</button>
+                    <button id="themeRed" class="btn" style="background:#e50914;">Rojo</button>
+                    <button id="themeGreen" class="btn" style="background:#10b981;">Verde</button>
+                    <button id="themeBlue" class="btn" style="background:#3b82f6;">Azul</button>
+                    <button id="themePurple" class="btn" style="background:#8b5cf6;">Morado</button>
+                    <button id="themePink" class="btn" style="background:#ec4899;">Rosa</button>
+                    <button id="themeCyan" class="btn" style="background:#06b6d4;">Cian</button>
+                    <button id="themeOrange" class="btn" style="background:#f59e0b;">Naranja</button>
+                    <button id="toggleLightMode" class="btn">🌙 Modo Claro/Oscuro</button>
+                </div>
+                <div class="settings-section">
+                    <h4>🛡️ VPN & SEGURIDAD</h4>
+                    <button id="vpnNordBtn" style="background:#1e3a5f;">🔵 NordVPN</button>
+                    <button id="vpnSurfBtn" style="background:#0f2b3d;">🦈 Surfshark</button>
+                    <button id="vpnWindBtn" style="background:#2d2d2d;">🌬️ Windscribe</button>
+                    <button id="vpnOffBtn" style="background:#dc2626;">⛔ Desconectar VPN</button>
+                </div>
+                <div class="settings-section">
+                    <h4>🎙️ VOZ</h4>
+                    <button id="voiceBtn">🎤 ACTIVAR VOZ</button>
+                </div>
+                <div class="settings-section">
+                    <h4>🧹 MANTENIMIENTO</h4>
+                    <button id="cleanDeadBtn">🗑️ LIMPIAR CANALES MUERTOS</button>
+                    <button id="backupBtn">💾 HACER BACKUP</button>
+                    <button id="resetStatsBtn">📊 REINICIAR ESTADÍSTICAS</button>
+                    <button id="clearCacheBtn">🗑️ LIMPIAR CACHÉ</button>
+                </div>
+                <div class="settings-section">
+                    <h4>🔗 SINCRONIZACIÓN</h4>
+                    <div class="codigo-box">📱 MAC: ${deviceMac}</div>
+                    <div class="codigo-box">🔑 CÓDIGO: ${deviceCode}</div>
+                    <div id="qrCodeModal"></div>
+                    <button id="copyDataBtn">📋 COPIAR DATOS</button>
+                </div>
+                <div class="settings-section">
+                    <h4>📊 ESTADÍSTICAS</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">📺 Canales vistos<br><strong>${stats.canalesVistos}</strong></div>
+                        <div class="stat-card">📡 Servidores<br><strong>${servers.length}</strong></div>
+                        <div class="stat-card">⭐ Favoritos<br><strong>${favoritos.length}</strong></div>
+                    </div>
+                </div>
+                <button onclick="this.closest('.modal').remove()" style="margin-top:15px;">Cerrar</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Temas
+        document.getElementById('themeGold')?.addEventListener('click', () => { document.body.setAttribute('data-theme', 'gold'); localStorage.setItem('theme', 'gold'); modal.remove(); });
+        document.getElementById('themeRed')?.addEventListener('click', () => { document.body.setAttribute('data-theme', 'red'); localStorage.setItem('theme', 'red'); modal.remove(); });
+        document.getElementById('themeGreen')?.addEventListener('click', () => { document.body.setAttribute('data-theme', 'green'); localStorage.setItem('theme', 'green'); modal.remove(); });
+        document.getElementById('themeBlue')?.addEventListener('click', () => { document.body.setAttribute('data-theme', 'blue'); localStorage.setItem('theme', 'blue'); modal.remove(); });
+        document.getElementById('toggleLightMode')?.addEventListener('click', () => { document.body.classList.toggle('light'); localStorage.setItem('lightMode', document.body.classList.contains('light')); });
+        
+        // VPN
+        document.getElementById('vpnNordBtn')?.addEventListener('click', () => { vpnActivo = true; vpnProvider = 'nordvpn'; localStorage.setItem('vpn_provider', 'nordvpn'); updateVPNStatusUI(); mostrarToast("🔵 NordVPN activado"); modal.remove(); });
+        document.getElementById('vpnSurfBtn')?.addEventListener('click', () => { vpnActivo = true; vpnProvider = 'surfshark'; localStorage.setItem('vpn_provider', 'surfshark'); updateVPNStatusUI(); mostrarToast("🦈 Surfshark activado"); modal.remove(); });
+        document.getElementById('vpnWindBtn')?.addEventListener('click', () => { vpnActivo = true; vpnProvider = 'windscribe'; localStorage.setItem('vpn_provider', 'windscribe'); updateVPNStatusUI(); mostrarToast("🌬️ Windscribe activado"); modal.remove(); });
+        document.getElementById('vpnOffBtn')?.addEventListener('click', () => { vpnActivo = false; localStorage.removeItem('vpn_provider'); updateVPNStatusUI(); mostrarToast("VPN desconectada"); modal.remove(); });
+        
+        // Voz
+        document.getElementById('voiceBtn')?.addEventListener('click', () => { iniciarVoz(); modal.remove(); });
+        
+        // Mantenimiento
+        document.getElementById('cleanDeadBtn')?.addEventListener('click', () => { cleanDeadChannels(); modal.remove(); });
+        document.getElementById('backupBtn')?.addEventListener('click', () => { hacerBackup(); modal.remove(); });
+        document.getElementById('resetStatsBtn')?.addEventListener('click', () => { stats = { canalesVistos:0, tiempoTotal:0, ultimoAcceso:null }; localStorage.setItem('luis_stats', JSON.stringify(stats)); mostrarToast("✅ Estadísticas reiniciadas"); modal.remove(); });
+        document.getElementById('clearCacheBtn')?.addEventListener('click', () => { localStorage.clear(); location.reload(); });
+        
+        // QR
+        new QRCode(document.getElementById('qrCodeModal'), { text: `MAC: ${deviceMac}\nCódigo: ${deviceCode}`, width: 180, height: 180 });
+        document.getElementById('copyDataBtn')?.addEventListener('click', () => { navigator.clipboard.writeText(`MAC: ${deviceMac}\nCódigo: ${deviceCode}`); mostrarToast("📋 Datos copiados"); });
+    }
+    
+    // ==================== MODAL DE SERVIDORES ====================
     function showAddServerModal() {
         let modal = document.createElement('div'); modal.className = 'modal';
         modal.innerHTML = `<div class="modal-card"><h3>➕ AGREGAR SERVIDOR</h3>
-            <input id="newName" placeholder="Nombre del servidor">
-            <input id="newUrl" placeholder="URL (http://servidor:8080)">
-            <input id="newUser" placeholder="Usuario">
-            <input id="newPass" type="password" placeholder="Contraseña">
-            <button id="saveBtn">💾 Guardar</button>
-            <button onclick="this.closest('.modal').remove()">Cancelar</button>
-        </div>`;
+            <input id="newName" placeholder="Nombre"><input id="newUrl" placeholder="URL (http://...:8080)">
+            <input id="newUser" placeholder="Usuario"><div class="password-wrapper"><input id="newPass" type="password" placeholder="Contraseña"><button class="toggle-password" onclick="togglePass('newPass')">👁️</button></div>
+            <textarea id="newM3U" rows="2" placeholder="O pega una URL M3U completa"></textarea>
+            <div style="display:flex;gap:10px;"><button id="saveXtream">💾 Guardar Xtream</button><button id="saveM3U">📁 Guardar M3U</button><button onclick="this.closest('.modal').remove()">Cancelar</button></div></div>`;
         document.body.appendChild(modal);
-        document.getElementById('saveBtn').onclick = () => {
-            const name = document.getElementById('newName').value.trim();
-            const url = document.getElementById('newUrl').value.trim();
-            const user = document.getElementById('newUser').value.trim();
-            const pass = document.getElementById('newPass').value.trim();
-            if (!name || !url || !user || !pass) { alert("Completa todos los campos"); return; }
-            const newId = Date.now();
-            servidores.push({ id: newId, name, url, user, pass, type: "xtream", active: false });
-            guardarServidores();
-            setServidorActivo(newId);
-            modal.remove();
-            mostrarToast(`✅ ${name} agregado`);
+        document.getElementById('saveXtream').onclick = () => {
+            let name = document.getElementById('newName').value.trim(), url = document.getElementById('newUrl').value.trim(), user = document.getElementById('newUser').value.trim(), pass = document.getElementById('newPass').value.trim();
+            if (!name || !url || !user || !pass) return alert("Completa los campos");
+            servers.push({ id:Date.now(), name, url, user, pass, type:"xtream", created: new Date().toISOString() });
+            saveServers(); activeServer = servers[servers.length-1]; renderView(); modal.remove(); mostrarToast(`✅ ${name} agregado`);
+        };
+        document.getElementById('saveM3U').onclick = () => {
+            let name = document.getElementById('newName').value.trim(), m3u = document.getElementById('newM3U').value.trim();
+            if (!name || !m3u) return alert("Nombre y URL M3U requeridos");
+            servers.push({ id:Date.now(), name, m3uUrl:m3u, type:"m3u", created: new Date().toISOString() });
+            saveServers(); activeServer = servers[servers.length-1]; renderView(); modal.remove(); mostrarToast(`✅ ${name} agregado`);
         };
     }
     
-    function showServersManager() {
+    function showServersList() {
         let modal = document.createElement('div'); modal.className = 'modal';
         let html = `<div class="modal-card"><h3>📡 MIS SERVIDORES</h3>`;
-        for (const s of servidores) {
-            html += `<div style="background:#1a1a24; margin:10px 0; padding:12px; border-radius:24px; display:flex; justify-content:space-between;">
-                        <div><strong>${s.name}</strong> ${s.id === servidorActivo?.id ? '✅' : ''}<br><small>${s.url}</small></div>
-                        <div>${s.id !== servidorActivo?.id ? `<button onclick="window.activar(${s.id})">Activar</button>` : ''}<button onclick="window.eliminar(${s.id})" style="background:#dc2626;">🗑</button></div>
+        for (let s of servers) {
+            let detail = s.type === 'xtream' ? `${s.url} | ${s.user}` : `M3U: ${s.m3uUrl?.substring(0,40)}...`;
+            html += `<div style="background:#1a1a24; margin:10px 0; padding:12px; border-radius:30px; display:flex; justify-content:space-between; flex-wrap:wrap;">
+                        <div><strong>${s.name}</strong> ${s.id === activeServer?.id ? '✅' : ''}<br><small>${detail}</small></div>
+                        <div>${s.id !== activeServer?.id ? `<button onclick="setActive(${s.id})">Activar</button>` : ''}<button onclick="delServer(${s.id})" style="background:#dc2626;">🗑</button></div>
                      </div>`;
         }
-        html += `<button onclick="window.addServer()">➕ Agregar</button>
-                 <button onclick="this.closest('.modal').remove()">Cerrar</button></div>`;
+        html += `<button onclick="this.closest('.modal').remove()">Cerrar</button></div>`;
         modal.innerHTML = html;
         document.body.appendChild(modal);
-        window.activar = (id) => { setServidorActivo(id); modal.remove(); };
-        window.eliminar = (id) => {
-            if (servidores.length <= 1) { mostrarToast("❌ Debe haber al menos un servidor"); return; }
-            servidores = servidores.filter(s => s.id !== id);
-            if (servidorActivo.id === id) setServidorActivo(servidores[0].id);
-            else guardarServidores();
-            modal.remove();
-            cargarCategorias();
-        };
-        window.addServer = () => { modal.remove(); showAddServerModal(); };
+        window.setActive = (id) => { activeServer = servers.find(s=>s.id===id); saveServers(); renderView(); modal.remove(); mostrarToast(`📡 Servidor cambiado a ${activeServer.name}`); };
+        window.delServer = (id) => { servers = servers.filter(s=>s.id!==id); if(activeServer.id===id && servers.length) activeServer=servers[0]; saveServers(); renderView(); modal.remove(); showServersList(); };
     }
     
-    function mostrarAjustes() {
-        let modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-card"><h3>⚙️ AJUSTES</h3>
-            <button id="exportBtn">💾 EXPORTAR LISTAS (BACKUP)</button>
-            <button id="importBtn">📂 IMPORTAR LISTAS (RESTAURAR)</button>
-            <button id="clearHistoryBtn">🗑️ BORRAR HISTORIAL</button>
-            <button id="clearFavBtn">⭐ BORRAR FAVORITOS</button>
-            <button id="themeBtn">🎨 TEMAS DE COLOR</button>
-            <button onclick="this.closest('.modal').remove()">Cerrar</button>
-        </div>`;
-        document.body.appendChild(modal);
-        document.getElementById('exportBtn').onclick = () => {
-            const data = { servidores, favoritos, historial };
-            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `luisr_backup_${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            mostrarToast("💾 Backup exportado");
-        };
-        document.getElementById('importBtn').onclick = () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    try {
-                        const data = JSON.parse(ev.target.result);
-                        if (data.servidores) servidores = data.servidores;
-                        if (data.favoritos) favoritos = data.favoritos;
-                        if (data.historial) historial = data.historial;
-                        guardarServidores();
-                        localStorage.setItem('favoritos', JSON.stringify(favoritos));
-                        localStorage.setItem('historial', JSON.stringify(historial));
-                        mostrarToast("✅ Listas importadas");
-                        location.reload();
-                    } catch(e) { mostrarToast("❌ Archivo inválido"); }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
-        };
-        document.getElementById('clearHistoryBtn').onclick = () => {
-            historial = [];
-            localStorage.setItem('historial', JSON.stringify(historial));
-            mostrarToast("🗑️ Historial borrado");
-            modal.remove();
-        };
-        document.getElementById('clearFavBtn').onclick = () => {
-            favoritos = [];
-            localStorage.setItem('favoritos', JSON.stringify(favoritos));
-            mostrarToast("⭐ Favoritos borrados");
-            modal.remove();
-        };
-        document.getElementById('themeBtn').onclick = () => {
-            modal.remove();
-            categoriaActual = 'dev';
-            cargarCategorias();
-        };
-    }
+    function renderView() { loadCategories(); }
+    function mostrarToast(msg) { let toast = document.createElement('div'); toast.className = 'toast'; toast.innerText = msg; document.body.appendChild(toast); setTimeout(() => toast.remove(), 2000); }
+    function togglePass(id) { let x = document.getElementById(id); x.type = x.type === 'password' ? 'text' : 'password'; }
+    function updateClock() { document.getElementById('clock').innerHTML = new Date().toLocaleTimeString(); }
     
-    function mostrarToast(msg) {
-        let toast = document.createElement('div'); toast.className = 'toast'; toast.innerText = msg;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
-    }
-    
-    function cambiarTab(tab) {
-        categoriaActual = tab;
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
-        cargarCategorias();
-    }
-    
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => cambiarTab(tab.getAttribute('data-tab')));
-    });
-    document.getElementById('settingsBtn').onclick = () => mostrarAjustes();
-    document.getElementById('voiceBtn').onclick = () => iniciarVoz();
-    document.getElementById('syncBtn').onclick = () => cambiarTab('qr');
-    document.getElementById('serversBtn').onclick = () => showServersManager();
-    document.getElementById('addServerBtn').onclick = () => showAddServerModal();
-    
-    function updateClock() {
-        document.getElementById('clock').innerHTML = new Date().toLocaleTimeString();
-    }
-    
+    // ==================== EVENTOS Y NAVEGACIÓN ====================
+    document.getElementById('settingsBtn').onclick = showSettingsModal;
+    document.getElementById('addServerBtn').onclick = showAddServerModal;
+    document.getElementById('serversBtn').onclick = showServersList;
+    document.getElementById('backBtn').onclick = () => { let v = document.getElementById('video'); v.currentTime = Math.max(0, v.currentTime - 10); };
+    document.getElementById('forwardBtn').onclick = () => { let v = document.getElementById('video'); v.currentTime = Math.min(v.duration, v.currentTime + 10); };
+    document.getElementById('speedBtn').onclick = () => { let v = document.getElementById('video'); let sp = [0.5,0.75,1,1.25,1.5,2]; let idx = sp.indexOf(v.playbackRate); v.playbackRate = sp[(idx+1)%sp.length]; document.getElementById('speedBtn').innerHTML = `⚡ ${v.playbackRate}x`; };
+    document.getElementById('pipBtn').onclick = () => { let v = document.getElementById('video'); if(v.requestPictureInPicture) v.requestPictureInPicture(); else mostrarToast("PiP no compatible"); };
     document.getElementById('searchInput').addEventListener('input', e => {
-        const term = e.target.value.toLowerCase();
+        let term = e.target.value.toLowerCase();
         document.querySelectorAll('.channel-item').forEach(el => {
             el.style.display = el.innerText.toLowerCase().includes(term) ? 'flex' : 'none';
         });
     });
     
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) document.body.setAttribute('data-theme', savedTheme);
-    const savedLightMode = localStorage.getItem('lightMode');
-    if (savedLightMode === 'true') document.body.classList.add('light');
-    if (localStorage.getItem('modoDev') === 'true') {
-        modoDev = true;
-        document.getElementById('devOverlay').style.display = 'block';
-    }
+    function switchTab(tab) { currentTab = tab; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active'); renderView(); }
+    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.getAttribute('data-tab'))));
     
-    cargarServidores();
+    // ==================== INICIALIZACIÓN ====================
+    loadServers();
     updateClock();
     setInterval(updateClock, 1000);
-    cargarCategorias();
-    
-    window.reproducirUrl = reproducirUrl;
+    if (localStorage.getItem('theme')) document.body.setAttribute('data-theme', localStorage.getItem('theme'));
+    if (localStorage.getItem('lightMode') === 'true') document.body.classList.add('light');
+    if (localStorage.getItem('vpn_provider')) { vpnActivo = true; vpnProvider = localStorage.getItem('vpn_provider'); updateVPNStatusUI(); }
+    window.togglePass = togglePass;
 </script>
 </body>
 </html>
