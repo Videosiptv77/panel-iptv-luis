@@ -1,547 +1,180 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>🦂 LUIS R 🦉</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <style>
-        /* ========== ESTILOS PRINCIPALES (CSS) ========== */
-        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-        body{background:#0a0a0a;color:#fff;font-family:system-ui;padding:15px;transition:all 0.3s}
-        /* Animación neón suave para el título */
-        @keyframes neonSuave{0%{text-shadow:0 0 1px rgba(255,215,0,0.3);opacity:0.96}50%{text-shadow:0 0 5px rgba(255,215,0,0.5);opacity:1}100%{text-shadow:0 0 1px rgba(255,215,0,0.3);opacity:0.96}}
-        /* Pantalla de bloqueo */
-        .lock-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:10000;display:flex;justify-content:center;align-items:center;backdrop-filter:blur(10px)}
-        .lock-card{background:#121218;border-radius:60px;padding:40px 30px;text-align:center;border:2px solid #ffd700;width:320px}
-        .lock-card h2{color:#ffd700;margin-bottom:15px}
-        .lock-card input{width:100%;padding:14px;background:#1e1e2a;border:2px solid #ffd700;border-radius:40px;color:white;text-align:center;font-size:1.2rem;letter-spacing:4px;margin-bottom:20px}
-        .lock-card button{background:#ffd700;border:none;padding:12px 30px;border-radius:40px;font-weight:bold;cursor:pointer}
-        .error-msg{color:#ff6666;margin-top:10px}
-        .main-content{display:none}
-        /* Cabecera */
-        .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;background:#111;padding:12px 20px;border-radius:60px;margin-bottom:20px;border:2px solid #ffd700}
-        .logo{display:flex;align-items:center;gap:10px}
-        .logo-text{font-size:1.8rem;font-weight:bold;background:linear-gradient(135deg,#ffd700,#ffaa00);-webkit-background-clip:text;background-clip:text;color:transparent;animation:neonSuave 2s ease-in-out infinite}
-        .logo-emojis{font-size:1.8rem;animation:neonSuave 2s ease-in-out infinite}
-        /* Botones */
-        .btn{background:#ffd700;border:none;padding:8px 20px;border-radius:40px;font-weight:bold;cursor:pointer}
-        .btn-secondary{background:#1e1e2a;color:#ffd700;border:1px solid #ffd700}
-        .vpn-status{font-size:11px;padding:4px 12px;border-radius:20px;background:#1e293b;display:inline-block;margin-left:10px}
-        /* Pestañas */
-        .tabs{display:flex;gap:15px;overflow-x:auto;margin-bottom:20px}
-        .tab{background:#1e1e2a;padding:10px 24px;border-radius:40px;cursor:pointer;white-space:nowrap}
-        .tab.active{background:#ffd700;color:#000}
-        /* Layout principal */
-        .main{display:flex;flex-direction:column;gap:20px;height:calc(100vh - 160px);overflow:hidden}
-        @media (min-width:800px){.main{flex-direction:row}}
-        .sidebar{background:#111;border-radius:30px;padding:18px;overflow-y:auto;flex:1}
-        .player-area{background:#000;border-radius:30px;overflow:hidden;flex:2;display:flex;flex-direction:column}
-        video{width:100%;max-height:450px;background:#000}
-        /* Lista de canales */
-        .channel-item{background:#1e1e2a;padding:14px;margin:10px 0;border-radius:40px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
-        .channel-item:hover{background:#ffd700;color:#000}
-        .channel-offline{opacity:0.5;background:#3a1a1a}
-        .speed-badge{font-size:11px;background:#000;padding:2px 8px;border-radius:20px}
-        /* Controles del reproductor */
-        .player-controls{display:flex;gap:12px;padding:12px;background:#1a1a1a;flex-wrap:wrap;justify-content:center}
-        .control-btn{background:#1e1e2a;border:none;padding:8px 18px;border-radius:40px;color:white;cursor:pointer}
-        .control-btn:hover{background:#ffd700;color:#000}
-        /* Modales */
-        .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.96);backdrop-filter:blur(12px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
-        .modal-card{background:#121218;border-radius:40px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:28px;border:2px solid #ffd700}
-        .modal-card h3{color:#ffd700;margin-bottom:20px;text-align:center}
-        .modal-card input,.modal-card textarea,.modal-card select{width:100%;padding:12px;margin-bottom:12px;background:#1e1e2a;border:1px solid #333;border-radius:30px;color:white}
-        .password-wrapper{position:relative;width:100%;margin-bottom:12px}
-        .password-wrapper input{width:100%;padding-right:45px}
-        .toggle-password{position:absolute;right:15px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;font-size:18px}
-        /* Notificaciones */
-        .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#ffd700;color:#000;padding:8px 20px;border-radius:40px;z-index:3000;animation:fadeOut 2s forwards}
-        @keyframes fadeOut{0%{opacity:1}70%{opacity:1}100%{opacity:0;visibility:hidden}}
-        .loading{padding:20px;text-align:center}
-        /* Tarjetas de información */
-        .device-card{background:linear-gradient(135deg,#1a1a2e,#0f0f1a);border-radius:24px;padding:16px;margin:10px 0;border:1px solid #ffd700;text-align:center}
-        .codigo-box{background:#000;padding:10px;border-radius:12px;font-family:monospace;font-size:14px;margin:10px 0;border:1px solid #ffd700}
-        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-        .stat-card{background:#0f0f1a;padding:10px;border-radius:16px;text-align:center}
-        .settings-section{background:#1a1a24;border-radius:20px;padding:15px;margin-bottom:20px}
-        .settings-section h4{color:#ffd700;margin-bottom:12px;font-size:1rem}
-        @media (max-width:800px){.logo-text{font-size:1.3rem}.logo-emojis{font-size:1.3rem}.btn{font-size:11px;padding:6px 12px}}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+<title>🦂 LUIS R 🦉</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#0a0a0a;color:#fff;font-family:system-ui;padding:15px;transition:all 0.3s}
+@keyframes neonSuave{0%{text-shadow:0 0 1px rgba(255,215,0,0.3);opacity:0.96}50%{text-shadow:0 0 5px rgba(255,215,0,0.5);opacity:1}100%{text-shadow:0 0 1px rgba(255,215,0,0.3);opacity:0.96}}
+.lock-screen{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;z-index:10000;display:flex;justify-content:center;align-items:center;backdrop-filter:blur(10px)}
+.lock-card{background:#121218;border-radius:60px;padding:40px 30px;text-align:center;border:2px solid #ffd700;width:320px}
+.lock-card h2{color:#ffd700;margin-bottom:15px}
+.lock-card input{width:100%;padding:14px;background:#1e1e2a;border:2px solid #ffd700;border-radius:40px;color:white;text-align:center;font-size:1.2rem;letter-spacing:4px;margin-bottom:20px}
+.lock-card button{background:#ffd700;border:none;padding:12px 30px;border-radius:40px;font-weight:bold;cursor:pointer}
+.error-msg{color:#ff6666;margin-top:10px}
+.main-content{display:none}
+.header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;background:#111;padding:12px 20px;border-radius:60px;margin-bottom:20px;border:2px solid #ffd700}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-text{font-size:1.8rem;font-weight:bold;background:linear-gradient(135deg,#ffd700,#ffaa00);-webkit-background-clip:text;background-clip:text;color:transparent;animation:neonSuave 2s ease-in-out infinite}
+.logo-emojis{font-size:1.8rem;animation:neonSuave 2s ease-in-out infinite}
+.btn{background:#ffd700;border:none;padding:8px 20px;border-radius:40px;font-weight:bold;cursor:pointer}
+.btn-secondary{background:#1e1e2a;color:#ffd700;border:1px solid #ffd700}
+.vpn-status{font-size:11px;padding:4px 12px;border-radius:20px;background:#1e293b;display:inline-block;margin-left:10px}
+.tabs{display:flex;gap:15px;overflow-x:auto;margin-bottom:20px}
+.tab{background:#1e1e2a;padding:10px 24px;border-radius:40px;cursor:pointer;white-space:nowrap}
+.tab.active{background:#ffd700;color:#000}
+.main{display:flex;flex-direction:column;gap:20px;height:calc(100vh - 160px);overflow:hidden}@media (min-width:800px){.main{flex-direction:row}}
+.sidebar{background:#111;border-radius:30px;padding:18px;overflow-y:auto;flex:1}
+.player-area{background:#000;border-radius:30px;overflow:hidden;flex:2;display:flex;flex-direction:column}
+video{width:100%;max-height:450px;background:#000}
+.channel-item{background:#1e1e2a;padding:14px;margin:10px 0;border-radius:40px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.channel-item:hover{background:#ffd700;color:#000;transform:scale(1.01)}
+.channel-offline{opacity:0.5;background:#3a1a1a}
+.speed-badge{font-size:11px;background:#000;padding:2px 8px;border-radius:20px}
+.player-controls{display:flex;gap:12px;padding:12px;background:#1a1a1a;flex-wrap:wrap;justify-content:center}
+.control-btn{background:#1e1e2a;border:none;padding:8px 18px;border-radius:40px;color:white;cursor:pointer}
+.control-btn:hover{background:#ffd700;color:#000}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.96);backdrop-filter:blur(12px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-card{background:#121218;border-radius:40px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto;padding:28px;border:2px solid #ffd700}
+.modal-card h3{color:#ffd700;margin-bottom:20px;text-align:center}
+.modal-card input,.modal-card textarea,.modal-card select{width:100%;padding:12px;margin-bottom:12px;background:#1e1e2a;border:1px solid #333;border-radius:30px;color:white}
+.password-wrapper{position:relative;width:100%;margin-bottom:12px}
+.password-wrapper input{width:100%;padding-right:45px}
+.toggle-password{position:absolute;right:15px;top:50%;transform:translateY(-50%);background:none;border:none;color:#aaa;cursor:pointer;font-size:18px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#ffd700;color:#000;padding:8px 20px;border-radius:40px;z-index:3000;animation:fadeOut 2s forwards}
+@keyframes fadeOut{0%{opacity:1}70%{opacity:1}100%{opacity:0;visibility:hidden}}
+.loading{padding:20px;text-align:center}
+.device-card{background:linear-gradient(135deg,#1a1a2e,#0f0f1a);border-radius:24px;padding:16px;margin:10px 0;border:1px solid #ffd700;text-align:center}
+.codigo-box{background:#000;padding:10px;border-radius:12px;font-family:monospace;font-size:14px;margin:10px 0;border:1px solid #ffd700}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat-card{background:#0f0f1a;padding:10px;border-radius:16px;text-align:center}
+.settings-section{background:#1a1a24;border-radius:20px;padding:15px;margin-bottom:20px}
+.settings-section h4{color:#ffd700;margin-bottom:12px;font-size:1rem}
+@media (max-width:800px){.logo-text{font-size:1.3rem}.logo-emojis{font-size:1.3rem}.btn{font-size:11px;padding:6px 12px}}
+</style>
 </head>
 <body>
-
-<!-- PANTALLA DE BLOQUEO -->
-<div id="lockScreen" class="lock-screen">
-    <div class="lock-card">
-        <h2>🔐 ACCESO</h2>
-        <p>Ingresa el PIN</p>
-        <input type="password" id="pinInput" maxlength="4" placeholder="****">
-        <button onclick="verificarPin()">INGRESAR</button>
-        <div id="pinError" class="error-msg"></div>
-    </div>
-</div>
-
-<!-- CONTENIDO PRINCIPAL -->
+<div id="lockScreen" class="lock-screen"><div class="lock-card"><h2>🔐 ACCESO</h2><p>Ingresa el PIN</p><input type="password" id="pinInput" maxlength="4" placeholder="****"><button onclick="verificarPin()">INGRESAR</button><div id="pinError" class="error-msg"></div></div></div>
 <div id="mainContent" class="main-content">
-    <div class="header">
-        <div class="logo">
-            <span class="logo-emojis">🦂</span>
-            <span class="logo-text">LUIS R</span>
-            <span class="logo-emojis">🦉</span>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn" id="settingsBtn">⚙️ AJUSTES</button>
-            <button class="btn" id="addServerBtn">➕ SERVIDOR</button>
-            <button class="btn btn-secondary" id="serversBtn">📡 LISTAS</button>
-            <span id="clock"></span>
-        </div>
-    </div>
-
-    <div class="tabs" id="tabContainer">
-        <div class="tab active" data-tab="live">📺 LIVE</div>
-        <div class="tab" data-tab="movies">🎬 PELIS</div>
-        <div class="tab" data-tab="series">📺 SERIES</div>
-        <div class="tab" data-tab="fav">⭐ FAV</div>
-        <div class="tab" data-tab="m3u">📁 M3U</div>
-    </div>
-
-    <div class="main">
-        <div class="sidebar">
-            <input type="text" id="searchInput" placeholder="🔍 Buscar..." style="width:100%;padding:12px;border-radius:40px;border:none;background:#1e1e2a;color:white;margin-bottom:15px">
-            <div id="contentList">📡 Cargando...</div>
-        </div>
-        <div class="player-area">
-            <video id="video" controls autoplay playsinline></video>
-            <div class="player-controls">
-                <button class="control-btn" id="backBtn">⏪ 10s</button>
-                <button class="control-btn" id="forwardBtn">⏩ 10s</button>
-                <button class="control-btn" id="speedBtn">⚡ 1.0x</button>
-                <button class="control-btn" id="pipBtn">📺 PiP</button>
-            </div>
-            <div id="nowPlaying" style="padding:12px;text-align:center;background:#111">✅ Selecciona un canal</div>
-        </div>
-    </div>
+<div class="header"><div class="logo"><span class="logo-emojis">🦂</span><span class="logo-text">LUIS R</span><span class="logo-emojis">🦉</span></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="settingsBtn">⚙️ AJUSTES</button><button class="btn" id="addServerBtn">➕ SERVIDOR</button><button class="btn btn-secondary" id="serversBtn">📡 LISTAS</button><span id="clock"></span></div></div>
+<div class="tabs" id="tabContainer"><div class="tab active" data-tab="live">📺 LIVE</div><div class="tab" data-tab="movies">🎬 PELIS</div><div class="tab" data-tab="series">📺 SERIES</div><div class="tab" data-tab="fav">⭐ FAV</div><div class="tab" data-tab="m3u">📁 M3U</div></div>
+<div class="main"><div class="sidebar"><input type="text" id="searchInput" placeholder="🔍 Buscar..." style="width:100%;padding:12px;border-radius:40px;border:none;background:#1e1e2a;color:white;margin-bottom:15px"><div id="contentList">📡 Cargando...</div></div>
+<div class="player-area"><video id="video" controls autoplay playsinline></video><div class="player-controls"><button class="control-btn" id="backBtn">⏪ 10s</button><button class="control-btn" id="forwardBtn">⏩ 10s</button><button class="control-btn" id="speedBtn">⚡ 1.0x</button><button class="control-btn" id="pipBtn">📺 PiP</button></div><div id="nowPlaying" style="padding:12px;text-align:center;background:#111">✅ Selecciona un canal</div></div></div>
 </div>
-
 <script>
-    // ==================== PIN DE ACCESO ====================
-    function verificarPin() {
-        const pin = document.getElementById('pinInput').value;
-        if (pin === "1515") {
-            document.getElementById('lockScreen').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            iniciarApp();
-        } else {
-            document.getElementById('pinError').innerHTML = '❌ PIN incorrecto';
-            document.getElementById('pinInput').value = '';
-        }
-    }
+function verificarPin(){const pin=document.getElementById('pinInput').value;if(pin==="1515"){document.getElementById('lockScreen').style.display='none';document.getElementById('mainContent').style.display='block';iniciarApp();}else{document.getElementById('pinError').innerHTML='❌ PIN incorrecto';document.getElementById('pinInput').value='';}}
+const PROXIES=["","https://cors-anywhere.herokuapp.com/","https://api.allorigins.win/raw?url=","https://proxy.cors.sh/"];
+async function fetchWithProxy(url){for(let proxy of PROXIES){try{const res=await fetch(proxy+url);if(res.ok)return await res.text();}catch(e){}}const res=await fetch(url);if(res.ok)return await res.text();throw new Error("No se pudo cargar");}
+const VPN_PROVIDERS={nordvpn:{name:"NordVPN",icon:"🔵",servers:["US - New York","US - Los Angeles"]},surfshark:{name:"Surfshark",icon:"🦈",servers:["US - Los Angeles","US - New York"]},windscribe:{name:"Windscribe",icon:"🌬️",servers:["US - East","US - West"]}};
+let vpnActivo=false,vpnProvider=localStorage.getItem('vpn_provider');
+function updateVPNStatusUI(){const badge=document.getElementById('vpnStatusBadge');if(badge){if(vpnActivo&&vpnProvider){badge.innerHTML=`${VPN_PROVIDERS[vpnProvider]?.icon} ${VPN_PROVIDERS[vpnProvider]?.name} ON`;badge.style.background='#10b981';}else{badge.innerHTML='🌐 Directo';badge.style.background='#1e293b';}}}
+let recognition=null;
+function iniciarVoz(){if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){mostrarToast("❌ Voz no soportada");return;}const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;recognition=new SpeechRecognition();recognition.lang='es-ES';recognition.start();mostrarToast("🎙️ Escuchando...");recognition.onresult=(event)=>{const comando=event.results[0][0].transcript.toLowerCase();mostrarToast(`🎙️ "${comando}"`);const video=document.getElementById('video');if(comando.includes('sube volumen'))video.volume=Math.min(1,video.volume+0.1);else if(comando.includes('baja volumen'))video.volume=Math.max(0,video.volume-0.1);else if(comando.includes('pausa'))video.pause();else if(comando.includes('reproducir'))video.play();};}
+async function checkChannelStatus(url){try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),3000);const res=await fetch(url,{method:'HEAD',signal:controller.signal});clearTimeout(timeout);return res.ok;}catch(e){return false;}}
+async function measureSpeed(url){const start=Date.now();try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),5000);const res=await fetch(url,{method:'HEAD',signal:controller.signal});clearTimeout(timeout);if(res.ok)return Date.now()-start;return Infinity;}catch(e){return Infinity;}}
+async function cleanDeadChannels(){mostrarToast("🔍 Verificando canales...");let deadCount=0;const items=document.querySelectorAll('.channel-item');for(const item of items){const url=item.getAttribute('data-url');if(url){const isAlive=await checkChannelStatus(url);if(!isAlive){item.classList.add('channel-offline');deadCount++;}}}mostrarToast(`🧹 ${deadCount} canales caídos detectados`);if(deadCount>0&&confirm(`¿Eliminar los ${deadCount} canales caídos?`)){document.querySelectorAll('.channel-offline').forEach(el=>el.remove());mostrarToast(`✅ ${deadCount} canales eliminados`);}}
+let servers=[],activeServer=null,currentTab='live',hlsPlayer=null;
+let favoritos=JSON.parse(localStorage.getItem('luis_favs')||'[]');
+let stats=JSON.parse(localStorage.getItem('luis_stats')||'{"canalesVistos":0,"tiempoTotal":0,"ultimoAcceso":null}');
+let deviceMac=localStorage.getItem('device_mac');let deviceCode=localStorage.getItem('device_code');
+if(!deviceMac){deviceMac='LUIS:'+Math.random().toString(36).substring(2,10).toUpperCase().match(/.{1,2}/g).join(':');localStorage.setItem('device_mac',deviceMac);}
+if(!deviceCode){deviceCode=Math.floor(100000+Math.random()*900000).toString();localStorage.setItem('device_code',deviceCode);}
+const DEFAULT_SERVERS=[{id:1,name:"Latin 1 (Laura)",url:"http://latinchannel.tv:8080",user:"laura.cal",pass:"cal130325",type:"xtream"},{id:2,name:"Latin 2 (Rafael)",url:"http://latinchannel.tv:8080",user:"rafael.mazzilli",pass:"mazzilli1402",type:"xtream"},{id:3,name:"TecnoMolly (Grupo)",url:"http://app.tecnomolly.com:8080",user:"Grupoelite",pass:"6rxPVLJGR9tH",type:"xtream"}];
+function loadServers(){let saved=localStorage.getItem('luis_servers');servers=saved?JSON.parse(saved):JSON.parse(JSON.stringify(DEFAULT_SERVERS));activeServer=servers[0];renderView();}
+function saveServers(){localStorage.setItem('luis_servers',JSON.stringify(servers));}
+function renderView(){loadCategories();}
+async function loadCategories(){const container=document.getElementById('contentList');if(currentTab==='fav'){mostrarFavoritos();return;}if(currentTab==='m3u'){mostrarM3U();return;}if(!activeServer){container.innerHTML='<div class="loading">❌ No hay servidor activo</div>';return;}container.innerHTML=`<div class="loading">📡 ${activeServer.name}</div><div id="catsContainer"></div>`;const catsContainer=document.getElementById('catsContainer');if(!catsContainer)return;let endpoint='';if(currentTab==='live')endpoint=`${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_live_categories`;else if(currentTab==='movies')endpoint=`${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_vod_categories`;else if(currentTab==='series')endpoint=`${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_series_categories`;if(!endpoint)return;try{const res=await fetch(endpoint);const data=await res.json();if(!Array.isArray(data))throw new Error();let html='';for(let cat of data){html+=`<div style="margin-bottom:12px;"><div style="background:#1e1e2a;padding:12px;border-radius:30px;cursor:pointer;" onclick="loadStreams(this,${cat.category_id})">📁 ${cat.category_name} ▼</div><div class="cat-content" style="display:none;margin-left:20px;"></div></div>`;}catsContainer.innerHTML=html;}catch(e){catsContainer.innerHTML='<div class="loading">❌ Error de conexión</div>';}}
+window.loadStreams=async function(header,catId){let contentDiv=header.nextElementSibling;if(contentDiv.style.display==='block'){contentDiv.style.display='none';return;}contentDiv.innerHTML='<div class="loading">Cargando...</div>';contentDiv.style.display='block';let endpoint='';if(currentTab==='live')endpoint=`${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_live_streams&category_id=${catId}`;else if(currentTab==='movies')endpoint=`${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_vod_streams&category_id=${catId}`;else if(currentTab==='series')endpoint=`${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_series&category_id=${catId}`;try{const res=await fetch(endpoint);const data=await res.json();if(!Array.isArray(data)){contentDiv.innerHTML='<div class="loading">Sin canales</div>';return;}let html='';for(let item of data){let name=item.name||item.title;let streamUrl='';if(currentTab==='live')streamUrl=`${activeServer.url}/live/${activeServer.user}/${activeServer.pass}/${item.stream_id}.m3u8`;else if(currentTab==='movies'){let ext=item.container_extension||'mp4';streamUrl=`${activeServer.url}/movie/${activeServer.user}/${activeServer.pass}/${item.stream_id}.${ext}`;}else if(currentTab==='series'){html+=`<div class="channel-item" onclick='alert("Temporadas disponibles")'>📺 ${name} (Serie)</div>`;continue;}if(streamUrl){const isAlive=await checkChannelStatus(streamUrl);const speed=await measureSpeed(streamUrl);const speedText=speed<200?'🟢':(speed<500?'🟡':'🔴');html+=`<div class="channel-item ${isAlive?'':'channel-offline'}" data-url="${streamUrl}" onclick='playStream("${streamUrl}","${name.replace(/['"]/g,'\\"')}")'>📺 ${name} ${isAlive?speedText:'🔴'} <span class="speed-badge">${isAlive?speed+'ms':'offline'}</span></div>`;}}contentDiv.innerHTML=html;}catch(e){contentDiv.innerHTML='<div class="loading">Error al cargar</div>';}};
+window.playStream=function(url,title){const video=document.getElementById('video');const now=document.getElementById('nowPlaying');if(hlsPlayer)hlsPlayer.destroy();video.pause();video.removeAttribute('src');video.load();now.innerHTML=`⏳ Cargando ${title}...`;stats.canalesVistos++;localStorage.setItem('luis_stats',JSON.stringify(stats));let attempts=0,maxAttempts=2;const tryPlay=()=>{if(url.includes('.m3u8')&&Hls.isSupported()){let hls=new Hls({enableWorker:true,maxBufferLength:30});hls.loadSource(url);hls.attachMedia(video);hls.on(Hls.Events.MANIFEST_PARSED,()=>{video.play();now.innerHTML=`▶️ ${title}`;});hls.on(Hls.Events.ERROR,(ev,data)=>{if(data.fatal&&attempts<maxAttempts){attempts++;now.innerHTML=`🔄 Reintento ${attempts}...`;setTimeout(tryPlay,1500);}else if(data.fatal)now.innerHTML=`❌ Error en ${title}`;});hlsPlayer=hls;}else{video.src=url;video.play().catch(()=>now.innerHTML=`🔊 ${title}`);now.innerHTML=`▶️ ${title}`;}};tryPlay();};
+function mostrarFavoritos(){const container=document.getElementById('contentList');if(!favoritos.length){container.innerHTML='<div class="loading">⭐ No hay favoritos</div>';return;}let html='<div class="loading">⭐ MIS FAVORITOS</div>';for(let fav of favoritos){html+=`<div class="channel-item" onclick='playStream("${fav.url}","${fav.name.replace(/['"]/g,'\\"')}")'>⭐ ${fav.name}</div>`;}container.innerHTML=html;}
+function mostrarM3U(){const container=document.getElementById('contentList');container.innerHTML=`<textarea id="m3uUrl" rows="3" placeholder="https://ejemplo.com/lista.m3u" style="width:100%;padding:12px;border-radius:30px;background:#1e1e2a;color:white;border:none;"></textarea><button class="btn" id="loadM3UBtn" style="margin-top:15px;">📡 CARGAR CANALES</button><div id="m3uChannels" style="margin-top:20px;"></div>`;document.getElementById('loadM3UBtn').onclick=async()=>{let url=document.getElementById('m3uUrl').value.trim();if(!url)return alert("Pega una URL M3U");try{const text=await fetchWithProxy(url);const lines=text.split('\n');let channels=[];for(let i=0;i<lines.length;i++){if(lines[i].startsWith('#EXTINF:')){let nameMatch=lines[i].match(/#EXTINF:.*?,(.*)$/);let name=nameMatch?nameMatch[1]:'Canal';let urlLine='';for(let j=i+1;j<lines.length;j++){if(lines[j].trim()&&!lines[j].startsWith('#')){urlLine=lines[j].trim();break;}}if(urlLine)channels.push({name,url:urlLine});}}let html='<div class="loading">📺 CANALES M3U</div>';for(let ch of channels){const isAlive=await checkChannelStatus(ch.url);html+=`<div class="channel-item ${isAlive?'':'channel-offline'}" data-url="${ch.url}" onclick='playStream("${ch.url}","${ch.name.replace(/['"]/g,'\\"')}")'>📺 ${ch.name} ${isAlive?'🟢':'🔴'}</div>`;}document.getElementById('m3uChannels').innerHTML=html;}catch(e){alert("Error al cargar M3U");}};}
+function showSettingsModal(){let modal=document.createElement('div');modal.className='modal';modal.innerHTML=`<div class="modal-card"><h3>⚙️ AJUSTES AVANZADOS</h3><div class="settings-section"><h4>🎨 TEMAS</h4><div style="display:flex;gap:10px;flex-wrap:wrap;"><button id="themeGold" style="background:#ffd700;color:#000;">Oro</button><button id="themeRed" style="background:#e50914;">Rojo</button><button id="themeGreen" style="background:#10b981;">Verde</button><button id="themeBlue" style="background:#3b82f6;">Azul</button><button id="toggleLightMode" style="background:#fff;color:#000;">Modo Claro</button></div></div><div class="settings-section"><h4>🛡️ VPN</h4><div style="display:flex;gap:10px;flex-wrap:wrap;"><button id="vpnNordBtn" style="background:#1e3a5f;">🔵 NordVPN</button><button id="vpnSurfBtn" style="background:#0f2b3d;">🦈 Surfshark</button><button id="vpnWindBtn" style="background:#2d2d2d;">🌬️ Windscribe</button><button id="vpnOffBtn" style="background:#dc2626;">⛔ Desconectar</button></div></div><div class="settings-section"><h4>🎙️ VOZ</h4><button id="voiceBtn">🎤 ACTIVAR VOZ</button></div><div class="settings-section"><h4>🧹 MANTENIMIENTO</h4><div style="display:flex;flex-direction:column;gap:10px;"><button id="cleanDeadBtn">🗑️ LIMPIAR CANALES MUERTOS</button><button id="backupBtn">💾 HACER BACKUP</button><button id="resetStatsBtn">📊 REINICIAR ESTADÍSTICAS</button><button id="clearCacheBtn">🗑️ LIMPIAR CACHÉ</button></div></div><div class="settings-section"><h4>🔗 SINCRONIZACIÓN</h4><div class="device-card"><div class="codigo-box">📱 MAC: ${deviceMac}</div><div class="codigo-box">🔑 CÓDIGO: ${deviceCode}</div><div id="qrCodeModal" style="display:flex;justify-content:center;margin:15px 0;"></div><button id="copyDataBtn">📋 COPIAR DATOS</button></div></div><div class="settings-section"><h4>📊 ESTADÍSTICAS</h4><div class="stats-grid"><div class="stat-card">📺 Canales vistos<br><strong>${stats.canalesVistos}</strong></div><div class="stat-card">📡 Servidores<br><strong>${servers.length}</strong></div><div class="stat-card">⭐ Favoritos<br><strong>${favoritos.length}</strong></div></div></div><button onclick="this.closest('.modal').remove()" style="margin-top:20px;">Cerrar</button></div>`;document.body.appendChild(modal);
+```
 
-    // ==================== PROXIES ANTI-BLOQUEO (CORS) ====================
-    const PROXIES = ["", "https://cors-anywhere.herokuapp.com/", "https://api.allorigins.win/raw?url=", "https://proxy.cors.sh/"];
-    async function fetchWithProxy(url) {
-        for (let proxy of PROXIES) {
-            try { const res = await fetch(proxy + url); if (res.ok) return await res.text(); } catch(e) {}
-        }
-        const res = await fetch(url);
-        if (res.ok) return await res.text();
-        throw new Error("No se pudo cargar");
-    }
+Fin de la Parte 1 (asegúrese de copiar hasta la última línea de esta parte, que termina con document.body.appendChild(modal);)
 
-    // ==================== VPN TRIPLE ====================
-    const VPN_PROVIDERS = {
-        nordvpn: { name: "NordVPN", icon: "🔵", servers: ["US - New York", "US - Los Angeles"] },
-        surfshark: { name: "Surfshark", icon: "🦈", servers: ["US - Los Angeles", "US - New York"] },
-        windscribe: { name: "Windscribe", icon: "🌬️", servers: ["US - East", "US - West"] }
-    };
-    let vpnActivo = false, vpnProvider = localStorage.getItem('vpn_provider');
-    function updateVPNStatusUI() {
-        const badge = document.getElementById('vpnStatusBadge');
-        if (badge) {
-            if (vpnActivo && vpnProvider) {
-                badge.innerHTML = `${VPN_PROVIDERS[vpnProvider]?.icon} ${VPN_PROVIDERS[vpnProvider]?.name} ON`;
-                badge.style.background = '#10b981';
-            } else {
-                badge.innerHTML = '🌐 Directo';
-                badge.style.background = '#1e293b';
-            }
-        }
-    }
+---
 
-    // ==================== CONTROL POR VOZ ====================
-    let recognition = null;
-    function iniciarVoz() {
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            mostrarToast("❌ Voz no soportada");
-            return;
-        }
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRecognition();
-        recognition.lang = 'es-ES';
-        recognition.start();
-        mostrarToast("🎙️ Escuchando...");
-        recognition.onresult = (event) => {
-            const comando = event.results[0][0].transcript.toLowerCase();
-            mostrarToast(`🎙️ "${comando}"`);
-            const video = document.getElementById('video');
-            if (comando.includes('sube volumen')) {
-                video.volume = Math.min(1, video.volume + 0.1);
-            } else if (comando.includes('baja volumen')) {
-                video.volume = Math.max(0, video.volume - 0.1);
-            } else if (comando.includes('pausa')) {
-                video.pause();
-            } else if (comando.includes('reproducir')) {
-                video.play();
-            }
-        };
-    }
+Parte 2 – Cópielo justo después de la Parte 1:
 
-    // ==================== DETECCIÓN DE CANALES CAÍDOS Y VELOCIDAD ====================
-    async function checkChannelStatus(url) {
-        try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 3000);
-            const res = await fetch(url, { method: 'HEAD', signal: controller.signal });
-            clearTimeout(timeout);
-            return res.ok;
-        } catch(e) { return false; }
-    }
-    async function measureSpeed(url) {
-        const start = Date.now();
-        try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 5000);
-            const res = await fetch(url, { method: 'HEAD', signal: controller.signal });
-            clearTimeout(timeout);
-            if (res.ok) return Date.now() - start;
-            return Infinity;
-        } catch(e) { return Infinity; }
-    }
-
-    // ==================== LIMPIADOR DE CANALES MUERTOS ====================
-    async function cleanDeadChannels() {
-        mostrarToast("🔍 Verificando canales...");
-        let deadCount = 0;
-        const items = document.querySelectorAll('.channel-item');
-        for (const item of items) {
-            const url = item.getAttribute('data-url');
-            if (url) {
-                const isAlive = await checkChannelStatus(url);
-                if (!isAlive) {
-                    item.classList.add('channel-offline');
-                    deadCount++;
-                }
-            }
-        }
-        mostrarToast(`🧹 ${deadCount} canales caídos detectados`);
-        if (deadCount > 0 && confirm(`¿Eliminar los ${deadCount} canales caídos?`)) {
-            document.querySelectorAll('.channel-offline').forEach(el => el.remove());
-            mostrarToast(`✅ ${deadCount} canales eliminados`);
-        }
-    }
-
-    // ==================== VARIABLES GLOBALES ====================
-    let servers = [], activeServer = null, currentTab = 'live', hlsPlayer = null;
-    let favoritos = JSON.parse(localStorage.getItem('luis_favs') || '[]');
-    let stats = JSON.parse(localStorage.getItem('luis_stats') || '{"canalesVistos":0,"tiempoTotal":0,"ultimoAcceso":null}');
-    let deviceMac = localStorage.getItem('device_mac');
-    let deviceCode = localStorage.getItem('device_code');
-    if (!deviceMac) {
-        deviceMac = 'LUIS:' + Math.random().toString(36).substring(2,10).toUpperCase().match(/.{1,2}/g).join(':');
-        localStorage.setItem('device_mac', deviceMac);
-    }
-    if (!deviceCode) {
-        deviceCode = Math.floor(100000 + Math.random() * 900000).toString();
-        localStorage.setItem('device_code', deviceCode);
-    }
-
-    const DEFAULT_SERVERS = [
-        { id:1, name:"Latin 1 (Laura)", url:"http://latinchannel.tv:8080", user:"laura.cal", pass:"cal130325", type:"xtream" },
-        { id:2, name:"Latin 2 (Rafael)", url:"http://latinchannel.tv:8080", user:"rafael.mazzilli", pass:"mazzilli1402", type:"xtream" },
-        { id:3, name:"TecnoMolly (Grupo)", url:"http://app.tecnomolly.com:8080", user:"Grupoelite", pass:"6rxPVLJGR9tH", type:"xtream" }
-    ];
-
-    function loadServers() {
-        let saved = localStorage.getItem('luis_servers');
-        servers = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_SERVERS));
-        activeServer = servers[0];
-        renderView();
-    }
-    function saveServers() { localStorage.setItem('luis_servers', JSON.stringify(servers)); }
-    function renderView() { loadCategories(); }
-
-    // ==================== CARGAR CATEGORÍAS (XTREAM) ====================
-    async function loadCategories() {
-        const container = document.getElementById('contentList');
-        if (currentTab === 'fav') { mostrarFavoritos(); return; }
-        if (currentTab === 'm3u') { mostrarM3U(); return; }
-        if (!activeServer) { container.innerHTML = '<div class="loading">❌ No hay servidor activo</div>'; return; }
-        container.innerHTML = `<div class="loading">📡 ${activeServer.name}</div><div id="catsContainer"></div>`;
-        const catsContainer = document.getElementById('catsContainer');
-        if (!catsContainer) return;
-        
-        let endpoint = '';
-        if (currentTab === 'live') endpoint = `${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_live_categories`;
-        else if (currentTab === 'movies') endpoint = `${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_vod_categories`;
-        else if (currentTab === 'series') endpoint = `${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_series_categories`;
-        if (!endpoint) return;
-        try {
-            const res = await fetch(endpoint);
-            const data = await res.json();
-            if (!Array.isArray(data)) throw new Error();
-            let html = '';
-            for (let cat of data) {
-                html += `<div style="margin-bottom:12px;">
-                            <div style="background:#1e1e2a; padding:12px; border-radius:30px; cursor:pointer;" onclick="loadStreams(this, ${cat.category_id})">📁 ${cat.category_name} ▼</div>
-                            <div class="cat-content" style="display:none; margin-left:20px;"></div>
-                         </div>`;
-            }
-            catsContainer.innerHTML = html;
-        } catch(e) { catsContainer.innerHTML = '<div class="loading">❌ Error de conexión</div>'; }
-    }
-
-    window.loadStreams = async function(header, catId) {
-        let contentDiv = header.nextElementSibling;
-        if (contentDiv.style.display === 'block') { contentDiv.style.display = 'none'; return; }
-        contentDiv.innerHTML = '<div class="loading">Cargando...</div>';
-        contentDiv.style.display = 'block';
-        
-        let endpoint = '';
-        if (currentTab === 'live') endpoint = `${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_live_streams&category_id=${catId}`;
-        else if (currentTab === 'movies') endpoint = `${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_vod_streams&category_id=${catId}`;
-        else if (currentTab === 'series') endpoint = `${activeServer.url}/player_api.php?username=${activeServer.user}&password=${activeServer.pass}&action=get_series&category_id=${catId}`;
-        try {
-            const res = await fetch(endpoint);
-            const data = await res.json();
-            if (!Array.isArray(data)) { contentDiv.innerHTML = '<div class="loading">Sin canales</div>'; return; }
-            let html = '';
-            for (let item of data) {
-                let name = item.name || item.title;
-                let streamUrl = '';
-                if (currentTab === 'live') streamUrl = `${activeServer.url}/live/${activeServer.user}/${activeServer.pass}/${item.stream_id}.m3u8`;
-                else if (currentTab === 'movies') {
-                    let ext = item.container_extension || 'mp4';
-                    streamUrl = `${activeServer.url}/movie/${activeServer.user}/${activeServer.pass}/${item.stream_id}.${ext}`;
-                } else if (currentTab === 'series') {
-                    html += `<div class="channel-item" onclick='alert("Temporadas disponibles")'>📺 ${name} (Serie)</div>`;
-                    continue;
-                }
-                if (streamUrl) {
-                    const isAlive = await checkChannelStatus(streamUrl);
-                    const speed = await measureSpeed(streamUrl);
-                    const speedText = speed < 200 ? '🟢' : (speed < 500 ? '🟡' : '🔴');
-                    html += `<div class="channel-item ${isAlive ? '' : 'channel-offline'}" data-url="${streamUrl}" onclick='playStream("${streamUrl}", "${name.replace(/['"]/g, '\\"')}")'>📺 ${name} ${isAlive ? speedText : '🔴'} <span class="speed-badge">${isAlive ? speed+'ms' : 'offline'}</span></div>`;
-                }
-            }
-            contentDiv.innerHTML = html;
-        } catch(e) { contentDiv.innerHTML = '<div class="loading">Error al cargar</div>'; }
-    };
-
-    // ==================== REPRODUCTOR ====================
-    window.playStream = function(url, title) {
-        const video = document.getElementById('video');
-        const now = document.getElementById('nowPlaying');
-        if (hlsPlayer) hlsPlayer.destroy();
-        video.pause();
-        video.removeAttribute('src');
-        video.load();
-        now.innerHTML = `⏳ Cargando ${title}...`;
-        stats.canalesVistos++;
-        localStorage.setItem('luis_stats', JSON.stringify(stats));
-        
-        let attempts = 0, maxAttempts = 2;
-        const tryPlay = () => {
-            if (url.includes('.m3u8') && Hls.isSupported()) {
-                let hls = new Hls({ enableWorker: true, maxBufferLength: 30 });
-                hls.loadSource(url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => { video.play(); now.innerHTML = `▶️ ${title}`; });
-                hls.on(Hls.Events.ERROR, (ev, data) => {
-                    if (data.fatal && attempts < maxAttempts) { attempts++; now.innerHTML = `🔄 Reintento ${attempts}...`; setTimeout(tryPlay, 1500); }
-                    else if (data.fatal) now.innerHTML = `❌ Error en ${title}`;
-                });
-                hlsPlayer = hls;
-            } else {
-                video.src = url;
-                video.play().catch(() => now.innerHTML = `🔊 ${title}`);
-                now.innerHTML = `▶️ ${title}`;
-            }
-        };
-        tryPlay();
-    };
-
-    // ==================== FAVORITOS ====================
-    function mostrarFavoritos() {
-        const container = document.getElementById('contentList');
-        if (!favoritos.length) { container.innerHTML = '<div class="loading">⭐ No hay favoritos</div>'; return; }
-        let html = '<div class="loading">⭐ MIS FAVORITOS</div>';
-        for (let fav of favoritos) {
-            html += `<div class="channel-item" onclick='playStream("${fav.url}", "${fav.name.replace(/['"]/g, '\\"')}")'>⭐ ${fav.name}</div>`;
-        }
-        container.innerHTML = html;
-    }
-
-    // ==================== M3U MANUAL ====================
-    function mostrarM3U() {
-        const container = document.getElementById('contentList');
-        container.innerHTML = `<textarea id="m3uUrl" rows="3" placeholder="https://ejemplo.com/lista.m3u" style="width:100%;padding:12px;border-radius:30px;background:#1e1e2a;color:white;border:none;"></textarea>
-                               <button class="btn" id="loadM3UBtn" style="margin-top:15px;">📡 CARGAR CANALES</button>
-                               <div id="m3uChannels" style="margin-top:20px;"></div>`;
-        document.getElementById('loadM3UBtn').onclick = async () => {
-            let url = document.getElementById('m3uUrl').value.trim();
-            if (!url) return alert("Pega una URL M3U");
-            try {
-                const text = await fetchWithProxy(url);
-                const lines = text.split('\n');
-                let channels = [];
-                for (let i=0; i<lines.length; i++) {
-                    if (lines[i].startsWith('#EXTINF:')) {
-                        let nameMatch = lines[i].match(/#EXTINF:.*?,(.*)$/);
-                        let name = nameMatch ? nameMatch[1] : 'Canal';
-                        let urlLine = '';
-                        for (let j=i+1; j<lines.length; j++) {
-                            if (lines[j].trim() && !lines[j].startsWith('#')) { urlLine = lines[j].trim(); break; }
-                        }
-                        if (urlLine) channels.push({ name, url: urlLine });
-                    }
-                }
-                let html = '<div class="loading">📺 CANALES M3U</div>';
-                for (let ch of channels) {
-                    const isAlive = await checkChannelStatus(ch.url);
-                    html += `<div class="channel-item ${isAlive ? '' : 'channel-offline'}" data-url="${ch.url}" onclick='playStream("${ch.url}", "${ch.name.replace(/['"]/g, '\\"')}")'>📺 ${ch.name} ${isAlive ? '🟢' : '🔴'}</div>`;
-                }
-                document.getElementById('m3uChannels').innerHTML = html;
-            } catch(e) { alert("Error al cargar M3U"); }
-        };
-    }
-
-    // ==================== MODAL DE AJUSTES ====================
-    function showSettingsModal() {
-        let modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-card">
-                <h3>⚙️ AJUSTES AVANZADOS</h3>
-                <div class="settings-section"><h4>🎨 TEMAS</h4><div style="display:flex;gap:10px;flex-wrap:wrap;"><button id="themeGold" style="background:#ffd700;color:#000;">Oro</button><button id="themeRed" style="background:#e50914;">Rojo</button><button id="themeGreen" style="background:#10b981;">Verde</button><button id="themeBlue" style="background:#3b82f6;">Azul</button><button id="toggleLightMode" style="background:#fff;color:#000;">Modo Claro</button></div></div>
-                <div class="settings-section"><h4>🛡️ VPN</h4><div style="display:flex;gap:10px;flex-wrap:wrap;"><button id="vpnNordBtn" style="background:#1e3a5f;">🔵 NordVPN</button><button id="vpnSurfBtn" style="background:#0f2b3d;">🦈 Surfshark</button><button id="vpnWindBtn" style="background:#2d2d2d;">🌬️ Windscribe</button><button id="vpnOffBtn" style="background:#dc2626;">⛔ Desconectar</button></div></div>
-                <div class="settings-section"><h4>🎙️ VOZ</h4><button id="voiceBtn">🎤 ACTIVAR VOZ</button></div>
-                <div class="settings-section"><h4>🧹 MANTENIMIENTO</h4><div style="display:flex;flex-direction:column;gap:10px;"><button id="cleanDeadBtn">🗑️ LIMPIAR CANALES MUERTOS</button><button id="backupBtn">💾 HACER BACKUP</button><button id="resetStatsBtn">📊 REINICIAR ESTADÍSTICAS</button><button id="clearCacheBtn">🗑️ LIMPIAR CACHÉ</button></div></div>
-                <div class="settings-section"><h4>🔗 SINCRONIZACIÓN</h4><div class="device-card"><div class="codigo-box">📱 MAC: ${deviceMac}</div><div class="codigo-box">🔑 CÓDIGO: ${deviceCode}</div><div id="qrCodeModal" style="display:flex;justify-content:center;margin:15px 0;"></div><button id="copyDataBtn">📋 COPIAR DATOS</button></div></div>
-                <div class="settings-section"><h4>📊 ESTADÍSTICAS</h4><div class="stats-grid"><div class="stat-card">📺 Canales vistos<br><strong>${stats.canalesVistos}</strong></div><div class="stat-card">📡 Servidores<br><strong>${servers.length}</strong></div><div class="stat-card">⭐ Favoritos<br><strong>${favoritos.length}</strong></div></div></div>
-                <button onclick="this.closest('.modal').remove()" style="margin-top:20px;">Cerrar</button>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        
-        // Temas
-        document.getElementById('themeGold')?.onclick = () => { document.body.style.setProperty('--main', '#ffd700'); localStorage.setItem('theme', 'gold'); modal.remove(); };
-        document.getElementById('themeRed')?.onclick = () => { document.body.style.setProperty('--main', '#e50914'); localStorage.setItem('theme', 'red'); modal.remove(); };
-        document.getElementById('themeGreen')?.onclick = () => { document.body.style.setProperty('--main', '#10b981'); localStorage.setItem('theme', 'green'); modal.remove(); };
-        document.getElementById('themeBlue')?.onclick = () => { document.body.style.setProperty('--main', '#3b82f6'); localStorage.setItem('theme', 'blue'); modal.remove(); };
-        document.getElementById('toggleLightMode')?.onclick = () => { document.body.classList.toggle('light'); localStorage.setItem('lightMode', document.body.classList.contains('light')); modal.remove(); };
-        
-        // VPN
-        document.getElementById('vpnNordBtn')?.onclick = () => { vpnActivo = true; vpnProvider = 'nordvpn'; localStorage.setItem('vpn_provider', 'nordvpn'); updateVPNStatusUI(); mostrarToast("🔵 NordVPN activado"); modal.remove(); };
-        document.getElementById('vpnSurfBtn')?.onclick = () => { vpnActivo = true; vpnProvider = 'surfshark'; localStorage.setItem('vpn_provider', 'surfshark'); updateVPNStatusUI(); mostrarToast("🦈 Surfshark activado"); modal.remove(); };
-        document.getElementById('vpnWindBtn')?.onclick = () => { vpnActivo = true; vpnProvider = 'windscribe'; localStorage.setItem('vpn_provider', 'windscribe'); updateVPNStatusUI(); mostrarToast("🌬️ Windscribe activado"); modal.remove(); };
-        document.getElementById('vpnOffBtn')?.onclick = () => { vpnActivo = false; localStorage.removeItem('vpn_provider'); updateVPNStatusUI(); mostrarToast("VPN desconectada"); modal.remove(); };
-        
-        // Voz
-        document.getElementById('voiceBtn')?.onclick = () => { iniciarVoz(); modal.remove(); };
-        
-        // Mantenimiento
-        document.getElementById('cleanDeadBtn')?.onclick = () => { cleanDeadChannels(); modal.remove(); };
-        document.getElementById('backupBtn')?.onclick = () => { const backup = { servers, favoritos, stats, fecha: new Date().toISOString() }; localStorage.setItem('luis_backup', JSON.stringify(backup)); mostrarToast("💾 Backup completado"); modal.remove(); };
-        document.getElementById('resetStatsBtn')?.onclick = () => { stats = { canalesVistos:0, tiempoTotal:0, ultimoAcceso:null }; localStorage.setItem('luis_stats', JSON.stringify(stats)); mostrarToast("✅ Estadísticas reiniciadas"); modal.remove(); };
-        document.getElementById('clearCacheBtn')?.onclick = () => { localStorage.clear(); location.reload(); };
-        
-        // QR
-        new QRCode(document.getElementById('qrCodeModal'), { text: `MAC: ${deviceMac}\nCódigo: ${deviceCode}`, width: 180, height: 180 });
-        document.getElementById('copyDataBtn')?.onclick = () => { navigator.clipboard.writeText(`MAC: ${deviceMac}\nCódigo: ${deviceCode}`); mostrarToast("📋 Datos copiados"); };
-    }
-
-    // ==================== AGREGAR SERVIDOR MANUALMENTE ====================
-    function showAddServerModal() {
-        let modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-card"><h3>➕ AGREGAR SERVIDOR</h3>
-            <input id="newName" placeholder="Nombre"><input id="newUrl" placeholder="URL (http://...:8080)">
-            <input id="newUser" placeholder="Usuario"><div class="password-wrapper"><input id="newPass" type="password" placeholder="Contraseña"><button class="toggle-password" onclick="togglePass('newPass')">👁️</button></div>
-            <textarea id="newM3U" rows="2" placeholder="O pega una URL M3U completa"></textarea>
-            <div style="display:flex;gap:10px;margin-top:15px;"><button id="saveXtream">💾 Guardar Xtream</button><button id="saveM3U">📁 Guardar M3U</button><button onclick="this.closest('.modal').remove()">Cancelar</button></div></div>`;
-        document.body.appendChild(modal);
-        document.getElementById('saveXtream').onclick = () => {
-            let name = document.getElementById('newName').value.trim(), url = document.getElementById('newUrl').value.trim(), user = document.getElementById('newUser').value.trim(), pass = document.getElementById('newPass').value.trim();
-            if (!name || !url || !user || !pass) return alert("Completa los campos");
-            servers.push({ id:Date.now(), name, url, user, pass, type:"xtream" });
-            saveServers(); activeServer = servers[servers.length-1]; renderView(); modal.remove(); mostrarToast(`✅ ${name} agregado`);
-        };
-        document.getElementById('saveM3U').onclick = () => {
-            let name = document.getElementById('newName').value.trim(), m3u = document.getElementById('newM3U').value.trim();
-            if (!name || !m3u) return alert("Nombre y URL M3U requeridos");
-            servers.push({ id:Date.now(), name, m3uUrl:m3u, type:"m3u" });
-            saveServers(); activeServer = servers[servers.length-1]; renderView(); modal.remove(); mostrarToast(`✅ ${name} agregado`);
-        };
-    }
-
-    // ==================== GESTIÓN DE SERVIDORES GUARDADOS ====================
-    function showServersList() {
-        let modal = document.createElement('div'); modal.className = 'modal';
-        let html = `<div class="modal-card"><h3>📡 MIS SERVIDORES</h3>`;
-        for (let s of servers) {
-            let detail = s.type === 'xtream' ? `${s.url} | ${s.user}` : `M3U: ${s.m3uUrl?.substring(0,40)}...`;
-            html += `<div style="background:#1a1a24; margin:10px 0; padding:12px; border-radius:30px; display:flex; justify-content:space-between;">
-                        <div><strong>${s.name}</strong> ${s.id === activeServer?.id ? '✅' : ''}<br><small>${detail}</small></div>
-                        <div>${s.id !== activeServer?.id ? `<button onclick="setActive(${s.id})">Activar</button>` : ''}<button onclick="delServer(${s.id})" style="background:#dc2626;">🗑</button></div>
-                     </div>`;
-        }
-        html += `<button onclick="this.closest('.modal').remove()">Cerrar</button></div>`;
-        modal.innerHTML = html;
-        document.body.appendChild(modal);
-        window.setActive = (id) => { activeServer = servers.find(s=>s.id===id); saveServers(); renderView(); modal.remove(); mostrarToast(`📡 Cambiado a ${activeServer.name}`); };
-        window.delServer = (id) => { servers = servers.filter(s=>s.id!==id); if(activeServer.id===id && servers.length) activeServer=servers[0]; saveServers(); renderView(); modal.remove(); showServersList(); };
-    }
-
-    function mostrarToast(msg) { let toast = document.createElement('div'); toast.className = 'toast'; toast.innerText = msg; document.body.appendChild(toast); setTimeout(() => toast.remove(), 2000); }
-    function togglePass(id) { let x = document.getElementById(id); x.type = x.type === 'password' ? 'text' : 'password'; }
-    function updateClock() { document.getElementById('clock').innerHTML = new Date().toLocaleTimeString(); }
-    
-    function iniciarApp() {
-        loadServers();
-        updateClock();
-        setInterval(updateClock, 1000);
-        // Restaurar estado de VPN si existía
-        if (localStorage.getItem('vpn_provider')) { vpnActivo = true; vpnProvider = localStorage.getItem('vpn_provider'); updateVPNStatusUI(); }
-        // Crear badge de VPN si no existe (se añade automáticamente al cargar la pantalla principal)
-        if (!document.getElementById('vpnStatusBadge')) {
-            const headerActions = document.querySelector('.header div:last-child');
-            const badge = document.createElement('div');
-            badge.id = 'vpnStatusBadge';
-            badge.className = 'vpn-status';
-            badge.style.display = 'inline-block';
-            badge.style.marginLeft = '10px';
-            headerActions.appendChild(badge);
-            updateVPNStatusUI();
-        }
-    }
-    
-    // Asignar eventos después de que el DOM esté listo
-    document.getElementById('settingsBtn').onclick = showSettingsModal;
-    document.getElementById('addServerBtn').onclick = showAddServerModal;
-    document.getElementById('serversBtn').onclick = showServersList;
-    document.getElementById('backBtn').onclick = () => { let v = document.getElementById('video'); v.currentTime = Math.max(0, v.currentTime - 10); };
-    document.getElementById('forwardBtn').onclick = () => { let v = document.getElementById('video'); v.currentTime = Math.min(v.duration, v.currentTime + 10); };
-    document.getElementById('speedBtn').onclick = () => { let v = document.getElementById('video'); let sp = [0.5,0.75,1,1.25,1.5,2]; let idx = sp.indexOf(v.playbackRate); v.playbackRate = sp[(idx+1)%sp.length]; document.getElementById('speedBtn').innerHTML = `⚡ ${v.playbackRate}x`; };
-    document.getElementById('pipBtn').onclick = () => { let v = document.getElementById('video'); if(v.requestPictureInPicture) v.requestPictureInPicture(); else mostrarToast("PiP no compatible"); };
-    document.getElementById('searchInput').addEventListener('input', e => {
-        let term = e.target.value.toLowerCase();
-        document.querySelectorAll('.channel-item').forEach(el => {
-            el.style.display = el.innerText.toLowerCase().includes(term) ? 'flex' : 'none';
-        });
-    });
-    
-    function switchTab(tab) { currentTab = tab; document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active'); renderView(); }
-    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.getAttribute('data-tab'))));
+```javascript
+document.getElementById('themeGold')?.onclick=()=>{document.body.style.setProperty('--main','#ffd700');localStorage.setItem('theme','gold');modal.remove();};
+document.getElementById('themeRed')?.onclick=()=>{document.body.style.setProperty('--main','#e50914');localStorage.setItem('theme','red');modal.remove();};
+document.getElementById('themeGreen')?.onclick=()=>{document.body.style.setProperty('--main','#10b981');localStorage.setItem('theme','green');modal.remove();};
+document.getElementById('themeBlue')?.onclick=()=>{document.body.style.setProperty('--main','#3b82f6');localStorage.setItem('theme','blue');modal.remove();};
+document.getElementById('toggleLightMode')?.onclick=()=>{document.body.classList.toggle('light');localStorage.setItem('lightMode',document.body.classList.contains('light'));modal.remove();};
+document.getElementById('vpnNordBtn')?.onclick=()=>{vpnActivo=true;vpnProvider='nordvpn';localStorage.setItem('vpn_provider','nordvpn');updateVPNStatusUI();mostrarToast("🔵 NordVPN activado");modal.remove();};
+document.getElementById('vpnSurfBtn')?.onclick=()=>{vpnActivo=true;vpnProvider='surfshark';localStorage.setItem('vpn_provider','surfshark');updateVPNStatusUI();mostrarToast("🦈 Surfshark activado");modal.remove();};
+document.getElementById('vpnWindBtn')?.onclick=()=>{vpnActivo=true;vpnProvider='windscribe';localStorage.setItem('vpn_provider','windscribe');updateVPNStatusUI();mostrarToast("🌬️ Windscribe activado");modal.remove();};
+document.getElementById('vpnOffBtn')?.onclick=()=>{vpnActivo=false;localStorage.removeItem('vpn_provider');updateVPNStatusUI();mostrarToast("VPN desconectada");modal.remove();};
+document.getElementById('voiceBtn')?.onclick=()=>{iniciarVoz();modal.remove();};
+document.getElementById('cleanDeadBtn')?.onclick=()=>{cleanDeadChannels();modal.remove();};
+document.getElementById('backupBtn')?.onclick=()=>{const backup={servers,favoritos,stats,fecha:new Date().toISOString()};localStorage.setItem('luis_backup',JSON.stringify(backup));mostrarToast("💾 Backup completado");modal.remove();};
+document.getElementById('resetStatsBtn')?.onclick=()=>{stats={canalesVistos:0,tiempoTotal:0,ultimoAcceso:null};localStorage.setItem('luis_stats',JSON.stringify(stats));mostrarToast("✅ Estadísticas reiniciadas");modal.remove();};
+document.getElementById('clearCacheBtn')?.onclick=()=>{localStorage.clear();location.reload();};
+new QRCode(document.getElementById('qrCodeModal'),{text:`MAC: ${deviceMac}\nCódigo: ${deviceCode}`,width:180,height:180});
+document.getElementById('copyDataBtn')?.onclick=()=>{navigator.clipboard.writeText(`MAC: ${deviceMac}\nCódigo: ${deviceCode}`);mostrarToast("📋 Datos copiados");};}
+function showAddServerModal(){let modal=document.createElement('div');modal.className='modal';modal.innerHTML=`<div class="modal-card"><h3>➕ AGREGAR SERVIDOR</h3><input id="newName" placeholder="Nombre"><input id="newUrl" placeholder="URL (http://...:8080)"><input id="newUser" placeholder="Usuario"><div class="password-wrapper"><input id="newPass" type="password" placeholder="Contraseña"><button class="toggle-password" onclick="togglePass('newPass')">👁️</button></div><textarea id="newM3U" rows="2" placeholder="O pega una URL M3U completa"></textarea><div style="display:flex;gap:10px;margin-top:15px;"><button id="saveXtream">💾 Guardar Xtream</button><button id="saveM3U">📁 Guardar M3U</button><button onclick="this.closest('.modal').remove()">Cancelar</button></div></div>`;document.body.appendChild(modal);
+document.getElementById('saveXtream').onclick=()=>{let name=document.getElementById('newName').value.trim(),url=document.getElementById('newUrl').value.trim(),user=document.getElementById('newUser').value.trim(),pass=document.getElementById('newPass').value.trim();if(!name||!url||!user||!pass)return alert("Completa los campos");servers.push({id:Date.now(),name,url,user,pass,type:"xtream"});saveServers();activeServer=servers[servers.length-1];renderView();modal.remove();mostrarToast(`✅ ${name} agregado`);};
+document.getElementById('saveM3U').onclick=()=>{let name=document.getElementById('newName').value.trim(),m3u=document.getElementById('newM3U').value.trim();if(!name||!m3u)return alert("Nombre y URL M3U requeridos");servers.push({id:Date.now(),name,m3uUrl:m3u,type:"m3u"});saveServers();activeServer=servers[servers.length-1];renderView();modal.remove();mostrarToast(`✅ ${name} agregado`);};}
+function showServersList(){let modal=document.createElement('div');modal.className='modal';let html=`<div class="modal-card"><h3>📡 MIS SERVIDORES</h3>`;for(let s of servers){let detail=s.type==='xtream'?`${s.url} | ${s.user}`:`M3U: ${s.m3uUrl?.substring(0,40)}...`;html+=`<div style="background:#1a1a24;margin:10px 0;padding:12px;border-radius:30px;display:flex;justify-content:space-between;"><div><strong>${s.name}</strong> ${s.id===activeServer?.id?'✅':''}<br><small>${detail}</small></div><div>${s.id!==activeServer?.id?`<button onclick="setActive(${s.id})">Activar</button>`:''}<button onclick="delServer(${s.id})" style="background:#dc2626;">🗑</button></div></div>`;}html+=`<button onclick="this.closest('.modal').remove()">Cerrar</button></div>`;modal.innerHTML=html;document.body.appendChild(modal);window.setActive=(id)=>{activeServer=servers.find(s=>s.id===id);saveServers();renderView();modal.remove();mostrarToast(`📡 Cambiado a ${activeServer.name}`);};window.delServer=(id)=>{servers=servers.filter(s=>s.id!==id);if(activeServer.id===id&&servers.length)activeServer=servers[0];saveServers();renderView();modal.remove();showServersList();};}
+function mostrarToast(msg){let toast=document.createElement('div');toast.className='toast';toast.innerText=msg;document.body.appendChild(toast);setTimeout(()=>toast.remove(),2000);}
+function togglePass(id){let x=document.getElementById(id);x.type=x.type==='password'?'text':'password';}
+function updateClock(){document.getElementById('clock').innerHTML=new Date().toLocaleTimeString();}
+function iniciarApp(){loadServers();updateClock();setInterval(updateClock,1000);if(localStorage.getItem('vpn_provider')){vpnActivo=true;vpnProvider=localStorage.getItem('vpn_provider');updateVPNStatusUI();}if(!document.getElementById('vpnStatusBadge')){const headerDiv=document.querySelector('.header div:last-child');const badge=document.createElement('span');badge.id='vpnStatusBadge';badge.className='vpn-status';badge.textContent='🌐 Directo';headerDiv.appendChild(badge);}}
+document.getElementById('settingsBtn').onclick=showSettingsModal;
+document.getElementById('addServerBtn').onclick=showAddServerModal;
+document.getElementById('serversBtn').onclick=showServersList;
+document.getElementById('backBtn').onclick=()=>{let v=document.getElementById('video');v.currentTime=Math.max(0,v.currentTime-10);};
+document.getElementById('forwardBtn').onclick=()=>{let v=document.getElementById('video');v.currentTime=Math.min(v.duration,v.currentTime+10);};
+document.getElementById('speedBtn').onclick=()=>{let v=document.getElementById('video');let sp=[0.5,0.75,1,1.25,1.5,2];let idx=sp.indexOf(v.playbackRate);v.playbackRate=sp[(idx+1)%sp.length];document.getElementById('speedBtn').innerHTML=`⚡ ${v.playbackRate}x`;};
+document.getElementById('pipBtn').onclick=()=>{if(document.getElementById('video').requestPictureInPicture)document.getElementById('video').requestPictureInPicture();else mostrarToast("PiP no compatible");};
+document.getElementById('searchInput').addEventListener('input',e=>{let term=e.target.value.toLowerCase();document.querySelectorAll('.channel-item').forEach(el=>{el.style.display=el.innerText.toLowerCase().includes(term)?'flex':'none';});});
+function switchTab(tab){currentTab=tab;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');renderView();}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.getAttribute('data-tab'))));
+</script>
+</body>
+</html>javascript
+document.getElementById('themeGold')?.onclick=()=>{document.body.style.setProperty('--main','#ffd700');localStorage.setItem('theme','gold');modal.remove();};
+document.getElementById('themeRed')?.onclick=()=>{document.body.style.setProperty('--main','#e50914');localStorage.setItem('theme','red');modal.remove();};
+document.getElementById('themeGreen')?.onclick=()=>{document.body.style.setProperty('--main','#10b981');localStorage.setItem('theme','green');modal.remove();};
+document.getElementById('themeBlue')?.onclick=()=>{document.body.style.setProperty('--main','#3b82f6');localStorage.setItem('theme','blue');modal.remove();};
+document.getElementById('toggleLightMode')?.onclick=()=>{document.body.classList.toggle('light');localStorage.setItem('lightMode',document.body.classList.contains('light'));modal.remove();};
+document.getElementById('vpnNordBtn')?.onclick=()=>{vpnActivo=true;vpnProvider='nordvpn';localStorage.setItem('vpn_provider','nordvpn');updateVPNStatusUI();mostrarToast("🔵 NordVPN activado");modal.remove();};
+document.getElementById('vpnSurfBtn')?.onclick=()=>{vpnActivo=true;vpnProvider='surfshark';localStorage.setItem('vpn_provider','surfshark');updateVPNStatusUI();mostrarToast("🦈 Surfshark activado");modal.remove();};
+document.getElementById('vpnWindBtn')?.onclick=()=>{vpnActivo=true;vpnProvider='windscribe';localStorage.setItem('vpn_provider','windscribe');updateVPNStatusUI();mostrarToast("🌬️ Windscribe activado");modal.remove();};
+document.getElementById('vpnOffBtn')?.onclick=()=>{vpnActivo=false;localStorage.removeItem('vpn_provider');updateVPNStatusUI();mostrarToast("VPN desconectada");modal.remove();};
+document.getElementById('voiceBtn')?.onclick=()=>{iniciarVoz();modal.remove();};
+document.getElementById('cleanDeadBtn')?.onclick=()=>{cleanDeadChannels();modal.remove();};
+document.getElementById('backupBtn')?.onclick=()=>{const backup={servers,favoritos,stats,fecha:new Date().toISOString()};localStorage.setItem('luis_backup',JSON.stringify(backup));mostrarToast("💾 Backup completado");modal.remove();};
+document.getElementById('resetStatsBtn')?.onclick=()=>{stats={canalesVistos:0,tiempoTotal:0,ultimoAcceso:null};localStorage.setItem('luis_stats',JSON.stringify(stats));mostrarToast("✅ Estadísticas reiniciadas");modal.remove();};
+document.getElementById('clearCacheBtn')?.onclick=()=>{localStorage.clear();location.reload();};
+new QRCode(document.getElementById('qrCodeModal'),{text:`MAC: ${deviceMac}\nCódigo: ${deviceCode}`,width:180,height:180});
+document.getElementById('copyDataBtn')?.onclick=()=>{navigator.clipboard.writeText(`MAC: ${deviceMac}\nCódigo: ${deviceCode}`);mostrarToast("📋 Datos copiados");};}
+function showAddServerModal(){let modal=document.createElement('div');modal.className='modal';modal.innerHTML=`<div class="modal-card"><h3>➕ AGREGAR SERVIDOR</h3><input id="newName" placeholder="Nombre"><input id="newUrl" placeholder="URL (http://...:8080)"><input id="newUser" placeholder="Usuario"><div class="password-wrapper"><input id="newPass" type="password" placeholder="Contraseña"><button class="toggle-password" onclick="togglePass('newPass')">👁️</button></div><textarea id="newM3U" rows="2" placeholder="O pega una URL M3U completa"></textarea><div style="display:flex;gap:10px;margin-top:15px;"><button id="saveXtream">💾 Guardar Xtream</button><button id="saveM3U">📁 Guardar M3U</button><button onclick="this.closest('.modal').remove()">Cancelar</button></div></div>`;document.body.appendChild(modal);
+document.getElementById('saveXtream').onclick=()=>{let name=document.getElementById('newName').value.trim(),url=document.getElementById('newUrl').value.trim(),user=document.getElementById('newUser').value.trim(),pass=document.getElementById('newPass').value.trim();if(!name||!url||!user||!pass)return alert("Completa los campos");servers.push({id:Date.now(),name,url,user,pass,type:"xtream"});saveServers();activeServer=servers[servers.length-1];renderView();modal.remove();mostrarToast(`✅ ${name} agregado`);};
+document.getElementById('saveM3U').onclick=()=>{let name=document.getElementById('newName').value.trim(),m3u=document.getElementById('newM3U').value.trim();if(!name||!m3u)return alert("Nombre y URL M3U requeridos");servers.push({id:Date.now(),name,m3uUrl:m3u,type:"m3u"});saveServers();activeServer=servers[servers.length-1];renderView();modal.remove();mostrarToast(`✅ ${name} agregado`);};}
+function showServersList(){let modal=document.createElement('div');modal.className='modal';let html=`<div class="modal-card"><h3>📡 MIS SERVIDORES</h3>`;for(let s of servers){let detail=s.type==='xtream'?`${s.url} | ${s.user}`:`M3U: ${s.m3uUrl?.substring(0,40)}...`;html+=`<div style="background:#1a1a24;margin:10px 0;padding:12px;border-radius:30px;display:flex;justify-content:space-between;"><div><strong>${s.name}</strong> ${s.id===activeServer?.id?'✅':''}<br><small>${detail}</small></div><div>${s.id!==activeServer?.id?`<button onclick="setActive(${s.id})">Activar</button>`:''}<button onclick="delServer(${s.id})" style="background:#dc2626;">🗑</button></div></div>`;}html+=`<button onclick="this.closest('.modal').remove()">Cerrar</button></div>`;modal.innerHTML=html;document.body.appendChild(modal);window.setActive=(id)=>{activeServer=servers.find(s=>s.id===id);saveServers();renderView();modal.remove();mostrarToast(`📡 Cambiado a ${activeServer.name}`);};window.delServer=(id)=>{servers=servers.filter(s=>s.id!==id);if(activeServer.id===id&&servers.length)activeServer=servers[0];saveServers();renderView();modal.remove();showServersList();};}
+function mostrarToast(msg){let toast=document.createElement('div');toast.className='toast';toast.innerText=msg;document.body.appendChild(toast);setTimeout(()=>toast.remove(),2000);}
+function togglePass(id){let x=document.getElementById(id);x.type=x.type==='password'?'text':'password';}
+function updateClock(){document.getElementById('clock').innerHTML=new Date().toLocaleTimeString();}
+function iniciarApp(){loadServers();updateClock();setInterval(updateClock,1000);if(localStorage.getItem('vpn_provider')){vpnActivo=true;vpnProvider=localStorage.getItem('vpn_provider');updateVPNStatusUI();}if(!document.getElementById('vpnStatusBadge')){const headerDiv=document.querySelector('.header div:last-child');const badge=document.createElement('span');badge.id='vpnStatusBadge';badge.className='vpn-status';badge.textContent='🌐 Directo';headerDiv.appendChild(badge);}}
+document.getElementById('settingsBtn').onclick=showSettingsModal;
+document.getElementById('addServerBtn').onclick=showAddServerModal;
+document.getElementById('serversBtn').onclick=showServersList;
+document.getElementById('backBtn').onclick=()=>{let v=document.getElementById('video');v.currentTime=Math.max(0,v.currentTime-10);};
+document.getElementById('forwardBtn').onclick=()=>{let v=document.getElementById('video');v.currentTime=Math.min(v.duration,v.currentTime+10);};
+document.getElementById('speedBtn').onclick=()=>{let v=document.getElementById('video');let sp=[0.5,0.75,1,1.25,1.5,2];let idx=sp.indexOf(v.playbackRate);v.playbackRate=sp[(idx+1)%sp.length];document.getElementById('speedBtn').innerHTML=`⚡ ${v.playbackRate}x`;};
+document.getElementById('pipBtn').onclick=()=>{if(document.getElementById('video').requestPictureInPicture)document.getElementById('video').requestPictureInPicture();else mostrarToast("PiP no compatible");};
+document.getElementById('searchInput').addEventListener('input',e=>{let term=e.target.value.toLowerCase();document.querySelectorAll('.channel-item').forEach(el=>{el.style.display=el.innerText.toLowerCase().includes(term)?'flex':'none';});});
+function switchTab(tab){currentTab=tab;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');renderView();}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>switchTab(t.getAttribute('data-tab'))));
 </script>
 </body>
 </html>
+```
