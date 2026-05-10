@@ -1,51 +1,591 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel Remoto LUIS R</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>🦂 LUIS R IPTV ULTRA - ANTI BLOQUEO 🦉</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { background: #0a0a0a; color: #fff; font-family: Arial; text-align: center; padding: 20px; }
-        input, button { padding: 12px; margin: 8px auto; border-radius: 30px; border: none; width: 90%; max-width: 400px; display: block; }
-        input { background: #1e1e2a; color: white; }
-        button { background: #ffd700; color: #000; font-weight: bold; cursor: pointer; }
-        .success { color: #4ade80; }
-        .error { color: #f87171; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 100%);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,215,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { font-weight: 800; font-size: 18px; background: linear-gradient(135deg, #ffd700, #ff8c00); -webkit-background-clip: text; background-clip: text; color: transparent; display: flex; align-items: center; gap: 8px; }
+        .logo span { font-size: 24px; background: none; -webkit-background-clip: unset; background-clip: unset; color: #ffd700; }
+        
+        .btn { background: #ffd700; border: none; padding: 8px 16px; border-radius: 30px; color: #000; font-weight: bold; cursor: pointer; min-height: 44px; margin: 5px; transition: 0.2s; }
+        .btn:active { transform: scale(0.97); }
+        .btn-secondary { background: #1e1e2a; color: #fff; }
+        input, select, textarea { background: #1e1e2a; border: 1px solid #333; padding: 10px 16px; border-radius: 30px; color: white; margin: 5px; width: 100%; max-width: 400px; }
+        
+        .tabs { display: flex; gap: 10px; padding: 12px 20px; background: #0f0f0f; overflow-x: auto; }
+        .tab { padding: 8px 16px; border-radius: 30px; background: #1e1e2a; cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .tab.active { background: #ffd700; color: #000; }
+        
+        .main { display: flex; flex-direction: column; padding: 15px; gap: 15px; height: calc(100vh - 130px); overflow: hidden; }
+        @media (min-width: 800px) { .main { flex-direction: row; } }
+        
+        .sidebar { background: rgba(15,15,20,0.9); border-radius: 28px; padding: 15px; overflow-y: auto; flex: 1; }
+        .player-area { background: #030303; border-radius: 28px; overflow: hidden; flex: 2; display: flex; flex-direction: column; }
+        video { width: 100%; max-height: 400px; background: #000; }
+        
+        .channel-item { padding: 12px; margin: 5px 0; background: #1e1e2a; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s; }
+        .channel-item:hover { background: #ffd700; color: #000; transform: scale(1.01); }
+        .now-playing { background: #111; padding: 10px; border-top: 1px solid #222; font-size: 12px; }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.96);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-card {
+            background: #121218;
+            border-radius: 32px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            border: 1px solid #ffd700;
+        }
+        .modal-card h3 { color: #ffd700; margin-bottom: 15px; text-align: center; }
+        .modal-card input, .modal-card textarea { width: 100%; margin-bottom: 10px; }
+        .codigo-box { background: #1e1e2a; padding: 12px; border-radius: 16px; font-family: monospace; font-size: 20px; letter-spacing: 2px; text-align: center; margin: 10px 0; }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffd700;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 30px;
+            z-index: 2000;
+            animation: fadeOut 2s forwards;
+        }
+        @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+        
+        .loading { text-align: center; padding: 30px; }
+        .error { background: rgba(239,68,68,0.15); padding: 15px; border-radius: 24px; color: #f87171; text-align: center; }
+        
+        @media (max-width: 800px) {
+            .btn { font-size: 12px; padding: 6px 12px; }
+            .codigo-box { font-size: 16px; }
+        }
     </style>
 </head>
 <body>
-    <h2>🔐 Panel Remoto LUIS R</h2>
-    <input type="text" id="codigo" placeholder="🔑 Código de acceso (ej: LUIS2024)">
-    <input type="text" id="nombre" placeholder="📛 Nombre de la lista">
-    <input type="text" id="url" placeholder="🔗 URL de la lista M3U o Xtream">
-    <input type="text" id="usuario" placeholder="👤 Usuario (opcional)">
-    <input type="password" id="pass" placeholder="🔑 Contraseña (opcional)">
-    <button onclick="enviarLista()">📡 ENVIAR LISTA</button>
-    <div id="estado"></div>
 
-    <script>
-        function enviarLista() {
-            const codigo = document.getElementById('codigo').value.trim();
-            const nombre = document.getElementById('nombre').value.trim();
-            const url = document.getElementById('url').value.trim();
-            const usuario = document.getElementById('usuario').value.trim();
-            const pass = document.getElementById('pass').value.trim();
+<div class="header">
+    <div class="logo"><span>🐊🦂🦉</span> LUIS R IPTV ULTRA</div>
+    <div>
+        <button class="btn" id="syncBtn">🔗 SINCRONIZAR</button>
+        <button class="btn btn-secondary" id="addServerBtn">➕ SERVIDOR</button>
+        <button class="btn btn-secondary" id="serversBtn">📡 LISTAS</button>
+        <span id="clock" style="font-family: monospace;"></span>
+    </div>
+</div>
 
-            if (!codigo || !nombre || !url) {
-                document.getElementById('estado').innerHTML = '<div class="error">❌ Completa código, nombre y URL</div>';
-                return;
-            }
+<div class="tabs" id="tabs">
+    <div class="tab active" data-tab="live">📺 LIVE</div>
+    <div class="tab" data-tab="movies">🎬 PELIS</div>
+    <div class="tab" data-tab="series">📺 SERIES</div>
+    <div class="tab" data-tab="favoritos">⭐ FAV</div>
+    <div class="tab" data-tab="listaM3U">📁 M3U</div>
+</div>
 
-            const listas = JSON.parse(localStorage.getItem(`listas_${codigo}`) || '[]');
-            const nuevaLista = { nombre, url, usuario, pass, fecha: new Date().toISOString() };
-            listas.push(nuevaLista);
-            localStorage.setItem(`listas_${codigo}`, JSON.stringify(listas));
+<div class="main">
+    <div class="sidebar" id="sidebar">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar canales..." style="width: 100%; margin-bottom: 10px;">
+        <div id="categoriesContainer">Cargando...</div>
+    </div>
+    <div class="player-area">
+        <video id="video" controls autoplay playsinline webkit-playsinline></video>
+        <div class="now-playing" id="nowPlaying">▶ Selecciona un canal</div>
+    </div>
+</div>
 
-            document.getElementById('estado').innerHTML = '<div class="success">✅ Lista enviada correctamente</div>';
-            document.getElementById('nombre').value = '';
-            document.getElementById('url').value = '';
-            document.getElementById('usuario').value = '';
-            document.getElementById('pass').value = '';
+<script type="importmap">
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js"
         }
-    </script>
+    }
+</script>
+
+<script type="module">
+    import { initializeApp } from 'firebase/app';
+    import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+
+    // ==================== CONFIGURACIÓN FIREBASE ====================
+    const firebaseConfig = {
+        apiKey: "AIzaSyA_nSgSdG-Kn2gNFk6j8u-JjGT53p4H74A",
+        authDomain: "iptv-luis-r.firebaseapp.com",
+        projectId: "iptv-luis-r",
+        storageBucket: "iptv-luis-r.firebasestorage.app",
+        messagingSenderId: "1031355573450",
+        appId: "1:1031355573450:web:2683dd9aaf005dd3760033"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ==================== SISTEMA ANTI-BLOQUEO (PROXIES CORS) ====================
+    const CORS_PROXIES = [
+        "https://cors-anywhere.herokuapp.com/",
+        "https://api.allorigins.win/raw?url=",
+        "https://proxy.cors.sh/"
+    ];
+
+    async function fetchWithProxy(url, retries = 2) {
+        for (let attempt = 0; attempt <= retries; attempt++) {
+            for (let proxy of CORS_PROXIES) {
+                try {
+                    const controller = new AbortController();
+                    const timeout = setTimeout(() => controller.abort(), 15000);
+                    const res = await fetch(proxy + url, { signal: controller.signal });
+                    clearTimeout(timeout);
+                    if (res.ok) return await res.text();
+                } catch(e) { console.log(`Proxy ${proxy} falló`); }
+            }
+            // Esperar 1 segundo antes de reintentar
+            if (attempt < retries) await new Promise(r => setTimeout(r, 1000));
+        }
+        // Fallback: intentar directo (última opción)
+        const res = await fetch(url);
+        if (res.ok) return await res.text();
+        throw new Error("No se pudo cargar después de múltiples intentos");
+    }
+
+    async function fetchJSONWithProxy(url) {
+        const text = await fetchWithProxy(url);
+        try { return JSON.parse(text); } catch(e) { return null; }
+    }
+
+    // ==================== CÓDIGO DE DISPOSITIVO ====================
+    let deviceCode = localStorage.getItem('device_code');
+    if (!deviceCode) {
+        deviceCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        localStorage.setItem('device_code', deviceCode);
+    }
+
+    function mostrarCodigoDispositivo() {
+        const sidebar = document.getElementById('sidebar');
+        if (!document.getElementById('deviceCodeDisplay')) {
+            const codeDiv = document.createElement('div');
+            codeDiv.id = 'deviceCodeDisplay';
+            codeDiv.className = 'codigo-box';
+            codeDiv.style.marginBottom = '15px';
+            codeDiv.innerHTML = `📱 CÓDIGO: ${deviceCode}<br><span style="font-size:12px;">Usa este código en el panel web</span><br><span style="font-size:10px;">videosiptv77.github.io/panel-iptv-luis</span>`;
+            sidebar.insertBefore(codeDiv, sidebar.firstChild);
+        }
+    }
+
+    // ==================== LISTAS REMOTAS DESDE FIREBASE ====================
+    let servidores = [];
+    let servidorActivo = null;
+    let categoriaActual = 'live';
+    let reproductorHLS = null;
+    let busqueda = '';
+    let favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+
+    const servidorDefault = {
+        id: 1,
+        name: "MSTR TV",
+        url: "http://mstrtv.com:25461",
+        user: "Joseangeljaur",
+        pass: "c91dea7b374135eb7eac31a468326e75",
+        type: "xtream",
+        active: true
+    };
+
+    async function cargarListasRemotas() {
+        try {
+            const docRef = doc(db, 'listas', deviceCode);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const listasRemotas = docSnap.data().items || [];
+                let nuevas = 0;
+                for (const lista of listasRemotas) {
+                    if (!servidores.find(s => s.name === lista.nombre)) {
+                        servidores.push({
+                            id: Date.now() + Math.random(),
+                            name: lista.nombre,
+                            url: lista.url,
+                            user: lista.usuario || '',
+                            pass: lista.pass || '',
+                            type: lista.usuario ? "xtream" : "m3u",
+                            active: false
+                        });
+                        nuevas++;
+                    }
+                }
+                if (nuevas > 0) {
+                    guardarServidores();
+                    mostrarToast(`📡 ${nuevas} listas remotas cargadas`);
+                }
+            }
+        } catch(e) { console.log("Error remoto:", e); }
+    }
+
+    function cargarServidoresLocal() {
+        const saved = localStorage.getItem('luisr_servers');
+        if (saved) {
+            try { servidores = JSON.parse(saved); } catch(e) { servidores = []; }
+        }
+        if (!servidores.length) servidores = [servidorDefault];
+        servidorActivo = servidores.find(s => s.active) || servidores[0];
+        actualizarHeaderServidor();
+    }
+
+    function guardarServidores() {
+        localStorage.setItem('luisr_servers', JSON.stringify(servidores));
+    }
+
+    function actualizarHeaderServidor() {
+        const serverNameSpan = document.getElementById('serverName');
+        if (serverNameSpan) serverNameSpan.innerText = servidorActivo?.name || 'Ninguno';
+    }
+
+    function setServidorActivo(id) {
+        servidores = servidores.map(s => ({ ...s, active: s.id === id }));
+        servidorActivo = servidores.find(s => s.active);
+        guardarServidores();
+        actualizarHeaderServidor();
+        cargarCategorias();
+    }
+
+    function eliminarServidor(id) {
+        if (servidores.length <= 1) { alert("Debe haber al menos un servidor"); return; }
+        servidores = servidores.filter(s => s.id !== id);
+        if (servidorActivo.id === id) setServidorActivo(servidores[0].id);
+        else guardarServidores();
+        cargarCategorias();
+    }
+
+    function apiUrl(action, params = '') {
+        if (!servidorActivo || servidorActivo.type !== 'xtream') return '';
+        return `${servidorActivo.url}/player_api.php?username=${servidorActivo.user}&password=${servidorActivo.pass}&action=${action}${params}`;
+    }
+
+    // ==================== REPRODUCTOR MULTIFORMATO CON FALLBACK ====================
+    function reproducirUrl(url, titulo) {
+        const video = document.getElementById('video');
+        const nowPlaying = document.getElementById('nowPlaying');
+        
+        if (reproductorHLS) { reproductorHLS.destroy(); reproductorHLS = null; }
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+        
+        nowPlaying.innerHTML = `⏳ Cargando: ${titulo}...`;
+        
+        // Detectar formato HLS (.m3u8)
+        if (url.includes('.m3u8') && Hls.isSupported()) {
+            const hls = new Hls({ enableWorker: true, debug: false });
+            hls.loadSource(url);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => { video.play().catch(e=>nowPlaying.innerHTML=`🔊 ${titulo}`); nowPlaying.innerHTML = `▶ ${titulo}`; });
+            hls.on(Hls.Events.ERROR, (event, data) => { 
+                if (data.fatal) {
+                    nowPlaying.innerHTML = `❌ Error en ${titulo}`;
+                    // Fallback a reproducción nativa
+                    video.src = url;
+                    video.play().catch(e => nowPlaying.innerHTML = `🔊 ${titulo} (toca play)`);
+                }
+            });
+            reproductorHLS = hls;
+        } 
+        else {
+            video.src = url;
+            video.play().catch(e => nowPlaying.innerHTML = `🔊 ${titulo} (toca play)`);
+            nowPlaying.innerHTML = `▶ ${titulo}`;
+        }
+        
+        // Guardar en historial local
+        let historial = JSON.parse(localStorage.getItem('historial') || '[]');
+        historial.unshift({ titulo, url, fecha: new Date().toLocaleTimeString() });
+        if (historial.length > 20) historial.pop();
+        localStorage.setItem('historial', JSON.stringify(historial));
+    }
+
+    // ==================== CARGAR M3U MANUAL CON PROXY ====================
+    async function cargarM3UManual(urlM3U) {
+        try {
+            mostrarToast("⏳ Cargando lista M3U...");
+            const texto = await fetchWithProxy(urlM3U);
+            const lineas = texto.split('\n');
+            let canales = [];
+            for (let i = 0; i < lineas.length; i++) {
+                if (lineas[i].startsWith('#EXTINF:')) {
+                    const match = lineas[i].match(/#EXTINF:.*?,(.*)$/);
+                    const nombre = match ? match[1] : 'Canal';
+                    let urlCanal = '';
+                    for (let j = i+1; j < lineas.length; j++) {
+                        if (lineas[j].trim() && !lineas[j].startsWith('#')) {
+                            urlCanal = lineas[j].trim();
+                            break;
+                        }
+                    }
+                    if (urlCanal) canales.push({ nombre, url: urlCanal });
+                }
+            }
+            mostrarCanalesM3U(canales);
+            mostrarToast(`✅ ${canales.length} canales cargados`);
+        } catch(e) { 
+            mostrarToast("❌ Error al cargar M3U: " + e.message);
+        }
+    }
+
+    function mostrarCanalesM3U(canales) {
+        const container = document.getElementById('categoriesContainer');
+        let html = '<div class="codigo-box" style="margin-bottom:10px;">📁 LISTA M3U CARGADA</div>';
+        for (const canal of canales) {
+            html += `<div class="channel-item" onclick='reproducirUrl("${canal.url.replace(/['"]/g, '\\"')}", "${canal.nombre.replace(/['"]/g, '\\"')}")'>📺 ${canal.nombre}</div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    // ==================== CATEGORÍAS Y CANALES CON PROXY ====================
+    async function cargarCategorias() {
+        const container = document.getElementById('categoriesContainer');
+        if (categoriaActual === 'favoritos') { mostrarFavoritos(); return; }
+        if (categoriaActual === 'listaM3U') { mostrarFormM3U(); return; }
+        if (categoriaActual === 'historial') { mostrarHistorial(); return; }
+        
+        container.innerHTML = '<div class="loading">Cargando...</div>';
+        if (!servidorActivo) return;
+
+        let endpoint = '';
+        if (categoriaActual === 'live') endpoint = apiUrl('get_live_categories');
+        else if (categoriaActual === 'movies') endpoint = apiUrl('get_vod_categories');
+        else if (categoriaActual === 'series') endpoint = apiUrl('get_series_categories');
+        if (!endpoint) { container.innerHTML = '<div class="error">Selecciona un servidor primero</div>'; return; }
+        
+        const data = await fetchJSONWithProxy(endpoint);
+        if (!data || !Array.isArray(data)) { 
+            container.innerHTML = '<div class="error">Error de conexión. Verifica tu internet o servidor.</div>'; 
+            return;
+        }
+        
+        let html = '';
+        for (const cat of data) {
+            html += `<div class="categoria" data-cat-id="${cat.category_id}" style="margin-bottom: 10px;">
+                        <div style="background:#18181e; padding:12px; border-radius:20px; cursor:pointer; font-weight:bold;" onclick="toggleCategoria(this)">📁 ${cat.category_name} ▼</div>
+                        <div class="cat-content" style="display:none; padding-left:10px;"></div>
+                     </div>`;
+        }
+        container.innerHTML = html;
+        if (busqueda) filtrarCanales();
+    }
+
+    window.toggleCategoria = async function(header) {
+        const content = header.nextElementSibling;
+        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        if (content.style.display === 'block' && !content.innerHTML.trim()) {
+            const catId = header.parentElement.getAttribute('data-cat-id');
+            let endpoint = '';
+            if (categoriaActual === 'live') endpoint = apiUrl('get_live_streams', `&category_id=${catId}`);
+            else if (categoriaActual === 'movies') endpoint = apiUrl('get_vod_streams', `&category_id=${catId}`);
+            else if (categoriaActual === 'series') endpoint = apiUrl('get_series', `&category_id=${catId}`);
+            if (!endpoint) return;
+            const data = await fetchJSONWithProxy(endpoint);
+            if (!data || !Array.isArray(data)) { content.innerHTML = '<p class="error">Sin canales</p>'; return; }
+            let html = '';
+            for (const item of data) {
+                const name = item.name || item.title || 'Sin nombre';
+                let url = '';
+                if (categoriaActual === 'live') url = `${servidorActivo.url}/live/${servidorActivo.user}/${servidorActivo.pass}/${item.stream_id}.m3u8`;
+                else if (categoriaActual === 'movies') url = `${servidorActivo.url}/movie/${servidorActivo.user}/${servidorActivo.pass}/${item.stream_id}.${item.container_extension || 'mp4'}`;
+                else if (categoriaActual === 'series') url = `serie_${item.series_id}`;
+                html += `<div class="channel-item" onclick='reproducirUrl("${url.replace(/['"]/g, '\\"')}", "${name.replace(/['"]/g, '\\"')}")'>📺 ${name}</div>`;
+            }
+            content.innerHTML = html;
+        }
+    };
+
+    function mostrarFavoritos() {
+        const container = document.getElementById('categoriesContainer');
+        if (!favoritos.length) { container.innerHTML = '<div class="error">No hay favoritos</div>'; return; }
+        let html = '<div class="codigo-box">⭐ FAVORITOS</div>';
+        for (const fav of favoritos) {
+            html += `<div class="channel-item" onclick='reproducirUrl("${fav.url.replace(/['"]/g, '\\"')}", "${fav.name.replace(/['"]/g, '\\"')}")'>⭐ ${fav.name}</div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function mostrarHistorial() {
+        const historial = JSON.parse(localStorage.getItem('historial') || '[]');
+        const container = document.getElementById('categoriesContainer');
+        if (!historial.length) { container.innerHTML = '<div class="error">No hay historial</div>'; return; }
+        let html = '<div class="codigo-box">📜 HISTORIAL RECIENTE</div>';
+        for (const h of historial) {
+            html += `<div class="channel-item" onclick='reproducirUrl("${h.url.replace(/['"]/g, '\\"')}", "${h.titulo.replace(/['"]/g, '\\"')}")'>▶️ ${h.titulo} <span style="margin-left:auto; font-size:11px;">${h.fecha}</span></div>`;
+        }
+        container.innerHTML = html;
+    }
+
+    function mostrarFormM3U() {
+        const container = document.getElementById('categoriesContainer');
+        container.innerHTML = `
+            <div class="codigo-box" style="margin-bottom:15px;">📁 CARGAR LISTA M3U</div>
+            <input type="text" id="m3uUrl" placeholder="https://ejemplo.com/lista.m3u" style="width:100%;">
+            <button class="btn" id="cargarM3UBtn" style="margin-top:10px;">📡 CARGAR CANALES</button>
+            <div id="m3uResultado"></div>
+        `;
+        document.getElementById('cargarM3UBtn').onclick = async () => {
+            const url = document.getElementById('m3uUrl').value.trim();
+            if (!url) { alert("Ingresa la URL del M3U"); return; }
+            await cargarM3UManual(url);
+        };
+    }
+
+    function filtrarCanales() {
+        const term = busqueda.toLowerCase();
+        document.querySelectorAll('.channel-item').forEach(el => {
+            const name = el.innerText.toLowerCase();
+            el.style.display = name.includes(term) ? 'flex' : 'none';
+        });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', e => { busqueda = e.target.value; filtrarCanales(); });
+
+    // ==================== MODALES ====================
+    function showAddServerModal() {
+        let modal = document.createElement('div'); modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-card"><h3>➕ AGREGAR SERVIDOR</h3>
+            <input id="newName" placeholder="Nombre (ej: Mi Servidor)">
+            <input id="newUrl" placeholder="URL (http://servidor:8080)">
+            <input id="newUser" placeholder="Usuario">
+            <input id="newPass" type="password" placeholder="Contraseña">
+            <textarea id="newM3U" rows="2" placeholder="O pega aquí una URL M3U completa"></textarea>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button id="saveXtreamBtn" style="background:#ffd700; color:#000;">💾 Guardar Xtream</button>
+                <button id="saveM3UBtn" style="background:#10b981;">📁 Guardar M3U</button>
+                <button onclick="this.closest('.modal').remove()" style="background:#444;">Cancelar</button>
+            </div>
+        </div>`;
+        document.body.appendChild(modal);
+        
+        document.getElementById('saveXtreamBtn').onclick = () => {
+            const name = document.getElementById('newName').value.trim();
+            const url = document.getElementById('newUrl').value.trim();
+            const user = document.getElementById('newUser').value.trim();
+            const pass = document.getElementById('newPass').value.trim();
+            if (!name || !url || !user || !pass) { alert("Completa todos los campos"); return; }
+            const newId = Date.now();
+            servidores.push({ id: newId, name, url, user, pass, type: "xtream", active: false });
+            guardarServidores();
+            setServidorActivo(newId);
+            modal.remove();
+            mostrarToast(`✅ Servidor ${name} agregado`);
+        };
+        
+        document.getElementById('saveM3UBtn').onclick = () => {
+            const name = document.getElementById('newName').value.trim();
+            const m3uUrl = document.getElementById('newM3U').value.trim();
+            if (!name || !m3uUrl) { alert("Nombre y URL M3U requeridos"); return; }
+            const newId = Date.now();
+            servidores.push({ id: newId, name, m3uUrl, type: "m3u", active: false });
+            guardarServidores();
+            setServidorActivo(newId);
+            modal.remove();
+            mostrarToast(`✅ Lista M3U ${name} agregada`);
+        };
+    }
+
+    function showServersManager() {
+        let modal = document.createElement('div'); modal.className = 'modal';
+        let html = `<div class="modal-card"><h3>📡 MIS SERVIDORES</h3>`;
+        for (const s of servidores) {
+            let detalle = s.type === 'xtream' ? `${s.url} | ${s.user}` : `M3U: ${s.m3uUrl?.substring(0,40)}...`;
+            html += `<div style="background:#1a1a24; margin:10px 0; padding:12px; border-radius:24px; display:flex; justify-content:space-between; flex-wrap:wrap;">
+                        <div><strong>${s.name}</strong> ${s.id === servidorActivo?.id ? '✅' : ''}<br><small>${detalle}</small></div>
+                        <div>${s.id !== servidorActivo?.id ? `<button onclick="window.activar(${s.id})">Activar</button>` : ''}<button onclick="window.eliminar(${s.id})" style="background:#dc2626;">🗑</button></div>
+                     </div>`;
+        }
+        html += `<button onclick="window.addServer()" style="margin-top:10px;">➕ Agregar</button>
+                 <button onclick="window.addM3UManual()" style="margin-top:10px; background:#10b981;">📁 Cargar M3U Manual</button>
+                 <button onclick="this.closest('.modal').remove()">Cerrar</button></div>`;
+        modal.innerHTML = html;
+        document.body.appendChild(modal);
+        window.activar = (id) => { setServidorActivo(id); modal.remove(); };
+        window.eliminar = (id) => { eliminarServidor(id); modal.remove(); setTimeout(showServersManager, 100); };
+        window.addServer = () => { modal.remove(); showAddServerModal(); };
+        window.addM3UManual = () => { modal.remove(); categoriaActual = 'listaM3U'; cambiarTab('listaM3U'); };
+    }
+
+    function showSyncModal() {
+        let modal = document.createElement('div'); modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-card"><h3>🔗 SINCRONIZAR REMOTO</h3>
+            <div class="codigo-box">📱 CÓDIGO: ${deviceCode}</div>
+            <p style="margin:10px 0;">Usa este código en el panel web para enviar listas remotamente</p>
+            <p style="font-size:12px; color:#aaa;">Panel web: videosiptv77.github.io/panel-iptv-luis</p>
+            <button onclick="this.closest('.modal').remove()">Cerrar</button>
+        </div>`;
+        document.body.appendChild(modal);
+    }
+
+    function mostrarToast(msg) {
+        let toast = document.createElement('div'); toast.className = 'toast'; toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2000);
+    }
+
+    // ==================== INICIALIZACIÓN ====================
+    function cambiarTab(tab) {
+        categoriaActual = tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+        cargarCategorias();
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => cambiarTab(tab.getAttribute('data-tab')));
+    });
+
+    document.getElementById('addServerBtn').onclick = () => showAddServerModal();
+    document.getElementById('serversBtn').onclick = () => showServersManager();
+    document.getElementById('syncBtn').onclick = () => showSyncModal();
+
+    function updateClock() {
+        document.getElementById('clock').innerHTML = new Date().toLocaleTimeString();
+    }
+
+    cargarServidoresLocal();
+    cargarListasRemotas();
+    setInterval(cargarListasRemotas, 30000);
+    mostrarCodigoDispositivo();
+    updateClock();
+    setInterval(updateClock, 1000);
+    
+    window.reproducirUrl = reproducirUrl;
+</script>
 </body>
 </html>
