@@ -43,7 +43,7 @@
                 const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
                     headers: { 'Authorization': `Bearer ${GIST_TOKEN}` }
                 });
-                if (!res.ok) throw new Error('Error al leer Gist');
+                if (!res.ok) throw new Error('No se pudo leer el Gist');
 
                 const data = await res.json();
                 let listas = [];
@@ -75,7 +75,7 @@
                     document.getElementById('estado').innerHTML = '<div class="error">❌ Error al enviar. Verifica el token.</div>';
                 }
             } catch (error) {
-                document.getElementById('estado').innerHTML = '<div class="error">❌ Error de conexión: ' + error.message + '</div>';
+                document.getElementById('estado').innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
             }
         }
     </script>
