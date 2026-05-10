@@ -2,7 +2,6 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Remoto LUIS R</title>
     <style>
         body { background: #0a0a0a; color: #fff; font-family: Arial; text-align: center; padding: 20px; }
@@ -15,6 +14,7 @@
 </head>
 <body>
     <h2>🔐 Panel Remoto LUIS R</h2>
+    <input type="text" id="codigo" placeholder="🔑 Código de acceso (ej: LUIS2024)">
     <input type="text" id="nombre" placeholder="📛 Nombre de la lista">
     <input type="text" id="url" placeholder="🔗 URL de la lista M3U o Xtream">
     <input type="text" id="usuario" placeholder="👤 Usuario (opcional)">
@@ -23,60 +23,28 @@
     <div id="estado"></div>
 
     <script>
-        const GIST_ID = "abc0bdb5d45066596ece2ac48090ce46";
-        const GIST_TOKEN = "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";
-
-        async function enviarLista() {
+        function enviarLista() {
+            const codigo = document.getElementById('codigo').value.trim();
             const nombre = document.getElementById('nombre').value.trim();
             const url = document.getElementById('url').value.trim();
             const usuario = document.getElementById('usuario').value.trim();
             const pass = document.getElementById('pass').value.trim();
 
-            if (!nombre || !url) {
-                document.getElementById('estado').innerHTML = '<div class="error">❌ Completa nombre y URL</div>';
+            if (!codigo || !nombre || !url) {
+                document.getElementById('estado').innerHTML = '<div class="error">❌ Completa código, nombre y URL</div>';
                 return;
             }
 
-            document.getElementById('estado').innerHTML = '<div>⏳ Enviando...</div>';
+            const listas = JSON.parse(localStorage.getItem(`listas_${codigo}`) || '[]');
+            const nuevaLista = { nombre, url, usuario, pass, fecha: new Date().toISOString() };
+            listas.push(nuevaLista);
+            localStorage.setItem(`listas_${codigo}`, JSON.stringify(listas));
 
-            try {
-                const res = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                    headers: { 'Authorization': `Bearer ${GIST_TOKEN}` }
-                });
-                if (!res.ok) throw new Error('No se pudo leer el Gist');
-
-                const data = await res.json();
-                let listas = [];
-                if (data.files && data.files['lista.json'] && data.files['lista.json'].content) {
-                    listas = JSON.parse(data.files['lista.json'].content);
-                }
-
-                const nuevaLista = { nombre, url, usuario, pass, fecha: new Date().toISOString() };
-                listas.push(nuevaLista);
-
-                const update = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer ${GIST_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        files: { 'lista.json': { content: JSON.stringify(listas, null, 2) } }
-                    })
-                });
-
-                if (update.ok) {
-                    document.getElementById('estado').innerHTML = '<div class="success">✅ Lista enviada correctamente</div>';
-                    document.getElementById('nombre').value = '';
-                    document.getElementById('url').value = '';
-                    document.getElementById('usuario').value = '';
-                    document.getElementById('pass').value = '';
-                } else {
-                    document.getElementById('estado').innerHTML = '<div class="error">❌ Error al enviar. Verifica el token.</div>';
-                }
-            } catch (error) {
-                document.getElementById('estado').innerHTML = '<div class="error">❌ Error: ' + error.message + '</div>';
-            }
+            document.getElementById('estado').innerHTML = '<div class="success">✅ Lista enviada correctamente</div>';
+            document.getElementById('nombre').value = '';
+            document.getElementById('url').value = '';
+            document.getElementById('usuario').value = '';
+            document.getElementById('pass').value = '';
         }
     </script>
 </body>
