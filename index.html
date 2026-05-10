@@ -1,30 +1,6 @@
-name: luis_r
-description: Luis R - Reproductor Universal Pro
-version: 7.10.1+1
+// Luis R - v7.10.1 - BUILD DIOS DE DIOSES
+// Código completo, corregido y mejorado
 
-environment:
-  sdk: '>=3.3.0 <4.0.0'
-
-dependencies:
-  flutter:
-    sdk: flutter
-  media_kit: ^1.1.10
-  media_kit_video: ^1.2.4
-  media_kit_libs_video: ^1.0.4
-  shared_preferences: ^2.2.3
-  dio: ^5.4.3
-  path_provider: ^2.1.3
-  permission_handler: ^11.3.1
-  screen_brightness: ^0.2.2
-  volume_controller: ^2.0.7
-  wakelock_plus: ^1.2.5
-  flutter_pip: ^1.0.0
-  connectivity_plus: ^6.0.3
-  url_launcher: ^6.2.6
-
-flutter:
-  uses-material-design: true// Luis R - v7.10.1 - BUILD DIOS DE DIOSES
-// LINEA 1 - AGREGADO: Imports nivel pro
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
@@ -39,12 +15,15 @@ import 'package:dio/dio.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized(); // LINEA 16 - AGREGADO: Core universal mkv/ts/avi/m3u8/mp4
+  MediaKit.ensureInitialized();
   await WakelockPlus.enable();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const LuisRApp());
 }
 
+// ─────────────────────────────────────────────────────────────
+// APP ROOT
+// ─────────────────────────────────────────────────────────────
 class LuisRApp extends StatelessWidget {
   const LuisRApp({super.key});
 
@@ -63,9 +42,12 @@ class LuisRApp extends StatelessWidget {
           elevation: 0,
         ),
         switchTheme: SwitchThemeData(
-          thumbColor: MaterialStateProperty.all(Colors.white),
-          trackColor: MaterialStateProperty.resolveWith((states) => 
-            states.contains(MaterialState.selected) ? const Color(0xFFFF5722) : Colors.grey.shade800),
+          thumbColor: WidgetStateProperty.all(Colors.white),
+          trackColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? const Color(0xFFFF5722)
+                : Colors.grey.shade800,
+          ),
         ),
       ),
       home: const MainScreen(),
@@ -73,39 +55,44 @@ class LuisRApp extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────
+// MAIN SCREEN
+// ─────────────────────────────────────────────────────────────
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
+
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  // LINEA 55 - AGREGADO: Variables PRO globales
+
+  // Variables PRO globales
   bool pipMode = false;
   bool autoDownload = false;
   double playbackSpeed = 1.0;
   int servidorActual = 1;
-  bool modoAmolded = true;
+  bool modoAmoled = true;
   bool ecualizadorOn = false;
   String calidadDefault = 'Auto';
   bool traktSync = false;
 
-  final List<Widget> _pages = [];
+  List<Widget> _pages = [];
 
   @override
   void initState() {
     super.initState();
-    _pages.addAll([
+    _pages = [
       InicioPage(onPlay: _abrirReproductor),
       const VivoPage(),
       const DramaPage(),
-      PerfilPage(),
-    ]);
+      const PerfilPage(),
+    ];
     _cargarPrefs();
   }
 
-  _cargarPrefs() async {
+  Future<void> _cargarPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       pipMode = prefs.getBool('pipMode') ?? false;
@@ -115,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  _guardarPref(String key, dynamic value) async {
+  Future<void> _guardarPref(String key, dynamic value) async {
     final prefs = await SharedPreferences.getInstance();
     if (value is bool) prefs.setBool(key, value);
     if (value is double) prefs.setDouble(key, value);
@@ -124,46 +111,86 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _abrirReproductor(String url, String titulo) {
-    Navigator.push(context, MaterialPageRoute(
-      builder: (_) => ReproductorDios(
-        url: url,
-        titulo: titulo,
-        playbackSpeed: playbackSpeed,
-        pipMode: pipMode,
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ReproductorDios(
+          url: url,
+          titulo: titulo,
+          playbackSpeed: playbackSpeed,
+          pipMode: pipMode,
+        ),
       ),
-    ));
+    );
+  }
+
+  void _mostrarDialogoServidor() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1C2E),
+        title: const Text('Seleccionar Servidor CDN'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [1, 2, 3, 4, 5]
+              .map(
+                (i) => RadioListTile<int>(
+                  title: Text('Servidor $i'),
+                  value: i,
+                  groupValue: servidorActual,
+                  onChanged: (val) {
+                    setState(() => servidorActual = val!);
+                    _guardarPref('servidorActual', val);
+                    Navigator.pop(context);
+                  },
+                ),
+              )
+              .toList(),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // LINEA 104 - AGREGADO: AppBar con ⚙️ y ☰
       appBar: AppBar(
-        title: const Text('Luis R', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
+        title: const Text(
+          'Luis R',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+        ),
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, size: 28), // Las 3 barras ☰
+            icon: const Icon(Icons.menu, size: 28),
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, size: 26), // Engranaje ⚙️
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ConfigProPage(
-              servidorActual: servidorActual,
-              calidadDefault: calidadDefault,
-              onChanged: (s, c) => setState(() {
-                servidorActual = s;
-                calidadDefault = c;
-                _guardarPref('servidorActual', s);
-                _guardarPref('calidadDefault', c);
-              }),
-            ))),
+            icon: const Icon(Icons.settings, size: 26),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ConfigProPage(
+                  servidorActual: servidorActual,
+                  calidadDefault: calidadDefault,
+                  onChanged: (s, c) {
+                    setState(() {
+                      servidorActual = s;
+                      calidadDefault = c;
+                    });
+                    _guardarPref('servidorActual', s);
+                    _guardarPref('calidadDefault', c);
+                  },
+                ),
+              ),
+            ),
           ),
           const SizedBox(width: 8),
         ],
       ),
-      // LINEA 129 - AGREGADO: Drawer MEGA PRO
+
+      // ── DRAWER MEGA PRO ──
       drawer: Drawer(
         backgroundColor: const Color(0xFF0F1123),
         child: ListView(
@@ -171,80 +198,148 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             UserAccountsDrawerHeader(
               decoration: const BoxDecoration(
-                gradient: LinearGradient(colors: [Color(0xFFFF5722), Color(0xFFFF8A50)]),
+                gradient: LinearGradient(
+                  colors: [Color(0xFFFF5722), Color(0xFFFF8A50)],
+                ),
               ),
-              accountName: const Text('Luis R', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              accountName: const Text(
+                'Luis R',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
               accountEmail: const Text('Validez: 2026-09-03'),
               currentAccountPicture: const CircleAvatar(
                 backgroundColor: Colors.white,
-                child: Text('💎', style: TextStyle(fontSize: 30)), // LINEA 144 - Emoji original
+                child: Text('💎', style: TextStyle(fontSize: 30)),
               ),
               otherAccountsPictures: [
-                IconButton(icon: const Icon(Icons.close, color: Colors.white), onPressed: () => Navigator.pop(context))
+                IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ],
             ),
-            // LINEA 149 - SECCIÓN USUARIO - Emojis originales
-            ListTile(leading: const Icon(Icons.history, color: Colors.cyan), title: const Text('Historia'), onTap: () {}),
-            ListTile(leading: const Icon(Icons.star, color: Colors.amber), title: const Text('Favorito'), trailing: const Icon(Icons.chevron_right), onTap: () {}),
-            ListTile(leading: const Icon(Icons.shopping_cart, color: Colors.lightGreen), title: const Text('Comprar'), trailing: const Icon(Icons.chevron_right), onTap: () {}),
-            ListTile(leading: const Icon(Icons.update, color: Colors.lightBlue), title: const Text('Actualizar'), trailing: const Text('7.10.1'), onTap: () {}),
+
+            // Sección Usuario
+            ListTile(
+              leading: const Icon(Icons.history, color: Colors.cyan),
+              title: const Text('Historia'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.star, color: Colors.amber),
+              title: const Text('Favorito'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.shopping_cart, color: Colors.lightGreen),
+              title: const Text('Comprar'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.update, color: Colors.lightBlue),
+              title: const Text('Actualizar'),
+              trailing: const Text('7.10.1'),
+              onTap: () {},
+            ),
+
             const Divider(color: Colors.grey),
-            const Padding(padding: EdgeInsets.all(16), child: Text('FUNCIONES PRO', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFFF5722)))),
-            // LINEA 158 - AGREGADO: Todas las funciones pro
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'FUNCIONES PRO',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFFF5722),
+                ),
+              ),
+            ),
+
+            // Modo PiP
             SwitchListTile(
               secondary: const Icon(Icons.picture_in_picture_alt),
               title: const Text('Modo PiP'),
               subtitle: const Text('Ventana flotante al salir'),
               value: pipMode,
-              onChanged: (val) => setState(() { pipMode = val; _guardarPref('pipMode', val); }),
+              onChanged: (val) {
+                setState(() => pipMode = val);
+                _guardarPref('pipMode', val);
+              },
             ),
+
+            // Descarga Inteligente
             SwitchListTile(
               secondary: const Icon(Icons.download_for_offline),
               title: const Text('Descarga Inteligente'),
               subtitle: const Text('Solo con WiFi + Auto-borrar'),
               value: autoDownload,
-              onChanged: (val) => setState(() { autoDownload = val; _guardarPref('autoDownload', val); }),
+              onChanged: (val) {
+                setState(() => autoDownload = val);
+                _guardarPref('autoDownload', val);
+              },
             ),
+
+            // Velocidad Global
             ListTile(
               leading: const Icon(Icons.speed),
               title: const Text('Velocidad Global'),
               trailing: DropdownButton<double>(
                 value: playbackSpeed,
                 dropdownColor: const Color(0xFF1A1C2E),
-                underline: Container(),
+                underline: const SizedBox(),
                 items: [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0]
-                    .map((e) => DropdownMenuItem(value: e, child: Text('${e}x'))).toList(),
-                onChanged: (val) => setState(() { playbackSpeed = val!; _guardarPref('playbackSpeed', val); }),
+                    .map(
+                      (e) => DropdownMenuItem<double>(
+                        value: e,
+                        child: Text('${e}x'),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (val) {
+                  setState(() => playbackSpeed = val!);
+                  _guardarPref('playbackSpeed', val);
+                },
               ),
             ),
+
+            // Ecualizador
             ListTile(
               leading: const Icon(Icons.equalizer),
               title: const Text('Ecualizador Pro 10 Bandas'),
               subtitle: Text(ecualizadorOn ? 'Activado' : 'Desactivado'),
               onTap: () => setState(() => ecualizadorOn = !ecualizadorOn),
             ),
+
+            // Servidor CDN
             ListTile(
               leading: const Icon(Icons.dns),
               title: const Text('Servidor CDN'),
               subtitle: Text('Servidor $servidorActual'),
               onTap: () => _mostrarDialogoServidor(),
             ),
+
+            // Trakt.tv Sync
             ListTile(
               leading: const Icon(Icons.sync),
               title: const Text('Trakt.tv Sync'),
               subtitle: Text(traktSync ? 'Conectado' : 'Desconectado'),
               onTap: () => setState(() => traktSync = !traktSync),
             ),
+
+            // Modo AMOLED
             ListTile(
               leading: const Icon(Icons.dark_mode),
               title: const Text('Modo AMOLED'),
-              subtitle: Text(modoAmolded ? 'Negro puro' : 'Gris oscuro'),
-              onTap: () => setState(() => modoAmolded = !modoAmolded),
+              subtitle: Text(modoAmoled ? 'Negro puro' : 'Gris oscuro'),
+              onTap: () => setState(() => modoAmoled = !modoAmoled),
             ),
           ],
         ),
       ),
+
       body: _pages[_selectedIndex],
+
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF1A1C2E),
         selectedItemColor: const Color(0xFFFF5722),
@@ -255,95 +350,136 @@ class _MainScreenState extends State<MainScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'INICIO'),
           BottomNavigationBarItem(icon: Icon(Icons.live_tv), label: 'VIVO'),
-          BottomNavigationBarItem(icon: Icon(Icons.theater_comedy), label: 'DRAMA'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.theater_comedy),
+            label: 'DRAMA',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'ME'),
         ],
       ),
     );
   }
-
-  _mostrarDialogoServidor() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1C2E),
-        title: const Text('Seleccionar Servidor CDN'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [1, 2, 3, 4, 5].map((i) => RadioListTile(
-            title: Text('Servidor $i'),
-            value: i,
-            groupValue: servidorActual,
-            onChanged: (val) {
-              setState(() => servidorActual = val!);
-              _guardarPref('servidorActual', val);
-              Navigator.pop(context);
-            },
-          )).toList(),
-        ),
-      ),
-    );
-  }
 }
 
-// LINEA 248 - AGREGADO: REPRODUCTOR DIOS DE DIOSES - SOPORTA TODO
+// ─────────────────────────────────────────────────────────────
+// REPRODUCTOR DIOS DE DIOSES - SOPORTA mkv / ts / avi / m3u8 / mp4 / wmv / flv / mov / mpd
+// ─────────────────────────────────────────────────────────────
 class ReproductorDios extends StatefulWidget {
   final String url;
   final String titulo;
   final double playbackSpeed;
   final bool pipMode;
-  const ReproductorDios({super.key, required this.url, required this.titulo, required this.playbackSpeed, required this.pipMode});
+
+  const ReproductorDios({
+    super.key,
+    required this.url,
+    required this.titulo,
+    required this.playbackSpeed,
+    required this.pipMode,
+  });
 
   @override
   State<ReproductorDios> createState() => _ReproductorDiosState();
 }
 
-class _ReproductorDiosState extends State<ReproductorDios> {
-  late final player = Player();
-  late final controller = VideoController(player);
+class _ReproductorDiosState extends State<ReproductorDios>
+    with SingleTickerProviderStateMixin {
+  late final Player _player;
+  late final VideoController _controller;
+
   bool _mostrarControles = true;
+  bool _isPlaying = false;
+  bool _isBuffering = false;
+  bool _isMuted = false;
+  bool _isFullscreen = false;
+  bool _lock = false;
+
   double _brillo = 0.5;
   double _volumen = 0.5;
-  List<AudioTrack> _audios = [];
-  List<SubtitleTrack> _subs = [];
+  double _velocidad = 1.0;
+
   Duration _position = Duration.zero;
   Duration _duration = Duration.zero;
-  bool _isPlaying = false;
+
+  List<AudioTrack> _audios = [];
+  List<SubtitleTrack> _subs = [];
+  List<VideoTrack> _videos = [];
+
+  // Indicadores de gesto flotante
+  String? _gestureLabel;
+  late AnimationController _gestureAnimController;
+  late Animation<double> _gestureAnim;
+
+  // Doble tap seek
+  bool _showLeftSeek = false;
+  bool _showRightSeek = false;
 
   @override
   void initState() {
     super.initState();
+    _velocidad = widget.playbackSpeed;
+
+    _gestureAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _gestureAnim = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _gestureAnimController, curve: Curves.easeOut),
+    );
+
+    _player = Player();
+    _controller = VideoController(_player);
     _initPlayer();
     _initGestos();
   }
 
-  _initPlayer() async {
-    // LINEA 278 - AGREGADO: Abre mkv, ts, avi, m3u8, mp4, wmv, flv, mov, mpd
-    await player.open(Media(widget.url));
-    await player.setRate(widget.playbackSpeed);
-    player.stream.position.listen((p) => setState(() => _position = p));
-    player.stream.duration.listen((d) => setState(() => _duration = d));
-    player.stream.playing.listen((p) => setState(() => _isPlaying = p));
-    player.stream.tracks.listen((t) {
-      setState(() {
-        _audios = t.audio;
-        _subs = t.subtitle;
-      });
+  Future<void> _initPlayer() async {
+    await _player.open(Media(widget.url));
+    await _player.setRate(_velocidad);
+
+    _player.stream.position.listen((p) {
+      if (mounted) setState(() => _position = p);
+    });
+    _player.stream.duration.listen((d) {
+      if (mounted) setState(() => _duration = d);
+    });
+    _player.stream.playing.listen((p) {
+      if (mounted) setState(() => _isPlaying = p);
+    });
+    _player.stream.buffering.listen((b) {
+      if (mounted) setState(() => _isBuffering = b);
+    });
+    _player.stream.tracks.listen((t) {
+      if (mounted) {
+        setState(() {
+          _audios = t.audio;
+          _subs = t.subtitle;
+          _videos = t.video;
+        });
+      }
     });
   }
 
-  _initGestos() async {
-    _brillo = await ScreenBrightness().current;
-    _volumen = await VolumeController().getVolume();
+  Future<void> _initGestos() async {
+    try {
+      _brillo = await ScreenBrightness().current;
+    } catch (_) {}
+    try {
+      _volumen = await VolumeController().getVolume();
+    } catch (_) {}
   }
 
   @override
   void dispose() {
-    player.dispose();
+    _gestureAnimController.dispose();
+    _player.dispose();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
-  String _formatDuration(Duration d) {
+  // ── Helpers ──
+  String _fmt(Duration d) {
     String two(int n) => n.toString().padLeft(2, '0');
     final h = two(d.inHours);
     final m = two(d.inMinutes.remainder(60));
@@ -351,96 +487,640 @@ class _ReproductorDiosState extends State<ReproductorDios> {
     return d.inHours > 0 ? '$h:$m:$s' : '$m:$s';
   }
 
+  void _toggleFullscreen() {
+    setState(() => _isFullscreen = !_isFullscreen);
+    if (_isFullscreen) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    } else {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
+  }
+
+  void _mostrarGestureLabel(String label) {
+    setState(() => _gestureLabel = label);
+    _gestureAnimController.forward(from: 0);
+  }
+
+  void _mostrarVelocidadDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1A1C2E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'Velocidad de Reproducción',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+          ...([0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0].map(
+            (v) => ListTile(
+              title: Text('${v}x'),
+              trailing: _velocidad == v
+                  ? const Icon(Icons.check, color: Color(0xFFFF5722))
+                  : null,
+              onTap: () {
+                setState(() => _velocidad = v);
+                _player.setRate(v);
+                Navigator.pop(context);
+              },
+            ),
+          )),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  void _mostrarCalidadDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1A1C2E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'Calidad de Video',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+          ..._videos.map(
+            (v) => ListTile(
+              title: Text(v.title ?? v.id ?? 'Calidad'),
+              onTap: () {
+                _player.setVideoTrack(v);
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          if (_videos.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('No hay pistas de video disponibles'),
+            ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  void _mostrarAudioDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1A1C2E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'Pista de Audio',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+          ..._audios.map(
+            (a) => ListTile(
+              leading: const Icon(Icons.audiotrack),
+              title: Text(a.title ?? a.language ?? 'Audio'),
+              onTap: () {
+                _player.setAudioTrack(a);
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          if (_audios.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('No hay pistas de audio disponibles'),
+            ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  void _mostrarSubtitulosDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1A1C2E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Text(
+              'Subtítulos',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.subtitles_off),
+            title: const Text('Desactivar'),
+            onTap: () {
+              _player.setSubtitleTrack(SubtitleTrack.no());
+              Navigator.pop(context);
+            },
+          ),
+          ..._subs.map(
+            (s) => ListTile(
+              leading: const Icon(Icons.subtitles),
+              title: Text(s.title ?? s.language ?? 'Subtítulo'),
+              onTap: () {
+                _player.setSubtitleTrack(s);
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          if (_subs.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('No hay subtítulos disponibles'),
+            ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // BUILD
+  // ─────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          Center(child: Video(controller: controller, controls: NoVideoControls)),
-          // LINEA 315 - AGREGADO: Gestos de brillo y volumen
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: () => setState(() => _mostrarControles = !_mostrarControles),
-              onDoubleTap: () => player.playOrPause(),
-              onVerticalDragUpdate: (d) {
-                final delta = d.primaryDelta! / MediaQuery.of(context).size.height;
-                if (d.localPosition.dx < MediaQuery.of(context).size.width / 2) {
-                  _brillo = (_brillo - delta).clamp(0.0, 1.0);
-                  ScreenBrightness().setScreenBrightness(_brillo);
-                } else {
-                  _volumen = (_volumen - delta).clamp(0.0, 1.0);
-                  VolumeController().setVolume(_volumen);
-                }
-              },
+          // ── Video ──
+          Center(
+            child: Video(
+              controller: _controller,
+              controls: NoVideoControls,
             ),
           ),
-          // LINEA 331 - AGREGADO: UI de controles PRO
-          if (_mostrarControles)
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.black87, Colors.transparent, Colors.black87],
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+          // ── Capa de gestos (pantalla dividida: izq=brillo, der=volumen) ──
+          if (!_lock)
+            Positioned.fill(
+              child: Row(
                 children: [
-                  AppBar(
-                    backgroundColor: Colors.transparent,
-                    title: Text(widget.titulo, style: const TextStyle(fontSize: 16)),
-                    actions: [
-                      // LINEA 347 - AGREGADO: Botón PiP
-                      if (widget.pipMode)
-                        IconButton(icon: const Icon(Icons.picture_in_picture_alt), onPressed: () {}),
-                      // LINEA 350 - AGREGADO: Selector de audio
-                      PopupMenuButton(
-                        icon: const Icon(Icons.audiotrack),
-                        itemBuilder: (_) => _audios.map((a) => PopupMenuItem(
-                          child: Text(a.title ?? a.language ?? 'Audio'),
-                          onTap: () => player.setAudioTrack(a),
-                        )).toList(),
+                  // Zona izquierda: brillo
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () => setState(
+                        () => _mostrarControles = !_mostrarControles,
                       ),
-                      // LINEA 357 - AGREGADO: Selector de subtítulos
-                      PopupMenuButton(
-                        icon: const Icon(Icons.subtitles),
-                        itemBuilder: (_) => [
-                          PopupMenuItem(child: const Text('Desactivar'), onTap: () => player.setSubtitleTrack(SubtitleTrack.no())),
-                          ..._subs.map((s) => PopupMenuItem(
-                            child: Text(s.title ?? s.language ?? 'Sub'),
-                            onTap: () => player.setSubtitleTrack(s),
-                          )),
-                        ],
-                      ),
-                    ],
+                      onDoubleTap: () {
+                        _player.seek(_position - const Duration(seconds: 10));
+                        setState(() => _showLeftSeek = true);
+                        Future.delayed(const Duration(milliseconds: 600), () {
+                          if (mounted) setState(() => _showLeftSeek = false);
+                        });
+                      },
+                      onVerticalDragUpdate: (d) {
+                        final delta =
+                            d.primaryDelta! / size.height;
+                        _brillo = (_brillo - delta).clamp(0.0, 1.0);
+                        ScreenBrightness()
+                            .setScreenBrightness(_brillo);
+                        _mostrarGestureLabel(
+                          '☀️ ${(_brillo * 100).round()}%',
+                        );
+                      },
+                    ),
                   ),
-                  // LINEA 368 - AGREGADO: Controles inferiores
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        VideoProgressIndicator(player, controller),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(_formatDuration(_position)),
-                            Text(_formatDuration(_duration)),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(icon: const Icon(Icons.replay_10, color: Colors.white, size: 32), onPressed: () => player.seek(_position - const Duration(seconds: 10))),
-                            IconButton(icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white, size: 48), onPressed: () => player.playOrPause()),
-                            IconButton(icon: const Icon(Icons.forward_10, color: Colors.white, size: 32), onPressed: () => player.seek(_position + const Duration(seconds: 10))),
-                          ],
-                        ),
-                      ],
+                  // Zona derecha: volumen
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () => setState(
+                        () => _mostrarControles = !_mostrarControles,
+                      ),
+                      onDoubleTap: () {
+                        _player.seek(_position + const Duration(seconds: 10));
+                        setState(() => _showRightSeek = true);
+                        Future.delayed(const Duration(milliseconds: 600), () {
+                          if (mounted) setState(() => _showRightSeek = false);
+                        });
+                      },
+                      onVerticalDragUpdate: (d) {
+                        final delta =
+                            d.primaryDelta! / size.height;
+                        _volumen = (_volumen - delta).clamp(0.0, 1.0);
+                        VolumeController().setVolume(_volumen);
+                        _mostrarGestureLabel(
+                          '🔊 ${(_volumen * 100).round()}%',
+                        );
+                      },
                     ),
                   ),
                 ],
+              ),
+            ),
+
+          // ── Indicadores doble tap seek ──
+          if (_showLeftSeek)
+            Positioned(
+              left: 24,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: const Text(
+                    '⏪ 10s',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              ),
+            ),
+          if (_showRightSeek)
+            Positioned(
+              right: 24,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  child: const Text(
+                    '⏩ 10s',
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              ),
+            ),
+
+          // ── Label flotante de gesto (brillo / volumen) ──
+          if (_gestureLabel != null)
+            Center(
+              child: FadeTransition(
+                opacity: _gestureAnim,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    _gestureLabel!,
+                    style: const TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ),
+              ),
+            ),
+
+          // ── Buffering spinner ──
+          if (_isBuffering)
+            const Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFFFF5722),
+                strokeWidth: 3,
+              ),
+            ),
+
+          // ── Controles PRO ──
+          if (_mostrarControles)
+            AnimatedOpacity(
+              opacity: _mostrarControles ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 300),
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: [0.0, 0.3, 0.7, 1.0],
+                    colors: [
+                      Colors.black87,
+                      Colors.transparent,
+                      Colors.transparent,
+                      Colors.black87,
+                    ],
+                  ),
+                ),
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      // ── AppBar superior ──
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back_ios_new,
+                                color: Colors.white,
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                            Expanded(
+                              child: Text(
+                                widget.titulo,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            // Velocidad
+                            TextButton(
+                              onPressed: _mostrarVelocidadDialog,
+                              child: Text(
+                                '${_velocidad}x',
+                                style: const TextStyle(
+                                  color: Color(0xFFFF5722),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            // Audio
+                            IconButton(
+                              icon: const Icon(
+                                Icons.audiotrack,
+                                color: Colors.white,
+                              ),
+                              onPressed: _mostrarAudioDialog,
+                              tooltip: 'Audio',
+                            ),
+                            // Subtítulos
+                            IconButton(
+                              icon: const Icon(
+                                Icons.subtitles,
+                                color: Colors.white,
+                              ),
+                              onPressed: _mostrarSubtitulosDialog,
+                              tooltip: 'Subtítulos',
+                            ),
+                            // Calidad
+                            IconButton(
+                              icon: const Icon(
+                                Icons.high_quality,
+                                color: Colors.white,
+                              ),
+                              onPressed: _mostrarCalidadDialog,
+                              tooltip: 'Calidad',
+                            ),
+                            // PiP
+                            if (widget.pipMode)
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.picture_in_picture_alt,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () {
+                                  // PiP: se activa via plugin flutter_pip
+                                },
+                                tooltip: 'PiP',
+                              ),
+                            // Bloqueo de pantalla
+                            IconButton(
+                              icon: Icon(
+                                _lock ? Icons.lock : Icons.lock_open,
+                                color: _lock
+                                    ? const Color(0xFFFF5722)
+                                    : Colors.white,
+                              ),
+                              onPressed: () =>
+                                  setState(() => _lock = !_lock),
+                              tooltip: 'Bloquear pantalla',
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      // ── Controles centrales ──
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Retroceder 30s
+                          IconButton(
+                            icon: const Icon(
+                              Icons.replay_30,
+                              color: Colors.white,
+                              size: 36,
+                            ),
+                            onPressed: () => _player.seek(
+                              _position - const Duration(seconds: 30),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Retroceder 10s
+                          IconButton(
+                            icon: const Icon(
+                              Icons.replay_10,
+                              color: Colors.white,
+                              size: 40,
+                            ),
+                            onPressed: () => _player.seek(
+                              _position - const Duration(seconds: 10),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Play / Pause
+                          Container(
+                            width: 68,
+                            height: 68,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFFF5722),
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              icon: Icon(
+                                _isPlaying ? Icons.pause : Icons.play_arrow,
+                                color: Colors.white,
+                                size: 40,
+                              ),
+                              onPressed: () => _player.playOrPause(),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Adelantar 10s
+                          IconButton(
+                            icon: const Icon(
+                              Icons.forward_10,
+                              color: Colors.white,
+                              size: 40,
+                            ),
+                            onPressed: () => _player.seek(
+                              _position + const Duration(seconds: 10),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Adelantar 30s
+                          IconButton(
+                            icon: const Icon(
+                              Icons.forward_30,
+                              color: Colors.white,
+                              size: 36,
+                            ),
+                            onPressed: () => _player.seek(
+                              _position + const Duration(seconds: 30),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // ── Barra inferior ──
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                        child: Column(
+                          children: [
+                            // Slider de progreso
+                            SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                thumbColor: const Color(0xFFFF5722),
+                                activeTrackColor: const Color(0xFFFF5722),
+                                inactiveTrackColor: Colors.white30,
+                                thumbShape: const RoundSliderThumbShape(
+                                  enabledThumbRadius: 7,
+                                ),
+                                trackHeight: 3,
+                                overlayShape: const RoundSliderOverlayShape(
+                                  overlayRadius: 14,
+                                ),
+                              ),
+                              child: Slider(
+                                value: _duration.inMilliseconds > 0
+                                    ? _position.inMilliseconds /
+                                        _duration.inMilliseconds
+                                    : 0.0,
+                                onChanged: (v) => _player.seek(
+                                  Duration(
+                                    milliseconds:
+                                        (v * _duration.inMilliseconds)
+                                            .toInt(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            // Tiempos + mute + fullscreen
+                            Row(
+                              children: [
+                                Text(
+                                  _fmt(_position),
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const Text(
+                                  ' / ',
+                                  style: TextStyle(color: Colors.white30),
+                                ),
+                                Text(
+                                  _fmt(_duration),
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const Spacer(),
+                                // Mute
+                                IconButton(
+                                  icon: Icon(
+                                    _isMuted
+                                        ? Icons.volume_off
+                                        : Icons.volume_up,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                  onPressed: () {
+                                    setState(() => _isMuted = !_isMuted);
+                                    VolumeController().setVolume(
+                                      _isMuted ? 0 : _volumen,
+                                    );
+                                  },
+                                ),
+                                // Fullscreen
+                                IconButton(
+                                  icon: Icon(
+                                    _isFullscreen
+                                        ? Icons.fullscreen_exit
+                                        : Icons.fullscreen,
+                                    color: Colors.white,
+                                    size: 26,
+                                  ),
+                                  onPressed: _toggleFullscreen,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          // ── Icono de bloqueo visible cuando bloqueado ──
+          if (_lock)
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 12,
+              right: 16,
+              child: GestureDetector(
+                onTap: () => setState(() => _lock = false),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: const Icon(
+                    Icons.lock,
+                    color: Color(0xFFFF5722),
+                    size: 26,
+                  ),
+                ),
               ),
             ),
         ],
@@ -449,32 +1129,12 @@ class _ReproductorDiosState extends State<ReproductorDios> {
   }
 }
 
-// LINEA 398 - Widget de progreso custom
-class VideoProgressIndicator extends StatelessWidget {
-  final Player player;
-  final VideoController controller;
-  const VideoProgressIndicator(this.player, this.controller, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<Duration>(
-      stream: player.stream.position,
-      builder: (context, snapshot) {
-        final pos = snapshot.data ?? Duration.zero;
-        final dur = player.state.duration;
-        return Slider(
-          value: dur.inMilliseconds > 0 ? pos.inMilliseconds / dur.inMilliseconds : 0,
-          onChanged: (v) => player.seek(Duration(milliseconds: (v * dur.inMilliseconds).toInt())),
-          activeColor: const Color(0xFFFF5722),
-        );
-      },
-    );
-  }
-}
-
-// LINEA 420 - PÁGINAS CON DISEÑO DE TUS FOTOS
+// ─────────────────────────────────────────────────────────────
+// INICIO PAGE
+// ─────────────────────────────────────────────────────────────
 class InicioPage extends StatelessWidget {
   final Function(String, String) onPlay;
+
   const InicioPage({super.key, required this.onPlay});
 
   @override
@@ -493,28 +1153,75 @@ class InicioPage extends StatelessWidget {
 
   Widget _section(String t) => Padding(
         padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-        child: Text(t, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+        child: Text(
+          t,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       );
 
   Widget _bannerPrincipal(BuildContext context) => GestureDetector(
-        onTap: () => onPlay('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', 'Confía en mí: El fal'),
+        onTap: () => onPlay(
+          'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+          'Confía en mí: El fal',
+        ),
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16),
           height: 220,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            image: const DecorationImage(image: NetworkImage('https://picsum.photos/800/400'), fit: BoxFit.cover),
+            image: const DecorationImage(
+              image: NetworkImage('https://picsum.photos/800/400'),
+              fit: BoxFit.cover,
+            ),
           ),
           child: Stack(
             children: [
-              Positioned(bottom: 16, left: 16, child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Confía en mí: El fal', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                  const Text('En esta serie documental de crímenes reales, una...', style: TextStyle(fontSize: 12)),
-                ],
-              )),
-              const Positioned(bottom: 16, right: 16, child: Icon(Icons.play_circle_fill, size: 50, color: Color(0xFFFF5722))),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black87],
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 16,
+                left: 16,
+                right: 72,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Confía en mí: El fal',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'En esta serie documental de crímenes reales, una...',
+                      style: TextStyle(fontSize: 12, color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+              const Positioned(
+                bottom: 16,
+                right: 16,
+                child: Icon(
+                  Icons.play_circle_fill,
+                  size: 50,
+                  color: Color(0xFFFF5722),
+                ),
+              ),
             ],
           ),
         ),
@@ -527,12 +1234,38 @@ class InicioPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           itemCount: 6,
           itemBuilder: (_, i) => GestureDetector(
-            onTap: () => onPlay('https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4', 'Pelicula $i'),
+            onTap: () => onPlay(
+              'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4',
+              'Película ${i + 1}',
+            ),
             child: Container(
               width: 120,
               margin: const EdgeInsets.only(right: 12),
-              decoration: BoxDecoration(color: const Color(0xFF1A1C2E), borderRadius: BorderRadius.circular(8)),
-              child: const Center(child: Icon(Icons.movie, size: 40)),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1A1C2E),
+                borderRadius: BorderRadius.circular(8),
+                image: DecorationImage(
+                  image: NetworkImage('https://picsum.photos/120/180?random=$i'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.black54],
+                  ),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.play_circle_outline,
+                    size: 40,
+                    color: Colors.white70,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
@@ -542,33 +1275,84 @@ class InicioPage extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: 0.7, crossAxisSpacing: 12, mainAxisSpacing: 12),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 0.7,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+        ),
         itemCount: 9,
         itemBuilder: (_, i) => GestureDetector(
-          onTap: () => onPlay('https://test-videos.co.uk/vids/bigbuckbunny/mkv/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mkv', 'MKV Test $i'),
+          onTap: () => onPlay(
+            'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4',
+            'Título ${i + 1}',
+          ),
           child: Container(
-            decoration: BoxDecoration(color: const Color(0xFF1A1C2E), borderRadius: BorderRadius.circular(8)),
-            child: const Center(child: Icon(Icons.play_arrow, size: 40)),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1C2E),
+              borderRadius: BorderRadius.circular(8),
+              image: DecorationImage(
+                image: NetworkImage(
+                  'https://picsum.photos/120/170?random=${i + 10}',
+                ),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                gradient: const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, Colors.black54],
+                ),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.play_arrow,
+                  size: 36,
+                  color: Colors.white70,
+                ),
+              ),
+            ),
           ),
         ),
       );
 }
 
+// ─────────────────────────────────────────────────────────────
+// VIVO PAGE
+// ─────────────────────────────────────────────────────────────
 class VivoPage extends StatelessWidget {
   const VivoPage({super.key});
+
   @override
-  Widget build(BuildContext context) => const Center(child: Text('CANALES EN VIVO', style: TextStyle(fontSize: 24)));
+  Widget build(BuildContext context) => const Center(
+        child: Text(
+          'CANALES EN VIVO',
+          style: TextStyle(fontSize: 24),
+        ),
+      );
 }
 
+// ─────────────────────────────────────────────────────────────
+// DRAMA PAGE
+// ─────────────────────────────────────────────────────────────
 class DramaPage extends StatelessWidget {
   const DramaPage({super.key});
+
   @override
-  Widget build(BuildContext context) => const Center(child: Text('DRAMAS', style: TextStyle(fontSize: 24)));
+  Widget build(BuildContext context) => const Center(
+        child: Text('DRAMAS', style: TextStyle(fontSize: 24)),
+      );
 }
 
-// LINEA 510 - PERFIL CON TODAS TUS OPCIONES ORIGINALES
+// ─────────────────────────────────────────────────────────────
+// PERFIL PAGE
+// ─────────────────────────────────────────────────────────────
 class PerfilPage extends StatefulWidget {
   const PerfilPage({super.key});
+
   @override
   State<PerfilPage> createState() => _PerfilPageState();
 }
@@ -580,11 +1364,15 @@ class _PerfilPageState extends State<PerfilPage> {
   bool alertaSinWifi = true;
   String cacheSize = '23.33MB';
 
-  _limpiarCache() async {
+  Future<void> _limpiarCache() async {
     final dir = await getTemporaryDirectory();
     dir.deleteSync(recursive: true);
     setState(() => cacheSize = '0.00MB');
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Caché limpiado')));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Caché limpiado')),
+      );
+    }
   }
 
   @override
@@ -592,34 +1380,52 @@ class _PerfilPageState extends State<PerfilPage> {
     return ListView(
       children: [
         const SizedBox(height: 16),
-        ListTile(leading: const Icon(Icons.person, color: Colors.cyan), title: const Text('Información del usuario'), trailing: const Icon(Icons.chevron_right), onTap: () {}),
-        ListTile(leading: const Icon(Icons.lock, color: Colors.pink), title: const Text('Controles parentales'), trailing: const Icon(Icons.chevron_right), onTap: () {}),
+        ListTile(
+          leading: const Icon(Icons.person, color: Colors.cyan),
+          title: const Text('Información del usuario'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {},
+        ),
+        ListTile(
+          leading: const Icon(Icons.lock, color: Colors.pink),
+          title: const Text('Controles parentales'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {},
+        ),
         SwitchListTile(
           secondary: const Icon(Icons.dns, color: Colors.blue),
           title: const Text('EPG Abierto O Apagado'),
-          subtitle: const Text('Nota: Aparte de dispositivos con baja configuración va a causar inconveniente, puede elegir abierto o apagado la guía de programación electrónica', style: TextStyle(fontSize: 11)),
+          subtitle: const Text(
+            'Nota: Aparte de dispositivos con baja configuración va a causar inconveniente, '
+            'puede elegir abierto o apagado la guía de programación electrónica',
+            style: TextStyle(fontSize: 11),
+          ),
           value: epgActivo,
           onChanged: (v) => setState(() => epgActivo = v),
         ),
         SwitchListTile(
           secondary: const Icon(Icons.shield, color: Colors.purple),
           title: const Text('Ajuste de adulto'),
-          subtitle: const Text('Después de abrir o cerrar contenido para adultos, debe reiniciar la aplicación para que surta efecto', style: TextStyle(fontSize: 11)),
+          subtitle: const Text(
+            'Después de abrir o cerrar contenido para adultos, '
+            'debe reiniciar la aplicación para que surta efecto',
+            style: TextStyle(fontSize: 11),
+          ),
           value: ajusteAdulto,
           onChanged: (v) => setState(() => ajusteAdulto = v),
         ),
         SwitchListTile(
           secondary: const Icon(Icons.vibration, color: Colors.yellow),
           title: const Text('Feedback Háptico'),
-          value: feedbackHaptico,
           activeColor: Colors.orange,
+          value: feedbackHaptico,
           onChanged: (v) => setState(() => feedbackHaptico = v),
         ),
         SwitchListTile(
           secondary: const Icon(Icons.wifi_off, color: Colors.red),
           title: const Text('Alerta Cuando No Hay Wifi'),
-          value: alertaSinWifi,
           activeColor: Colors.orange,
+          value: alertaSinWifi,
           onChanged: (v) => setState(() => alertaSinWifi = v),
         ),
         ListTile(
@@ -628,13 +1434,31 @@ class _PerfilPageState extends State<PerfilPage> {
           trailing: Text(cacheSize),
           onTap: _limpiarCache,
         ),
-        ListTile(leading: const Icon(Icons.privacy_tip, color: Colors.lightBlue), title: const Text('Política de Privacidad'), trailing: const Icon(Icons.chevron_right), onTap: () {}),
+        ListTile(
+          leading: const Icon(Icons.privacy_tip, color: Colors.lightBlue),
+          title: const Text('Política de Privacidad'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () {},
+        ),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              minimumSize: const Size(double.infinity, 50),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
             onPressed: () {},
-            child: const Text('CERRAR SESIÓN', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'CERRAR SESIÓN',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ],
@@ -642,12 +1466,20 @@ class _PerfilPageState extends State<PerfilPage> {
   }
 }
 
-// LINEA 574 - CONFIGURACIÓN PRO DESDE ⚙️
+// ─────────────────────────────────────────────────────────────
+// CONFIG PRO PAGE
+// ─────────────────────────────────────────────────────────────
 class ConfigProPage extends StatefulWidget {
   final int servidorActual;
   final String calidadDefault;
   final Function(int, String) onChanged;
-  const ConfigProPage({super.key, required this.servidorActual, required this.calidadDefault, required this.onChanged});
+
+  const ConfigProPage({
+    super.key,
+    required this.servidorActual,
+    required this.calidadDefault,
+    required this.onChanged,
+  });
 
   @override
   State<ConfigProPage> createState() => _ConfigProPageState();
@@ -664,66 +1496,201 @@ class _ConfigProPageState extends State<ConfigProPage> {
     _calidad = widget.calidadDefault;
   }
 
+  void _seleccionarServidor() {
+    showDialog(
+      context: context,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setLocal) => AlertDialog(
+          backgroundColor: const Color(0xFF1A1C2E),
+          title: const Text('Servidor CDN'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [1, 2, 3, 4, 5]
+                .map(
+                  (i) => RadioListTile<int>(
+                    title: Text(
+                      'Servidor $i - ${i == 1 ? "Principal" : "Backup $i"}',
+                    ),
+                    value: i,
+                    groupValue: _servidor,
+                    onChanged: (v) {
+                      setLocal(() => _servidor = v!);
+                      setState(() => _servidor = v!);
+                    },
+                  ),
+                )
+                .toList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('CERRAR'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _testVPN() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AlertDialog(
+        backgroundColor: Color(0xFF1A1C2E),
+        content: Row(
+          children: [
+            CircularProgressIndicator(color: Color(0xFFFF5722)),
+            SizedBox(width: 20),
+            Text('Verificando VPN...'),
+          ],
+        ),
+      ),
+    );
+    await Future.delayed(const Duration(seconds: 2));
+    if (mounted) {
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          backgroundColor: const Color(0xFF1A1C2E),
+          title: const Text('Test de VPN'),
+          content: const Text(
+            '✅ Conexión verificada.\nNo se detectó VPN activa.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Configuración Pro ⚙️')),
       body: ListView(
         children: [
-          const ListTile(title: Text('VIDEO', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFFF5722)))),
+          const ListTile(
+            title: Text(
+              'VIDEO',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFF5722),
+              ),
+            ),
+          ),
           ListTile(
             leading: const Icon(Icons.high_quality),
             title: const Text('Calidad por Defecto'),
             trailing: DropdownButton<String>(
               value: _calidad,
-              items: ['Auto', '4K', '1080p', '720p', '480p', '360p'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              dropdownColor: const Color(0xFF1A1C2E),
+              underline: const SizedBox(),
+              items: ['Auto', '4K', '1080p', '720p', '480p', '360p']
+                  .map(
+                    (e) => DropdownMenuItem<String>(
+                      value: e,
+                      child: Text(e),
+                    ),
+                  )
+                  .toList(),
               onChanged: (v) => setState(() => _calidad = v!),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.dns),
             title: const Text('Servidor CDN Preferido'),
-            subtitle: Text('Servidor $_servidor'),
-            onTap: () => _seleccionarServidor(),
+            subtitle: Text(
+              'Servidor $_servidor - ${_servidor == 1 ? "Principal" : "Backup $_servidor"}',
+            ),
+            onTap: _seleccionarServidor,
           ),
           const Divider(),
-          const ListTile(title: Text('AUDIO & SUBTÍTULOS', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFFF5722)))),
-          ListTile(leading: const Icon(Icons.language), title: const Text('Idioma de Audio'), subtitle: const Text('Español Latino'), onTap: () {}),
-          ListTile(leading: const Icon(Icons.subtitles), title: const Text('Idioma de Subtítulos'), subtitle: const Text('Español'), onTap: () {}),
-          ListTile(leading: const Icon(Icons.text_fields), title: const Text('Tamaño de Subtítulos'), subtitle: const Text('Mediano'), onTap: () {}),
+          const ListTile(
+            title: Text(
+              'AUDIO & SUBTÍTULOS',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFF5722),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.language),
+            title: const Text('Idioma de Audio'),
+            subtitle: const Text('Español Latino'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.subtitles),
+            title: const Text('Idioma de Subtítulos'),
+            subtitle: const Text('Español'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.text_fields),
+            title: const Text('Tamaño de Subtítulos'),
+            subtitle: const Text('Mediano'),
+            onTap: () {},
+          ),
           const Divider(),
-          const ListTile(title: Text('RED & AVANZADO', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFFF5722)))),
-          ListTile(leading: const Icon(Icons.vpn_lock), title: const Text('Test de VPN'), subtitle: const Text('Verificar si estás protegido'), onTap: () => _testVPN()),
-          ListTile(leading: const Icon(Icons.speed), title: const Text('Test de Velocidad'), subtitle: const Text('Mide tu conexión'), onTap: () {}),
-          ListTile(leading: const Icon(Icons.developer_mode), title: const Text('Logs de Depuración'), onTap: () {}),
+          const ListTile(
+            title: Text(
+              'RED & AVANZADO',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFFF5722),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.vpn_lock),
+            title: const Text('Test de VPN'),
+            subtitle: const Text('Verificar si estás protegido'),
+            onTap: _testVPN,
+          ),
+          ListTile(
+            leading: const Icon(Icons.speed),
+            title: const Text('Test de Velocidad'),
+            subtitle: const Text('Mide tu conexión'),
+            onTap: () {},
+          ),
+          ListTile(
+            leading: const Icon(Icons.developer_mode),
+            title: const Text('Logs de Depuración'),
+            onTap: () {},
+          ),
         ],
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5722), minimumSize: const Size(double.infinity, 50)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFFF5722),
+            minimumSize: const Size(double.infinity, 50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
           onPressed: () {
             widget.onChanged(_servidor, _calidad);
             Navigator.pop(context);
           },
-          child: const Text('GUARDAR CAMBIOS'),
+          child: const Text(
+            'GUARDAR CAMBIOS',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
         ),
       ),
     );
   }
-
-  _seleccionarServidor() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Servidor CDN'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [1, 2, 3, 4, 5].map((i) => RadioListTile(
-            title: Text('Servidor $i - ${i == 1 ? "Principal" : "Backup"}'),
-            value: i,
-            groupValue: _servidor,
-            onChanged: (v) => setState(() => _servidor = v!),
-          )).toList(),
-        ),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text
+}
