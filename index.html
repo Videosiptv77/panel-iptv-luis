@@ -1,13 +1,47 @@
-// Luis R - App Completa v7.10.1
-// LINEA 1 - AGREGADO: Imports para reproductor universal
+name: luis_r
+description: Luis R - Reproductor Universal Pro
+version: 7.10.1+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  media_kit: ^1.1.10
+  media_kit_video: ^1.2.4
+  media_kit_libs_video: ^1.0.4
+  shared_preferences: ^2.2.3
+  dio: ^5.4.3
+  path_provider: ^2.1.3
+  permission_handler: ^11.3.1
+  screen_brightness: ^0.2.2
+  volume_controller: ^2.0.7
+  wakelock_plus: ^1.2.5
+  flutter_pip: ^1.0.0
+  connectivity_plus: ^6.0.3
+  url_launcher: ^6.2.6
+
+flutter:
+  uses-material-design: true// Luis R - v7.10.1 - BUILD DIOS DE DIOSES
+// LINEA 1 - AGREGADO: Imports nivel pro
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:screen_brightness/screen_brightness.dart';
+import 'package:volume_controller/volume_controller.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:dio/dio.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized(); // LINEA 8 - AGREGADO: Inicializar reproductor universal
+  MediaKit.ensureInitialized(); // LINEA 16 - AGREGADO: Core universal mkv/ts/avi/m3u8/mp4
+  await WakelockPlus.enable();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(const LuisRApp());
 }
 
@@ -24,6 +58,15 @@ class LuisRApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF0F1123),
         primaryColor: const Color(0xFFFF5722),
         cardColor: const Color(0xFF1A1C2E),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF1A1C2E),
+          elevation: 0,
+        ),
+        switchTheme: SwitchThemeData(
+          thumbColor: MaterialStateProperty.all(Colors.white),
+          trackColor: MaterialStateProperty.resolveWith((states) => 
+            states.contains(MaterialState.selected) ? const Color(0xFFFF5722) : Colors.grey.shade800),
+        ),
       ),
       home: const MainScreen(),
     );
@@ -32,153 +75,182 @@ class LuisRApp extends StatelessWidget {
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
-
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  // LINEA 39 - AGREGADO: Variables para funciones pro
+  // LINEA 55 - AGREGADO: Variables PRO globales
   bool pipMode = false;
   bool autoDownload = false;
   double playbackSpeed = 1.0;
-  bool epgActivo = false;
-  bool ajusteAdulto = false;
-  bool feedbackHaptico = true;
-  bool alertaSinWifi = true;
+  int servidorActual = 1;
+  bool modoAmolded = true;
+  bool ecualizadorOn = false;
+  String calidadDefault = 'Auto';
+  bool traktSync = false;
 
-  final List<Widget> _pages = [
-    const InicioPage(),
-    const VivoPage(),
-    const DramaPage(),
-    const PerfilPage(),
-  ];
+  final List<Widget> _pages = [];
 
-  void _onItemTapped(int index) {
+  @override
+  void initState() {
+    super.initState();
+    _pages.addAll([
+      InicioPage(onPlay: _abrirReproductor),
+      const VivoPage(),
+      const DramaPage(),
+      PerfilPage(),
+    ]);
+    _cargarPrefs();
+  }
+
+  _cargarPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _selectedIndex = index;
+      pipMode = prefs.getBool('pipMode') ?? false;
+      autoDownload = prefs.getBool('autoDownload') ?? false;
+      playbackSpeed = prefs.getDouble('playbackSpeed') ?? 1.0;
+      servidorActual = prefs.getInt('servidorActual') ?? 1;
     });
+  }
+
+  _guardarPref(String key, dynamic value) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (value is bool) prefs.setBool(key, value);
+    if (value is double) prefs.setDouble(key, value);
+    if (value is int) prefs.setInt(key, value);
+    if (value is String) prefs.setString(key, value);
+  }
+
+  void _abrirReproductor(String url, String titulo) {
+    Navigator.push(context, MaterialPageRoute(
+      builder: (_) => ReproductorDios(
+        url: url,
+        titulo: titulo,
+        playbackSpeed: playbackSpeed,
+        pipMode: pipMode,
+      ),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // LINEA 64 - AGREGADO: AppBar con engranaje ⚙️ y menú de 3 barras
+      // LINEA 104 - AGREGADO: AppBar con ⚙️ y ☰
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1C2E),
-        title: const Text('Luis R', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Luis R', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
         leading: Builder(
           builder: (context) => IconButton(
-            icon: const Icon(Icons.menu), // Las 3 barras
+            icon: const Icon(Icons.menu, size: 28), // Las 3 barras ☰
             onPressed: () => Scaffold.of(context).openDrawer(),
           ),
         ),
         actions: [
-          // LINEA 76 - AGREGADO: Engranaje ⚙️ que abre configuración rápida
           IconButton(
-            icon: const Icon(Icons.settings), // ⚙️
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const ConfigRapidaPage()));
-            },
+            icon: const Icon(Icons.settings, size: 26), // Engranaje ⚙️
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ConfigProPage(
+              servidorActual: servidorActual,
+              calidadDefault: calidadDefault,
+              onChanged: (s, c) => setState(() {
+                servidorActual = s;
+                calidadDefault = c;
+                _guardarPref('servidorActual', s);
+                _guardarPref('calidadDefault', c);
+              }),
+            ))),
           ),
+          const SizedBox(width: 8),
         ],
       ),
-      // LINEA 84 - AGREGADO: Drawer con funciones PRO
+      // LINEA 129 - AGREGADO: Drawer MEGA PRO
       drawer: Drawer(
         backgroundColor: const Color(0xFF0F1123),
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
+            UserAccountsDrawerHeader(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(colors: [Color(0xFFFF5722), Color(0xFFFF8A50)]),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Text('Luis R', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-                  const SizedBox(height: 8),
-                  const Text('Validez: 2026-09-03', style: TextStyle(color: Colors.white70)),
-                  const Text('Estimado usuario, muchas gracias por elegir Luis R', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                  const Align(alignment: Alignment.topRight, child: Text('💎', style: TextStyle(fontSize: 24))), // LINEA 102 - Emoji original
-                ],
+              accountName: const Text('Luis R', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              accountEmail: const Text('Validez: 2026-09-03'),
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Text('💎', style: TextStyle(fontSize: 30)), // LINEA 144 - Emoji original
               ),
+              otherAccountsPictures: [
+                IconButton(icon: const Icon(Icons.close, color: Colors.white), onPressed: () => Navigator.pop(context))
+              ],
             ),
-            // LINEA 105 - AGREGADO: Funciones PRO en el Drawer
-            ListTile(
-              leading: const Icon(Icons.history, color: Colors.cyan), // Emoji original
-              title: const Text('Historia'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.star, color: Colors.amber), // Emoji original
-              title: const Text('Favorito'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.shopping_cart, color: Colors.lightGreen), // Emoji original
-              title: const Text('Comprar'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.update, color: Colors.lightBlue), // Emoji original
-              title: const Text('Actualizar'),
-              trailing: const Text('7.10.1'),
-              onTap: () {},
-            ),
-            const Divider(),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text('Configuración', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
+            // LINEA 149 - SECCIÓN USUARIO - Emojis originales
+            ListTile(leading: const Icon(Icons.history, color: Colors.cyan), title: const Text('Historia'), onTap: () {}),
+            ListTile(leading: const Icon(Icons.star, color: Colors.amber), title: const Text('Favorito'), trailing: const Icon(Icons.chevron_right), onTap: () {}),
+            ListTile(leading: const Icon(Icons.shopping_cart, color: Colors.lightGreen), title: const Text('Comprar'), trailing: const Icon(Icons.chevron_right), onTap: () {}),
+            ListTile(leading: const Icon(Icons.update, color: Colors.lightBlue), title: const Text('Actualizar'), trailing: const Text('7.10.1'), onTap: () {}),
+            const Divider(color: Colors.grey),
+            const Padding(padding: EdgeInsets.all(16), child: Text('FUNCIONES PRO', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFFF5722)))),
+            // LINEA 158 - AGREGADO: Todas las funciones pro
             SwitchListTile(
               secondary: const Icon(Icons.picture_in_picture_alt),
-              title: const Text('Modo PiP'), // LINEA 136 - AGREGADO: PiP Pro
-              subtitle: const Text('Ver en ventana flotante'),
+              title: const Text('Modo PiP'),
+              subtitle: const Text('Ventana flotante al salir'),
               value: pipMode,
-              activeColor: const Color(0xFFFF5722),
-              onChanged: (val) => setState(() => pipMode = val),
+              onChanged: (val) => setState(() { pipMode = val; _guardarPref('pipMode', val); }),
             ),
             SwitchListTile(
               secondary: const Icon(Icons.download_for_offline),
-              title: const Text('Descarga Automática'), // LINEA 144 - AGREGADO: Descarga Pro
-              subtitle: const Text('Bajar con WiFi solamente'),
+              title: const Text('Descarga Inteligente'),
+              subtitle: const Text('Solo con WiFi + Auto-borrar'),
               value: autoDownload,
-              activeColor: const Color(0xFFFF5722),
-              onChanged: (val) => setState(() => autoDownload = val),
+              onChanged: (val) => setState(() { autoDownload = val; _guardarPref('autoDownload', val); }),
             ),
             ListTile(
               leading: const Icon(Icons.speed),
-              title: const Text('Velocidad de reproducción'), // LINEA 152 - AGREGADO: Speed Control
-              subtitle: Text('${playbackSpeed}x'),
+              title: const Text('Velocidad Global'),
               trailing: DropdownButton<double>(
                 value: playbackSpeed,
                 dropdownColor: const Color(0xFF1A1C2E),
-                items: [0.5, 1.0, 1.25, 1.5, 2.0].map((e) => DropdownMenuItem(value: e, child: Text('${e}x'))).toList(),
-                onChanged: (val) => setState(() => playbackSpeed = val!),
+                underline: Container(),
+                items: [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 3.0]
+                    .map((e) => DropdownMenuItem(value: e, child: Text('${e}x'))).toList(),
+                onChanged: (val) => setState(() { playbackSpeed = val!; _guardarPref('playbackSpeed', val); }),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.equalizer),
-              title: const Text('Ecualizador de audio'), // LINEA 164 - AGREGADO: Ecualizador Pro
-              subtitle: const Text('Graves, agudos, diálogos'),
-              onTap: () {},
+              title: const Text('Ecualizador Pro 10 Bandas'),
+              subtitle: Text(ecualizadorOn ? 'Activado' : 'Desactivado'),
+              onTap: () => setState(() => ecualizadorOn = !ecualizadorOn),
+            ),
+            ListTile(
+              leading: const Icon(Icons.dns),
+              title: const Text('Servidor CDN'),
+              subtitle: Text('Servidor $servidorActual'),
+              onTap: () => _mostrarDialogoServidor(),
+            ),
+            ListTile(
+              leading: const Icon(Icons.sync),
+              title: const Text('Trakt.tv Sync'),
+              subtitle: Text(traktSync ? 'Conectado' : 'Desconectado'),
+              onTap: () => setState(() => traktSync = !traktSync),
+            ),
+            ListTile(
+              leading: const Icon(Icons.dark_mode),
+              title: const Text('Modo AMOLED'),
+              subtitle: Text(modoAmolded ? 'Negro puro' : 'Gris oscuro'),
+              onTap: () => setState(() => modoAmolded = !modoAmolded),
             ),
           ],
         ),
       ),
       body: _pages[_selectedIndex],
-      // LINEA 172 - Barra inferior original
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF1A1C2E),
         selectedItemColor: const Color(0xFFFF5722),
         unselectedItemColor: Colors.grey,
         currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+        onTap: (i) => setState(() => _selectedIndex = i),
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'INICIO'),
@@ -189,26 +261,80 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
+
+  _mostrarDialogoServidor() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1C2E),
+        title: const Text('Seleccionar Servidor CDN'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [1, 2, 3, 4, 5].map((i) => RadioListTile(
+            title: Text('Servidor $i'),
+            value: i,
+            groupValue: servidorActual,
+            onChanged: (val) {
+              setState(() => servidorActual = val!);
+              _guardarPref('servidorActual', val);
+              Navigator.pop(context);
+            },
+          )).toList(),
+        ),
+      ),
+    );
+  }
 }
 
-// LINEA 191 - AGREGADO: Reproductor Universal que abre mkv, ts, avi, m3u8, mp4
-class ReproductorUniversal extends StatefulWidget {
+// LINEA 248 - AGREGADO: REPRODUCTOR DIOS DE DIOSES - SOPORTA TODO
+class ReproductorDios extends StatefulWidget {
   final String url;
-  const ReproductorUniversal({super.key, required this.url});
+  final String titulo;
+  final double playbackSpeed;
+  final bool pipMode;
+  const ReproductorDios({super.key, required this.url, required this.titulo, required this.playbackSpeed, required this.pipMode});
 
   @override
-  State<ReproductorUniversal> createState() => _ReproductorUniversalState();
+  State<ReproductorDios> createState() => _ReproductorDiosState();
 }
 
-class _ReproductorUniversalState extends State<ReproductorUniversal> {
+class _ReproductorDiosState extends State<ReproductorDios> {
   late final player = Player();
   late final controller = VideoController(player);
+  bool _mostrarControles = true;
+  double _brillo = 0.5;
+  double _volumen = 0.5;
+  List<AudioTrack> _audios = [];
+  List<SubtitleTrack> _subs = [];
+  Duration _position = Duration.zero;
+  Duration _duration = Duration.zero;
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    // LINEA 207 - AGREGADO: Soporte para mkv, ts, avi, m3u8, mp4, wmv, flv
-    player.open(Media(widget.url));
+    _initPlayer();
+    _initGestos();
+  }
+
+  _initPlayer() async {
+    // LINEA 278 - AGREGADO: Abre mkv, ts, avi, m3u8, mp4, wmv, flv, mov, mpd
+    await player.open(Media(widget.url));
+    await player.setRate(widget.playbackSpeed);
+    player.stream.position.listen((p) => setState(() => _position = p));
+    player.stream.duration.listen((d) => setState(() => _duration = d));
+    player.stream.playing.listen((p) => setState(() => _isPlaying = p));
+    player.stream.tracks.listen((t) {
+      setState(() {
+        _audios = t.audio;
+        _subs = t.subtitle;
+      });
+    });
+  }
+
+  _initGestos() async {
+    _brillo = await ScreenBrightness().current;
+    _volumen = await VolumeController().getVolume();
   }
 
   @override
@@ -217,77 +343,213 @@ class _ReproductorUniversalState extends State<ReproductorUniversal> {
     super.dispose();
   }
 
+  String _formatDuration(Duration d) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    final h = two(d.inHours);
+    final m = two(d.inMinutes.remainder(60));
+    final s = two(d.inSeconds.remainder(60));
+    return d.inHours > 0 ? '$h:$m:$s' : '$m:$s';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(backgroundColor: Colors.black, title: const Text('Luis R Player')),
-      body: Center(
-        child: Video(controller: controller), // LINEA 223 - AGREGADO: Video widget universal
+      body: Stack(
+        children: [
+          Center(child: Video(controller: controller, controls: NoVideoControls)),
+          // LINEA 315 - AGREGADO: Gestos de brillo y volumen
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () => setState(() => _mostrarControles = !_mostrarControles),
+              onDoubleTap: () => player.playOrPause(),
+              onVerticalDragUpdate: (d) {
+                final delta = d.primaryDelta! / MediaQuery.of(context).size.height;
+                if (d.localPosition.dx < MediaQuery.of(context).size.width / 2) {
+                  _brillo = (_brillo - delta).clamp(0.0, 1.0);
+                  ScreenBrightness().setScreenBrightness(_brillo);
+                } else {
+                  _volumen = (_volumen - delta).clamp(0.0, 1.0);
+                  VolumeController().setVolume(_volumen);
+                }
+              },
+            ),
+          ),
+          // LINEA 331 - AGREGADO: UI de controles PRO
+          if (_mostrarControles)
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.black87, Colors.transparent, Colors.black87],
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  AppBar(
+                    backgroundColor: Colors.transparent,
+                    title: Text(widget.titulo, style: const TextStyle(fontSize: 16)),
+                    actions: [
+                      // LINEA 347 - AGREGADO: Botón PiP
+                      if (widget.pipMode)
+                        IconButton(icon: const Icon(Icons.picture_in_picture_alt), onPressed: () {}),
+                      // LINEA 350 - AGREGADO: Selector de audio
+                      PopupMenuButton(
+                        icon: const Icon(Icons.audiotrack),
+                        itemBuilder: (_) => _audios.map((a) => PopupMenuItem(
+                          child: Text(a.title ?? a.language ?? 'Audio'),
+                          onTap: () => player.setAudioTrack(a),
+                        )).toList(),
+                      ),
+                      // LINEA 357 - AGREGADO: Selector de subtítulos
+                      PopupMenuButton(
+                        icon: const Icon(Icons.subtitles),
+                        itemBuilder: (_) => [
+                          PopupMenuItem(child: const Text('Desactivar'), onTap: () => player.setSubtitleTrack(SubtitleTrack.no())),
+                          ..._subs.map((s) => PopupMenuItem(
+                            child: Text(s.title ?? s.language ?? 'Sub'),
+                            onTap: () => player.setSubtitleTrack(s),
+                          )),
+                        ],
+                      ),
+                    ],
+                  ),
+                  // LINEA 368 - AGREGADO: Controles inferiores
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        VideoProgressIndicator(player, controller),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_formatDuration(_position)),
+                            Text(_formatDuration(_duration)),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            IconButton(icon: const Icon(Icons.replay_10, color: Colors.white, size: 32), onPressed: () => player.seek(_position - const Duration(seconds: 10))),
+                            IconButton(icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white, size: 48), onPressed: () => player.playOrPause()),
+                            IconButton(icon: const Icon(Icons.forward_10, color: Colors.white, size: 32), onPressed: () => player.seek(_position + const Duration(seconds: 10))),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }
 }
 
-// LINEA 228 - Páginas base usando tus fotos
+// LINEA 398 - Widget de progreso custom
+class VideoProgressIndicator extends StatelessWidget {
+  final Player player;
+  final VideoController controller;
+  const VideoProgressIndicator(this.player, this.controller, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<Duration>(
+      stream: player.stream.position,
+      builder: (context, snapshot) {
+        final pos = snapshot.data ?? Duration.zero;
+        final dur = player.state.duration;
+        return Slider(
+          value: dur.inMilliseconds > 0 ? pos.inMilliseconds / dur.inMilliseconds : 0,
+          onChanged: (v) => player.seek(Duration(milliseconds: (v * dur.inMilliseconds).toInt())),
+          activeColor: const Color(0xFFFF5722),
+        );
+      },
+    );
+  }
+}
+
+// LINEA 420 - PÁGINAS CON DISEÑO DE TUS FOTOS
 class InicioPage extends StatelessWidget {
-  const InicioPage({super.key});
+  final Function(String, String) onPlay;
+  const InicioPage({super.key, required this.onPlay});
+
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        _buildSectionTitle('ESPECIAL DE NAVIDAD'),
-        _buildHorizontalList(),
-        _buildSectionTitle('EXCLUSIVOS 👑'),
-        _buildFeaturedCard(context),
+        _section('RECOMENDACIÓN'),
+        _bannerPrincipal(context),
+        _section('ESPECIAL DE NAVIDAD'),
+        _horizontalList(context),
+        _section('EXCLUSIVOS 👑'),
+        _gridPeliculas(context),
       ],
     );
   }
 
-  Widget _buildSectionTitle(String title) => Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+  Widget _section(String t) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+        child: Text(t, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
       );
 
-  Widget _buildHorizontalList() => SizedBox(
-        height: 200,
-        child: ListView(
+  Widget _bannerPrincipal(BuildContext context) => GestureDetector(
+        onTap: () => onPlay('https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8', 'Confía en mí: El fal'),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          height: 220,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            image: const DecorationImage(image: NetworkImage('https://picsum.photos/800/400'), fit: BoxFit.cover),
+          ),
+          child: Stack(
+            children: [
+              Positioned(bottom: 16, left: 16, child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Confía en mí: El fal', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  const Text('En esta serie documental de crímenes reales, una...', style: TextStyle(fontSize: 12)),
+                ],
+              )),
+              const Positioned(bottom: 16, right: 16, child: Icon(Icons.play_circle_fill, size: 50, color: Color(0xFFFF5722))),
+            ],
+          ),
+        ),
+      );
+
+  Widget _horizontalList(BuildContext context) => SizedBox(
+        height: 180,
+        child: ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          children: [
-            _buildMovieCard('Navidad en...'),
-            _buildMovieCard('Comprome...'),
-            _buildMovieCard('Atrapado c...'),
-            _buildMovieCard('Una Ger'),
-          ],
-        ),
-      );
-
-  Widget _buildMovieCard(String title) => Container(
-        width: 120,
-        margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1A1C2E),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(child: Text(title, textAlign: TextAlign.center)),
-      );
-
-  Widget _buildFeaturedCard(BuildContext context) => GestureDetector(
-        onTap: () {
-          // LINEA 272 - AGREGADO: Prueba con archivo mkv
-          Navigator.push(context, MaterialPageRoute(
-            builder: (_) => const ReproductorUniversal(url: 'https://test-videos.co.uk/vids/bigbuckbunny/mkv/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mkv'),
-          ));
-        },
-        child: Container(
-          margin: const EdgeInsets.all(16),
-          height: 200,
-          decoration: BoxDecoration(
-            color: const Color(0xFF1A1C2E),
-            borderRadius: BorderRadius.circular(12),
+          itemCount: 6,
+          itemBuilder: (_, i) => GestureDetector(
+            onTap: () => onPlay('https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/1080/Big_Buck_Bunny_1080_10s_5MB.mp4', 'Pelicula $i'),
+            child: Container(
+              width: 120,
+              margin: const EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(color: const Color(0xFF1A1C2E), borderRadius: BorderRadius.circular(8)),
+              child: const Center(child: Icon(Icons.movie, size: 40)),
+            ),
           ),
-          child: const Center(child: Icon(Icons.play_circle_fill, size: 64, color: Color(0xFFFF5722))),
+        ),
+      );
+
+  Widget _gridPeliculas(BuildContext context) => GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: 0.7, crossAxisSpacing: 12, mainAxisSpacing: 12),
+        itemCount: 9,
+        itemBuilder: (_, i) => GestureDetector(
+          onTap: () => onPlay('https://test-videos.co.uk/vids/bigbuckbunny/mkv/h264/1080/Big_Buck_Bunny_1080_10s_1MB.mkv', 'MKV Test $i'),
+          child: Container(
+            decoration: BoxDecoration(color: const Color(0xFF1A1C2E), borderRadius: BorderRadius.circular(8)),
+            child: const Center(child: Icon(Icons.play_arrow, size: 40)),
+          ),
         ),
       );
 }
@@ -295,16 +557,16 @@ class InicioPage extends StatelessWidget {
 class VivoPage extends StatelessWidget {
   const VivoPage({super.key});
   @override
-  Widget build(BuildContext context) => const Center(child: Text('VIVO'));
+  Widget build(BuildContext context) => const Center(child: Text('CANALES EN VIVO', style: TextStyle(fontSize: 24)));
 }
 
 class DramaPage extends StatelessWidget {
   const DramaPage({super.key});
   @override
-  Widget build(BuildContext context) => const Center(child: Text('DRAMA'));
+  Widget build(BuildContext context) => const Center(child: Text('DRAMAS', style: TextStyle(fontSize: 24)));
 }
 
-// LINEA 300 - Pantalla de Perfil con tus opciones originales
+// LINEA 510 - PERFIL CON TODAS TUS OPCIONES ORIGINALES
 class PerfilPage extends StatefulWidget {
   const PerfilPage({super.key});
   @override
@@ -316,71 +578,61 @@ class _PerfilPageState extends State<PerfilPage> {
   bool ajusteAdulto = false;
   bool feedbackHaptico = true;
   bool alertaSinWifi = true;
+  String cacheSize = '23.33MB';
+
+  _limpiarCache() async {
+    final dir = await getTemporaryDirectory();
+    dir.deleteSync(recursive: true);
+    setState(() => cacheSize = '0.00MB');
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Caché limpiado')));
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
-        ListTile(
-          leading: const Icon(Icons.person, color: Colors.cyan), // Emoji original
-          title: const Text('Información del usuario'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () {},
-        ),
-        ListTile(
-          leading: const Icon(Icons.lock, color: Colors.pink), // Emoji original
-          title: const Text('Controles parentales'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () {},
-        ),
+        const SizedBox(height: 16),
+        ListTile(leading: const Icon(Icons.person, color: Colors.cyan), title: const Text('Información del usuario'), trailing: const Icon(Icons.chevron_right), onTap: () {}),
+        ListTile(leading: const Icon(Icons.lock, color: Colors.pink), title: const Text('Controles parentales'), trailing: const Icon(Icons.chevron_right), onTap: () {}),
         SwitchListTile(
-          secondary: const Icon(Icons.dns, color: Colors.blue), // Emoji original
+          secondary: const Icon(Icons.dns, color: Colors.blue),
           title: const Text('EPG Abierto O Apagado'),
-          subtitle: const Text('Nota: Aparte de dispositivos con baja configuración va a causar inconveniente, puede elegir abierto o apagado la guía de programación electrónica'),
+          subtitle: const Text('Nota: Aparte de dispositivos con baja configuración va a causar inconveniente, puede elegir abierto o apagado la guía de programación electrónica', style: TextStyle(fontSize: 11)),
           value: epgActivo,
-          onChanged: (val) => setState(() => epgActivo = val),
+          onChanged: (v) => setState(() => epgActivo = v),
         ),
         SwitchListTile(
-          secondary: const Icon(Icons.shield, color: Colors.purple), // Emoji original
+          secondary: const Icon(Icons.shield, color: Colors.purple),
           title: const Text('Ajuste de adulto'),
-          subtitle: const Text('Después de abrir o cerrar contenido para adultos, debe reiniciar la aplicación para que surta efecto'),
+          subtitle: const Text('Después de abrir o cerrar contenido para adultos, debe reiniciar la aplicación para que surta efecto', style: TextStyle(fontSize: 11)),
           value: ajusteAdulto,
-          onChanged: (val) => setState(() => ajusteAdulto = val),
+          onChanged: (v) => setState(() => ajusteAdulto = v),
         ),
         SwitchListTile(
-          secondary: const Icon(Icons.vibration, color: Colors.yellow), // Emoji original
+          secondary: const Icon(Icons.vibration, color: Colors.yellow),
           title: const Text('Feedback Háptico'),
           value: feedbackHaptico,
           activeColor: Colors.orange,
-          onChanged: (val) => setState(() => feedbackHaptico = val),
+          onChanged: (v) => setState(() => feedbackHaptico = v),
         ),
         SwitchListTile(
-          secondary: const Icon(Icons.wifi_off, color: Colors.red), // Emoji original
+          secondary: const Icon(Icons.wifi_off, color: Colors.red),
           title: const Text('Alerta Cuando No Hay Wifi'),
           value: alertaSinWifi,
           activeColor: Colors.orange,
-          onChanged: (val) => setState(() => alertaSinWifi = val),
+          onChanged: (v) => setState(() => alertaSinWifi = v),
         ),
         ListTile(
-          leading: const Icon(Icons.cleaning_services, color: Colors.green), // Emoji original
+          leading: const Icon(Icons.cleaning_services, color: Colors.green),
           title: const Text('Limpiar Caché'),
-          trailing: const Text('23.33MB'),
-          onTap: () {},
+          trailing: Text(cacheSize),
+          onTap: _limpiarCache,
         ),
-        ListTile(
-          leading: const Icon(Icons.privacy_tip, color: Colors.lightBlue), // Emoji original
-          title: const Text('Política de Privacidad'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () {},
-        ),
-        // LINEA 364 - AGREGADO: Botón cerrar sesión original
+        ListTile(leading: const Icon(Icons.privacy_tip, color: Colors.lightBlue), title: const Text('Política de Privacidad'), trailing: const Icon(Icons.chevron_right), onTap: () {}),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              minimumSize: const Size(double.infinity, 50),
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
             onPressed: () {},
             child: const Text('CERRAR SESIÓN', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
@@ -390,35 +642,88 @@ class _PerfilPageState extends State<PerfilPage> {
   }
 }
 
-// LINEA 379 - AGREGADO: Configuración rápida desde el engranaje ⚙️
-class ConfigRapidaPage extends StatelessWidget {
-  const ConfigRapidaPage({super.key});
+// LINEA 574 - CONFIGURACIÓN PRO DESDE ⚙️
+class ConfigProPage extends StatefulWidget {
+  final int servidorActual;
+  final String calidadDefault;
+  final Function(int, String) onChanged;
+  const ConfigProPage({super.key, required this.servidorActual, required this.calidadDefault, required this.onChanged});
+
+  @override
+  State<ConfigProPage> createState() => _ConfigProPageState();
+}
+
+class _ConfigProPageState extends State<ConfigProPage> {
+  late int _servidor;
+  late String _calidad;
+
+  @override
+  void initState() {
+    super.initState();
+    _servidor = widget.servidorActual;
+    _calidad = widget.calidadDefault;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Configuración Rápida ⚙️')),
+      appBar: AppBar(title: const Text('Configuración Pro ⚙️')),
       body: ListView(
         children: [
+          const ListTile(title: Text('VIDEO', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFFF5722)))),
           ListTile(
             leading: const Icon(Icons.high_quality),
-            title: const Text('Calidad de Video'),
-            subtitle: const Text('Auto, 1080p, 720p, 480p'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.subtitles),
-            title: const Text('Subtítulos'),
-            subtitle: const Text('Tamaño, color, fondo'),
-            onTap: () {},
+            title: const Text('Calidad por Defecto'),
+            trailing: DropdownButton<String>(
+              value: _calidad,
+              items: ['Auto', '4K', '1080p', '720p', '480p', '360p'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              onChanged: (v) => setState(() => _calidad = v!),
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.dns),
-            title: const Text('Cambiar Servidor CDN'), // LINEA 401 - AGREGADO: Multi-CDN Pro
-            subtitle: const Text('Servidor 1, Servidor 2, Servidor 3'),
-            onTap: () {},
+            title: const Text('Servidor CDN Preferido'),
+            subtitle: Text('Servidor $_servidor'),
+            onTap: () => _seleccionarServidor(),
           ),
+          const Divider(),
+          const ListTile(title: Text('AUDIO & SUBTÍTULOS', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFFF5722)))),
+          ListTile(leading: const Icon(Icons.language), title: const Text('Idioma de Audio'), subtitle: const Text('Español Latino'), onTap: () {}),
+          ListTile(leading: const Icon(Icons.subtitles), title: const Text('Idioma de Subtítulos'), subtitle: const Text('Español'), onTap: () {}),
+          ListTile(leading: const Icon(Icons.text_fields), title: const Text('Tamaño de Subtítulos'), subtitle: const Text('Mediano'), onTap: () {}),
+          const Divider(),
+          const ListTile(title: Text('RED & AVANZADO', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFFF5722)))),
+          ListTile(leading: const Icon(Icons.vpn_lock), title: const Text('Test de VPN'), subtitle: const Text('Verificar si estás protegido'), onTap: () => _testVPN()),
+          ListTile(leading: const Icon(Icons.speed), title: const Text('Test de Velocidad'), subtitle: const Text('Mide tu conexión'), onTap: () {}),
+          ListTile(leading: const Icon(Icons.developer_mode), title: const Text('Logs de Depuración'), onTap: () {}),
         ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFF5722), minimumSize: const Size(double.infinity, 50)),
+          onPressed: () {
+            widget.onChanged(_servidor, _calidad);
+            Navigator.pop(context);
+          },
+          child: const Text('GUARDAR CAMBIOS'),
+        ),
       ),
     );
   }
-}
+
+  _seleccionarServidor() {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Servidor CDN'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [1, 2, 3, 4, 5].map((i) => RadioListTile(
+            title: Text('Servidor $i - ${i == 1 ? "Principal" : "Backup"}'),
+            value: i,
+            groupValue: _servidor,
+            onChanged: (v) => setState(() => _servidor = v!),
+          )).toList(),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text
