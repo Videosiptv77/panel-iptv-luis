@@ -4,25 +4,25 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>🦉 LUIS R IPTV · DEFINITIVO</title>
+    <title>🦉 LUIS R · REPRODUCTOR PROFESIONAL</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a14; color: #fff; min-height: 100vh; }
         .header { background: rgba(10,10,20,0.97); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 200; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .logo-area { display: flex; align-items: center; gap: 8px; }
-        .logo-text { font-size: 22px; font-weight: 900; color: #ff6b1a; }
+        .logo-text { font-size: 22px; font-weight: 900; color: #ff6b1a; letter-spacing: 1px; }
         .logo-emoji { font-size: 22px; }
         .icon-btn-header { background: none; border: none; font-size: 22px; cursor: pointer; color: #ccc; padding: 4px; }
         .expiry-small { font-size: 11px; color: #facc15; background: rgba(250,204,21,0.1); border-radius: 20px; padding: 2px 8px; }
         .search-bar-wrap { padding: 12px 16px; }
         .search-input { width: 100%; background: #1a1a2e; border: none; border-radius: 40px; padding: 12px 20px; color: #ccc; font-size: 15px; outline: none; }
         .nav-tabs { display: flex; gap: 0; padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.06); background: #0a0a14; overflow-x: auto; }
-        .nav-tab { padding: 12px 14px; font-size: 14px; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .nav-tab { padding: 12px 14px; font-size: 14px; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; transition: 0.2s; }
         .nav-tab.active { color: #ff6b1a; border-bottom-color: #ff6b1a; }
         .hero-banner { margin: 16px; border-radius: 16px; background: linear-gradient(135deg, #141414, #1a1a2e); padding: 20px; text-align: center; position: relative; }
         .hero-title { font-size: 20px; font-weight: 900; }
         .hero-sub { font-size: 13px; color: #bbb; margin-top: 4px; }
-        .hero-fab { position: absolute; bottom: 16px; right: 16px; width: 46px; height: 46px; background: #ff6b1a; border-radius: 50%; border: none; font-size: 24px; color: #fff; cursor: pointer; }
+        .hero-fab { position: absolute; bottom: 16px; right: 16px; width: 46px; height: 46px; background: #ff6b1a; border-radius: 50%; border: none; font-size: 24px; color: #fff; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .section-header { display: flex; justify-content: space-between; padding: 16px 16px 8px; }
         .section-title { font-size: 17px; font-weight: 800; }
         .section-add-link { color: #ff6b1a; font-size: 14px; font-weight: 600; cursor: pointer; background: none; border: none; }
@@ -30,13 +30,14 @@
         .empty-state { text-align: center; padding: 50px 20px; }
         .empty-tv { font-size: 64px; }
         .category-block { margin: 0 12px 10px; background: #111120; border-radius: 16px; overflow: hidden; }
-        .cat-header { padding: 14px 16px; background: #161625; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; }
+        .cat-header { padding: 14px 16px; background: #161625; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; user-select: none; }
         .cat-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; }
         .cat-body.open { max-height: 500px; overflow-y: auto; }
-        .ch-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); color: #ccc; }
+        .ch-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); color: #ccc; transition: 0.1s; }
         .ch-item:hover { background: #1e1e30; color: #fff; }
         .ch-item.playing { background: rgba(255,107,26,0.2); color: #ff6b1a; }
         .ch-icon { width: 34px; height: 34px; background: #1e1e2e; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+        /* Mini reproductor */
         .mini-player { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,20,0.98); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.08); padding: 10px 16px 16px; z-index: 500; display: none; }
         .mini-player.visible { display: block; }
         .mini-player-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
@@ -46,28 +47,34 @@
         .mini-title { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .mini-status { font-size: 11px; color: #ff6b1a; }
         .mini-controls { display: flex; gap: 8px; }
-        .mini-btn { background: #1e1e2e; border: none; color: #fff; font-size: 16px; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .mini-btn { background: #1e1e2e; border: none; color: #fff; font-size: 16px; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
+        .mini-btn:hover { background: #ff6b1a; }
         .mini-btn.expand { background: #ff6b1a; font-size: 18px; }
-        .mini-progress { height: 3px; background: #333; border-radius: 4px; overflow: hidden; }
-        .mini-progress-fill { height: 100%; background: #ff6b1a; width: 0%; transition: width 0.5s linear; }
+        .mini-progress { height: 3px; background: #333; border-radius: 4px; overflow: hidden; margin-top: 6px; }
+        .mini-progress-fill { height: 100%; background: #ff6b1a; width: 0%; transition: width 0.2s linear; }
+        /* Bottom nav */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,20,0.98); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.07); display: flex; z-index: 400; padding-bottom: env(safe-area-inset-bottom, 0px); }
-        .nav-btn { flex: 1; padding: 12px 0 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; color: #666; font-size: 10px; font-weight: 600; }
+        .nav-btn { flex: 1; padding: 12px 0 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; color: #666; font-size: 10px; font-weight: 600; transition: 0.1s; }
         .nav-btn.active { color: #ff6b1a; }
         .nav-btn-icon { font-size: 22px; }
-        .global-fab { position: fixed; right: 20px; bottom: 80px; width: 54px; height: 54px; background: #ff6b1a; border-radius: 50%; border: none; font-size: 26px; color: #fff; cursor: pointer; z-index: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 24px rgba(255,107,26,0.55); }
+        .global-fab { position: fixed; right: 20px; bottom: 80px; width: 54px; height: 54px; background: #ff6b1a; border-radius: 50%; border: none; font-size: 26px; color: #fff; cursor: pointer; z-index: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(255,107,26,0.4); transition: 0.1s; }
+        .global-fab:active { transform: scale(0.95); }
+        /* Pantalla completa integrada */
         .fullscreen-overlay { position: fixed; inset: 0; z-index: 2000; background: #000; display: none; flex-direction: column; }
         .fullscreen-overlay.active { display: flex; }
         .fs-video-wrap { flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
         #fsVideo { width: 100%; height: 100%; object-fit: contain; }
-        .fs-controls-bar { position: absolute; bottom: 20px; left: 0; right: 0; background: rgba(0,0,0,0.6); padding: 12px; display: flex; justify-content: center; gap: 20px; backdrop-filter: blur(10px); }
-        .fs-btn { background: #ff6b1a; border: none; color: white; padding: 8px 20px; border-radius: 30px; font-size: 14px; cursor: pointer; }
+        .fs-controls-bar { position: absolute; bottom: 20px; left: 0; right: 0; background: rgba(0,0,0,0.6); padding: 12px; display: flex; justify-content: center; gap: 20px; backdrop-filter: blur(10px); border-radius: 40px; margin: 0 20px; }
+        .fs-btn { background: #ff6b1a; border: none; color: white; padding: 8px 20px; border-radius: 30px; font-size: 14px; cursor: pointer; font-weight: 600; }
         .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); border: none; color: white; font-size: 24px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
+        /* Modales */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px); z-index: 3000; display: flex; align-items: center; justify-content: center; }
         .modal-card { background: #121220; border-radius: 28px; width: 92%; max-width: 500px; max-height: 88vh; overflow-y: auto; padding: 26px; border: 1px solid rgba(255,107,26,0.3); }
         .modal-card h3 { font-size: 20px; margin-bottom: 18px; color: #ff6b1a; }
         .modal-card input, .modal-card textarea { width: 100%; padding: 12px 16px; margin-bottom: 12px; background: #1e1e2e; border: 1px solid #333; border-radius: 16px; color: white; font-size: 14px; outline: none; }
         .server-row { background: #1a1a2a; margin: 8px 0; padding: 14px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-        button { background: #ff6b1a; border: none; padding: 10px 20px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; font-size: 13px; margin: 4px; }
+        button { background: #ff6b1a; border: none; padding: 10px 20px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; font-size: 13px; margin: 4px; transition: 0.1s; }
+        button:active { transform: scale(0.97); }
         .btn-secondary { background: #333; }
         .btn-danger { background: #dc2626; }
         .mode-btn-row { display: flex; gap: 8px; margin-bottom: 12px; }
@@ -86,7 +93,7 @@
     <div class="logo-area"><span class="logo-emoji">🦂</span><span class="logo-text">LUIS R</span><span class="logo-emoji">🦉</span></div>
     <div class="header-right"><span class="expiry-small" id="expiryBadge">--</span><button class="icon-btn-header" id="serverBtn">📁</button><button class="icon-btn-header" id="settingsBtn">⚙️</button></div>
 </div>
-<div class="search-bar-wrap"><input class="search-input" id="searchInput" type="text" placeholder="Buscar canal..."></div>
+<div class="search-bar-wrap"><input class="search-input" id="searchInput" type="text" placeholder="🔍 Buscar canal..."></div>
 <div class="nav-tabs" id="navTabs">
     <div class="nav-tab active" data-tab="live">📺 TV EN VIVO</div>
     <div class="nav-tab" data-tab="movies">🎬 PELÍCULAS</div>
@@ -94,12 +101,12 @@
 </div>
 <div class="hero-banner" id="heroBanner">
     <div class="hero-title">BIENVENIDO A LUIS R</div>
-    <div class="hero-sub">Agrega tus listas M3U o servidores Xtream</div>
+    <div class="hero-sub">Agrega tus servidores Xtream o listas M3U</div>
     <button class="hero-fab" id="heroPlusBtn">+</button>
 </div>
-<div class="section-header"><div class="section-title">📺 MIS CANALES</div><button class="section-add-link" id="sectionAddBtn">Agregar ›</button></div>
+<div class="section-header"><div class="section-title">📺 MIS CANALES</div><button class="section-add-link" id="sectionAddBtn">+ Agregar servidor</button></div>
 <div class="channel-list-section" id="channelListSection">
-    <div class="empty-state" id="emptyState"><div class="empty-tv">📺</div><div class="empty-title">No tienes canales</div><div class="empty-sub">Pícale al botón + para agregar tu primer canal</div></div>
+    <div class="empty-state" id="emptyState"><div class="empty-tv">📺</div><div class="empty-title">No hay servidores configurados</div><div class="empty-sub">Toca el botón + para agregar tu servidor Xtream o lista M3U</div></div>
     <div id="categoriesContainer"></div>
 </div>
 <button class="global-fab" id="globalFab">+</button>
@@ -109,20 +116,22 @@
     <button class="nav-btn" id="navAddBtn"><span class="nav-btn-icon">+</span><span>AGREGAR</span></button>
 </div>
 
+<!-- Mini reproductor -->
 <div class="mini-player" id="miniPlayer">
     <div class="mini-player-top">
         <div class="mini-thumb"><video id="miniVideo" playsinline webkit-playsinline></video></div>
-        <div class="mini-info"><div class="mini-title" id="miniTitle">Sin reproducción</div><div class="mini-status" id="miniStatus">⏸ En vivo</div></div>
+        <div class="mini-info"><div class="mini-title" id="miniTitle">Sin reproducción</div><div class="mini-status" id="miniStatus">⏸ Selecciona un canal</div></div>
         <div class="mini-controls"><button class="mini-btn" id="miniPlayBtn">▶</button><button class="mini-btn expand" id="miniExpandBtn">⛶</button></div>
     </div>
     <div class="mini-progress"><div class="mini-progress-fill" id="miniProgressFill"></div></div>
 </div>
 
+<!-- Pantalla completa overlay -->
 <div class="fullscreen-overlay" id="fullscreenOverlay">
     <div class="fs-video-wrap">
         <video id="fsVideo" playsinline webkit-playsinline></video>
         <div class="fs-controls-bar">
-            <button class="fs-btn" id="fsPlayPause">▶</button>
+            <button class="fs-btn" id="fsPlayPause">▶ Reproducir</button>
             <button class="fs-btn" id="fsCloseFull">✕ Cerrar</button>
         </div>
         <button class="fs-close" id="fsCloseBtn">✕</button>
@@ -130,41 +139,23 @@
 </div>
 
 <script>
-// ===================== CONFIGURACIÓN GLOBAL =====================
+// ===================== CONFIGURACIÓN Y ESTADO =====================
 let servers = [];
 let currentServer = null;
 let currentTab = 'live';
 let categoriesData = {};
 let streamsCache = {};
-let allChannels = [];      // lista plana {url, name, isM3u8}
+let allChannels = [];      // lista plana de canales {url, name, isM3u8}
 let currentChannelIndex = -1;
 let hlsPlayer = null;
 let fullscreenHls = null;
 let searchTerm = '';
 let serverExpiryDates = {};
 
-// ----- CANALES DE PRUEBA QUE SÍ FUNCIONAN (2025) -----
-const testChannels = [
-    { name: "🔴 HLS Prueba 1 (Mux - Vídeo con audio)", url: "https://stream.mux.com/D3KZ1j00XKz02K02Bp00HvWp02I01R.m3u8", type: "hls" },
-    { name: "🎬 Big Buck Bunny (MP4 - 1080p)", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", type: "mp4" },
-    { name: "🌊 Tears of Steel (MP4)", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4", type: "mp4" },
-    { name: "📺 Sample MP4 (360p)", url: "https://www.radiantmediaplayer.com/media/bbb-360p.mp4", type: "mp4" },
-    { name: "🎥 HLS Prueba 2 (Akamai - alternativo)", url: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8", type: "hls" }
-];
-const testServer = {
-    id: 9999,
-    name: "📺 CANALES DE PRUEBA (Funcionan ahora)",
-    type: "test",
-    active: true
-};
-// Solo dejamos el servidor de prueba como activo por defecto, los Xtream ya no sirven
-const defaultServers = [
-    testServer
-];
-
+// ===================== PERSISTENCIA =====================
 function loadData() {
     try {
-        const saved = localStorage.getItem('luisr_definitive');
+        const saved = localStorage.getItem('luisr_iptv_pro');
         if(saved) {
             const data = JSON.parse(saved);
             servers = data.servers || [];
@@ -172,27 +163,22 @@ function loadData() {
         }
     } catch(e) {}
     if(!servers.length) {
-        servers = JSON.parse(JSON.stringify(defaultServers));
-        const now = new Date();
-        servers.forEach(s => {
-            const ex = new Date(now);
-            ex.setFullYear(ex.getFullYear() + 1);
-            serverExpiryDates[s.id] = ex.toISOString();
-        });
+        // No hay servidores de prueba, solo puedes agregar los tuyos
+        servers = [];
         saveData();
     }
-    currentServer = servers.find(s => s.active) || servers[0];
+    currentServer = servers.find(s => s.active) || (servers[0] || null);
     updateBadge();
     loadCategories();
 }
 function saveData() {
-    localStorage.setItem('luisr_definitive', JSON.stringify({ servers, expiryDates: serverExpiryDates }));
+    localStorage.setItem('luisr_iptv_pro', JSON.stringify({ servers, expiryDates: serverExpiryDates }));
 }
 function updateBadge() {
     if(currentServer && serverExpiryDates[currentServer.id]) {
         document.getElementById('expiryBadge').textContent = `📅 ${new Date(serverExpiryDates[currentServer.id]).toLocaleDateString()}`;
     } else {
-        document.getElementById('expiryBadge').textContent = '📅 ∞';
+        document.getElementById('expiryBadge').textContent = '📅 --';
     }
 }
 function setActiveServer(id) {
@@ -203,14 +189,13 @@ function setActiveServer(id) {
     loadCategories();
 }
 function deleteServer(id) {
-    if(servers.length <= 1) { alert("Debe quedar al menos un servidor (canales de prueba)"); return; }
     servers = servers.filter(s => s.id !== id);
-    if(currentServer.id === id) setActiveServer(servers[0].id);
+    if(currentServer && currentServer.id === id) setActiveServer(servers[0]?.id || null);
     else saveData();
     loadCategories();
 }
 
-// ----- API helpers para Xtream y M3U (si el usuario agrega los suyos) -----
+// ===================== API PARA XTREAM Y M3U =====================
 function apiUrl(action, params='') {
     if(!currentServer || currentServer.type !== 'xtream') return '';
     return `${currentServer.url}/player_api.php?username=${currentServer.user}&password=${currentServer.pass}&action=${action}${params}`;
@@ -252,29 +237,22 @@ async function parseM3U(m3uUrl) {
     } catch(e) { return null; }
 }
 
-// ----- Carga de categorías y canales -----
+// ===================== CARGA DE CATEGORÍAS Y CANALES =====================
 async function loadCategories() {
     const container = document.getElementById('categoriesContainer');
     const empty = document.getElementById('emptyState');
-    container.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Cargando...</p></div>';
+    container.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Cargando contenido...</p></div>';
     empty.style.display = 'none';
-    if(!currentServer) { empty.style.display = 'flex'; container.innerHTML = ''; return; }
-
-    // Servidor de prueba
-    if(currentServer.type === 'test' || currentServer.id === 9999) {
-        const testCat = [{ category_id: 999, category_name: "🎬 Canales de Prueba (Funcionan ahora)" }];
-        categoriesData[currentTab] = testCat;
-        streamsCache[currentTab] = { "🎬 Canales de Prueba (Funcionan ahora)": testChannels };
-        renderCategories(testCat);
+    if(!currentServer) {
+        empty.style.display = 'flex';
+        container.innerHTML = '';
         return;
     }
-
-    // M3U agregado por el usuario
     if(currentServer.type === 'm3u') {
         const parsed = await parseM3U(currentServer.m3uUrl);
-        if(!parsed) { 
-            container.innerHTML = '<div class="error-box">❌ Error al cargar la lista M3U<br>Verifica que la URL sea accesible</div>'; 
-            return; 
+        if(!parsed) {
+            container.innerHTML = '<div class="error-box">❌ Error al cargar la lista M3U<br>Verifica la URL</div>';
+            return;
         }
         const catList = Object.keys(parsed).map((name, idx) => ({ category_id: idx, category_name: name }));
         categoriesData[currentTab] = catList;
@@ -282,28 +260,25 @@ async function loadCategories() {
         renderCategories(catList);
         return;
     }
-
-    // Xtream agregado por el usuario
     if(currentServer.type === 'xtream') {
         let endpoint = '';
         if(currentTab === 'live') endpoint = apiUrl('get_live_categories');
         else if(currentTab === 'movies') endpoint = apiUrl('get_vod_categories');
         else if(currentTab === 'series') endpoint = apiUrl('get_series_categories');
-        if(!endpoint) { 
-            container.innerHTML = '<div class="error-box">❌ Error: servidor Xtream sin configuración válida</div>'; 
-            return; 
+        if(!endpoint) {
+            container.innerHTML = '<div class="error-box">❌ Configuración de servidor inválida</div>';
+            return;
         }
         const data = await fetchAPI(endpoint);
-        if(!data || !Array.isArray(data)) { 
-            container.innerHTML = '<div class="error-box">❌ Error al conectar con el servidor Xtream<br>Verifica URL, usuario y contraseña</div>'; 
-            return; 
+        if(!data || !Array.isArray(data)) {
+            container.innerHTML = '<div class="error-box">❌ Error de conexión con el servidor Xtream<br>Verifica URL, usuario y contraseña</div>';
+            return;
         }
         categoriesData[currentTab] = data;
         renderCategories(data);
         return;
     }
 }
-
 function renderCategories(cats) {
     if(!cats.length) { document.getElementById('categoriesContainer').innerHTML = '<div class="error-box">Sin categorías</div>'; return; }
     let html = '';
@@ -318,7 +293,6 @@ function renderCategories(cats) {
     document.getElementById('categoriesContainer').innerHTML = html;
     if(searchTerm) filterChannels();
 }
-
 window.toggleCat = function(header) {
     const block = header.parentElement;
     const body = block.querySelector('.cat-body');
@@ -329,14 +303,7 @@ window.toggleCat = function(header) {
         loadCatContent(catId, body);
     }
 };
-
 async function loadCatContent(categoryId, bodyDiv) {
-    if(currentServer.type === 'test' || currentServer.id === 9999) {
-        const catName = categoriesData[currentTab]?.find(c => c.category_id == categoryId)?.category_name;
-        const channels = streamsCache[currentTab]?.[catName];
-        if(channels) renderChannels(channels, bodyDiv);
-        return;
-    }
     if(currentServer.type === 'm3u') {
         const catName = categoriesData[currentTab]?.find(c => c.category_id == categoryId)?.category_name;
         const channels = streamsCache[currentTab]?.[catName];
@@ -354,17 +321,13 @@ async function loadCatContent(categoryId, bodyDiv) {
         renderChannels(data, bodyDiv);
     }
 }
-
 function renderChannels(items, container) {
     let html = '';
     for(const item of items) {
         const name = escapeHtml(item.name || item.title || 'Sin nombre');
         let url = '';
         let isM3u8 = false;
-        if(currentServer.type === 'test' || currentServer.id === 9999) {
-            url = item.url;
-            isM3u8 = item.type === 'hls' || url.includes('.m3u8');
-        } else if(currentServer.type === 'm3u') {
+        if(currentServer.type === 'm3u') {
             url = item.url;
             isM3u8 = url.includes('.m3u8');
         } else if(currentTab === 'live') {
@@ -384,12 +347,14 @@ function renderChannels(items, container) {
     container.innerHTML = html || '<p style="padding:16px;">Sin contenido</p>';
     if(searchTerm) filterChannels();
 }
-
 window.showSeries = async function(seriesId, seriesName) {
     const container = document.getElementById('categoriesContainer');
     container.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Cargando episodios...</p></div>';
     const data = await fetchAPI(apiUrl('get_series_info', `&series_id=${seriesId}`));
-    if(!data || !data.episodes) { container.innerHTML = `<div class="error-box">Error<br><button onclick="loadCategories()">Volver</button></div>`; return; }
+    if(!data || !data.episodes) {
+        container.innerHTML = `<div class="error-box">Error al cargar episodios<br><button onclick="loadCategories()">Volver</button></div>`;
+        return;
+    }
     let html = `<div style="padding:12px;"><button onclick="loadCategories()" style="background:#333;">◀ Volver</button><h3 style="margin:12px 0;">📺 ${escapeHtml(seriesName)}</h3>`;
     const seasons = Object.keys(data.episodes).sort((a,b)=>parseInt(a)-parseInt(b));
     for(const sn of seasons) {
@@ -409,7 +374,7 @@ window.showSeries = async function(seriesId, seriesName) {
     container.innerHTML = html;
 };
 
-// ===================== REPRODUCTOR MULTIFORMATO =====================
+// ===================== REPRODUCTOR MULTIFORMATO (TUS PROPIOS SERVIDORES) =====================
 const miniVideo = document.getElementById('miniVideo');
 window.playChannel = function(idx) {
     currentChannelIndex = idx;
@@ -420,27 +385,25 @@ window.playChannel = function(idx) {
     const el = document.querySelector(`.ch-item[data-idx="${idx}"]`);
     if(el) el.classList.add('playing');
 };
-
 function playStream(url, title, isM3u8, isFullscreen) {
     const videoElem = isFullscreen ? document.getElementById('fsVideo') : miniVideo;
+    // Destruir reproductor HLS anterior
     if(!isFullscreen && hlsPlayer) { hlsPlayer.destroy(); hlsPlayer = null; }
     if(isFullscreen && fullscreenHls) { fullscreenHls.destroy(); fullscreenHls = null; }
     videoElem.pause();
     videoElem.removeAttribute('src');
     videoElem.load();
     videoElem.muted = false;
-
     if(!isFullscreen) {
         document.getElementById('miniTitle').textContent = title;
         document.getElementById('miniStatus').textContent = '⏳ Cargando...';
         document.getElementById('miniPlayer').classList.add('visible');
     }
-
     const handleError = (e) => {
-        console.error("Error reproduciendo:", e);
-        const msg = `No se puede reproducir este formato. ¿Abrir enlace externo?\nURL: ${url}`;
+        console.error("Error al reproducir:", e);
+        let msg = `No se pudo reproducir: ${title}\nFormato: ${isM3u8 ? 'HLS' : 'directo'}\n¿Abrir enlace en el navegador?`;
         if(!isFullscreen) {
-            document.getElementById('miniStatus').textContent = '❌ Error de formato';
+            document.getElementById('miniStatus').textContent = '❌ Error';
             setTimeout(() => {
                 if(confirm(msg)) window.open(url, '_blank');
             }, 100);
@@ -449,7 +412,6 @@ function playStream(url, title, isM3u8, isFullscreen) {
         }
     };
     videoElem.onerror = handleError;
-
     if(isM3u8 && Hls.isSupported()) {
         const hls = new Hls({ enableWorker: true, debug: false });
         hls.loadSource(url);
@@ -469,7 +431,6 @@ function playStream(url, title, isM3u8, isFullscreen) {
         if(!isFullscreen) document.getElementById('miniStatus').textContent = '▶ Reproduciendo';
     }
 }
-
 // Controles mini
 document.getElementById('miniPlayBtn').onclick = () => {
     if(miniVideo.paused) { miniVideo.play(); document.getElementById('miniPlayBtn').textContent = '⏸'; }
@@ -481,8 +442,7 @@ miniVideo.addEventListener('timeupdate', () => {
         document.getElementById('miniProgressFill').style.width = pct + '%';
     }
 });
-
-// Fullscreen overlay
+// Pantalla completa
 const fsOverlay = document.getElementById('fullscreenOverlay');
 const fsVideo = document.getElementById('fsVideo');
 document.getElementById('miniExpandBtn').onclick = () => {
@@ -506,7 +466,7 @@ document.getElementById('fsPlayPause').onclick = () => {
     else fsVideo.pause();
 };
 
-// ===================== MODALES PARA AGREGAR SERVIDORES/LISTAS =====================
+// ===================== MODALES PARA AGREGAR TUS SERVIDORES =====================
 function showAddServerModal() {
     const modal = document.createElement('div');
     modal.className = 'modal';
@@ -568,8 +528,12 @@ function showAddServerModal() {
         modal.remove();
     };
 }
-
 function showServerManager() {
+    if(!servers.length) {
+        alert("No hay servidores. Agrega uno usando el botón +");
+        showAddServerModal();
+        return;
+    }
     const modal = document.createElement('div');
     modal.className = 'modal';
     let serversHtml = '';
@@ -578,7 +542,7 @@ function showServerManager() {
             <div class="server-row">
                 <div><strong>${escapeHtml(s.name)}</strong><br><small>Expira: ${serverExpiryDates[s.id] ? new Date(serverExpiryDates[s.id]).toLocaleDateString() : '∞'}</small></div>
                 <div style="display:flex;gap:6px;">
-                    ${s.id === currentServer.id ? '<span style="color:#ff6b1a;">✅ Activo</span>' : `<button onclick="window.activateSrv(${s.id})">Activar</button>`}
+                    ${s.id === currentServer?.id ? '<span style="color:#ff6b1a;">✅ Activo</span>' : `<button onclick="window.activateSrv(${s.id})">Activar</button>`}
                     <button class="btn-danger" onclick="window.delSrv(${s.id})">🗑</button>
                 </div>
             </div>
@@ -607,12 +571,10 @@ function filterChannels() {
     });
 }
 document.getElementById('searchInput').addEventListener('input', (e) => { searchTerm = e.target.value; filterChannels(); });
-
 function escapeHtml(str) {
     if(!str) return '';
     return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;');
 }
-
 function initTabs() {
     const tabs = document.querySelectorAll('.nav-tab');
     tabs.forEach(tab => {
@@ -627,13 +589,13 @@ function initTabs() {
 }
 initTabs();
 
-// Botones
+// Botones globales
 document.getElementById('heroPlusBtn').onclick = showAddServerModal;
 document.getElementById('sectionAddBtn').onclick = showAddServerModal;
 document.getElementById('globalFab').onclick = showAddServerModal;
 document.getElementById('navAddBtn').onclick = showAddServerModal;
 document.getElementById('serverBtn').onclick = showServerManager;
-document.getElementById('settingsBtn').onclick = () => alert("Ajustes: puedes gestionar servidores desde el botón 📁");
+document.getElementById('settingsBtn').onclick = () => alert("Ajustes: Usa el botón 📁 para gestionar tus servidores");
 
 loadData();
 </script>
