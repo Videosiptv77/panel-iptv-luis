@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#0a0a14">
-    <title>🦉 LUIS R IPTV · MINI + FULLSCREEN</title>
+    <title>🦉 LUIS R IPTV · FULL FUNCIONAL</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
@@ -32,7 +31,7 @@
             border-bottom: 1px solid rgba(255,255,255,0.06);
         }
         .logo-area { display: flex; align-items: center; gap: 8px; }
-        .logo-text { font-size: 22px; font-weight: 900; color: #ff6b1a; letter-spacing: 1px; }
+        .logo-text { font-size: 22px; font-weight: 900; color: #ff6b1a; }
         .logo-emoji { font-size: 22px; }
         .header-right { display: flex; align-items: center; gap: 14px; }
         .icon-btn-header { background: none; border: none; font-size: 22px; cursor: pointer; color: #ccc; padding: 4px; }
@@ -45,39 +44,38 @@
         /* Tabs */
         .nav-tabs {
             display: flex; gap: 0; padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
-            overflow-x: auto; white-space: nowrap; background: #0a0a14; scrollbar-width: none;
+            overflow-x: auto; white-space: nowrap; background: #0a0a14;
         }
-        .nav-tabs::-webkit-scrollbar { display:none; }
-        .nav-tab { padding: 12px 14px; font-size: 14px; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; }
+        .nav-tab { padding: 12px 14px; font-size: 14px; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; }
         .nav-tab.active { color: #ff6b1a; border-bottom-color: #ff6b1a; }
 
         /* Hero banner */
         .hero-banner {
             margin: 16px; border-radius: 16px; overflow: hidden; position: relative;
-            background: #141414; min-height: 200px; display: flex; align-items: flex-end;
+            background: #141414; min-height: 180px; display: flex; align-items: flex-end;
         }
         .hero-bg { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%), #1a0a0a; display: flex; align-items: center; justify-content: center; }
-        .hero-netflix-logo { font-size: 56px; font-weight: 900; color: #e50914; font-family: 'Arial Black', sans-serif; text-shadow: 0 0 60px rgba(229,9,20,0.4); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -60%); }
+        .hero-netflix-logo { font-size: 48px; font-weight: 900; color: #e50914; font-family: 'Arial Black', sans-serif; text-shadow: 0 0 40px rgba(229,9,20,0.4); }
         .hero-content { position: relative; padding: 18px; width: 100%; }
-        .hero-title { font-size: 20px; font-weight: 900; margin-bottom: 4px; }
-        .hero-sub { font-size: 13px; color: #bbb; }
-        .hero-fab { position: absolute; bottom: 16px; right: 16px; width: 50px; height: 50px; background: #ff6b1a; border-radius: 50%; border: none; font-size: 26px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(255,107,26,0.5); }
+        .hero-title { font-size: 18px; font-weight: 900; }
+        .hero-sub { font-size: 12px; color: #bbb; }
+        .hero-fab { position: absolute; bottom: 16px; right: 16px; width: 46px; height: 46px; background: #ff6b1a; border-radius: 50%; border: none; font-size: 24px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* Sección canales */
+        /* Section */
         .section-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 10px; }
-        .section-title { font-size: 17px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        .section-title { font-size: 17px; font-weight: 800; }
         .section-add-link { color: #ff6b1a; font-size: 14px; font-weight: 600; cursor: pointer; background: none; border: none; }
 
         .channel-list-section { padding: 0 0 100px; }
         .empty-state { text-align: center; padding: 50px 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
         .empty-tv { font-size: 64px; }
-        .empty-title { font-size: 20px; font-weight: 700; color: #aaa; }
 
+        /* Category and channel items */
         .category-block { margin: 0 12px 10px; background: #111120; border-radius: 16px; overflow: hidden; }
-        .cat-header { padding: 14px 16px; background: #161625; cursor: pointer; font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; align-items: center; color: #ddd; }
+        .cat-header { padding: 14px 16px; background: #161625; cursor: pointer; font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; color: #ddd; }
         .cat-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; }
         .cat-body.open { max-height: 500px; overflow-y: auto; }
-        .ch-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); transition: 0.15s; font-size: 14px; color: #ccc; }
+        .ch-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; color: #ccc; }
         .ch-item:hover { background: #1e1e30; color: #fff; }
         .ch-item.playing { background: rgba(255,107,26,0.12); color: #ff6b1a; }
         .ch-icon { width: 34px; height: 34px; background: #1e1e2e; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
@@ -93,207 +91,258 @@
         .mini-player-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
         .mini-thumb { width: 52px; height: 36px; background: #000; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
         .mini-thumb video { width: 100%; height: 100%; object-fit: cover; }
-        .mini-info { flex: 1; min-width: 0; }
-        .mini-title { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-info { flex: 1; }
+        .mini-title { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .mini-status { font-size: 11px; color: #ff6b1a; }
-        .mini-controls { display: flex; align-items: center; gap: 8px; }
+        .mini-controls { display: flex; gap: 8px; }
         .mini-btn { background: #1e1e2e; border: none; color: #fff; font-size: 16px; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .mini-btn.expand { background: #ff6b1a; font-size: 18px; }
         .mini-progress { height: 3px; background: #333; border-radius: 4px; overflow: hidden; }
-        .mini-progress-fill { height: 100%; background: #ff6b1a; width: 0%; transition: width 0.5s linear; }
+        .mini-progress-fill { height: 100%; background: #ff6b1a; width: 0%; }
 
         /* Bottom nav */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: rgba(10,10,20,0.98); backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255,255,255,0.07);
-            display: flex; z-index: 400; padding-bottom: env(safe-area-inset-bottom, 0px);
+            display: flex; z-index: 400;
         }
-        .nav-btn { flex: 1; padding: 12px 0 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; border: none; background: none; color: #666; font-size: 10px; font-weight: 600; }
+        .nav-btn { flex: 1; padding: 12px 0 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; color: #666; font-size: 10px; font-weight: 600; }
         .nav-btn.active { color: #ff6b1a; }
         .nav-btn-icon { font-size: 22px; }
 
         .global-fab { position: fixed; right: 20px; bottom: 80px; width: 54px; height: 54px; background: #ff6b1a; border-radius: 50%; border: none; font-size: 26px; color: #fff; cursor: pointer; z-index: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 24px rgba(255,107,26,0.55); }
 
-        /* Fullscreen overlay styles (compacto, se activa al hacer clic en ⛶) */
-        .fullscreen-overlay {
-            position: fixed; inset: 0; z-index: 2000; background: #000;
-            display: none; flex-direction: column; width: 100%; height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        /* Modal (agregar y gestionar) */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px);
+            z-index: 1000; display: flex; align-items: center; justify-content: center;
         }
-        .fullscreen-overlay.active { display: flex; }
-        .fs-app { display: flex; width: 100%; height: 100%; }
-        .fs-video-wrap { flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; min-width: 0; }
-        #fsVideo { width: 100%; height: 100%; object-fit: contain; display: block; }
-        .fs-overlay-controls {
-            position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between;
-            opacity: 0; transition: opacity 0.3s; pointer-events: none;
-            background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 20%, transparent 75%, rgba(0,0,0,0.7) 100%);
+        .modal-card {
+            background: #121220; border-radius: 28px; width: 92%; max-width: 500px; max-height: 88vh;
+            overflow-y: auto; padding: 26px; border: 1px solid rgba(255,107,26,0.3);
         }
-        .fs-overlay-controls.visible { opacity: 1; pointer-events: all; }
-        .fs-top-bar { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 10px; }
-        .fs-now-playing { font-size: 15px; font-weight: 700; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.8); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .fs-ov-btn { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 18px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: 10px; }
-        .fs-center-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; background: rgba(255,107,26,0.85); border-radius: 50%; border: none; color: #fff; font-size: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 30px rgba(255,107,26,0.5); }
-        .fs-bottom-bar { padding: 10px 20px 20px; }
-        .fs-progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .fs-time-label { font-size: 12px; color: #ccc; font-family: monospace; min-width: 48px; }
-        .fs-progress-track { flex: 1; height: 5px; background: rgba(255,255,255,0.25); border-radius: 6px; cursor: pointer; position: relative; }
-        .fs-progress-fill { height: 100%; background: #ff6b1a; border-radius: 6px; width: 0%; pointer-events: none; }
-        .fs-controls-row { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
-        .fs-ctrl-btn { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 9px 18px; border-radius: 30px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-        .fs-vol-wrap { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.6); border-radius: 30px; padding: 6px 14px; }
-        .fs-vol-slider { width: 90px; -webkit-appearance: none; height: 4px; background: rgba(255,255,255,0.3); border-radius: 4px; }
-        .fs-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #ff6b1a; border-radius: 50%; cursor: pointer; }
-        .fs-sidebar { width: 320px; height: 100vh; background: #0d0d18; border-left: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; flex-shrink: 0; }
-        .fs-sidebar.hidden { display: none; }
-        .fs-sidebar-header { padding: 16px 16px 10px; background: #0a0a14; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .fs-sidebar-title { font-size: 16px; font-weight: 900; color: #ff6b1a; display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .fs-sidebar-tabs { display: flex; gap: 4px; margin-bottom: 12px; }
-        .fs-stab { flex: 1; padding: 7px 0; text-align: center; font-size: 12px; font-weight: 700; color: #666; cursor: pointer; border-radius: 8px; }
-        .fs-stab.active { background: rgba(255,107,26,0.15); color: #ff6b1a; }
-        .fs-sidebar-search { width: 100%; background: #1a1a2e; border: none; border-radius: 30px; padding: 9px 16px; color: #ccc; font-size: 13px; outline: none; }
-        .fs-sidebar-body { flex: 1; overflow-y: auto; scrollbar-width: thin; }
-        .fs-scat { border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .fs-scat-header { padding: 13px 16px; font-size: 13px; font-weight: 700; color: #bbb; cursor: pointer; display: flex; justify-content: space-between; background: #0f0f1c; }
-        .fs-scat-body { display: none; }
-        .fs-scat-body.open { display: block; }
-        .fs-sch-item { display: flex; align-items: center; gap: 10px; padding: 11px 16px; cursor: pointer; font-size: 13px; color: #ccc; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .fs-sch-item:hover { background: #1e1e30; color: #fff; }
-        .fs-sch-item.playing { background: rgba(255,107,26,0.15); color: #ff6b1a; }
-        .fs-prev-next { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 100; }
-        .fs-pn-btn { background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 42px; height: 42px; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .fs-toggle-sidebar { position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: rgba(255,107,26,0.85); border: none; color: #fff; padding: 12px 8px; border-radius: 8px 0 0 8px; font-size: 18px; cursor: pointer; z-index: 200; writing-mode: vertical-rl; }
-        @media (max-width: 700px) { .fs-sidebar { position: absolute; right: 0; top: 0; bottom: 0; z-index: 300; width: 280px; transform: translateX(100%); transition: transform 0.2s; } .fs-sidebar.open { transform: translateX(0); } .fs-toggle-sidebar { display: flex; } }
+        .modal-card h3 { font-size: 20px; margin-bottom: 18px; color: #ff6b1a; font-weight: 800; }
+        .modal-card input, .modal-card select, .modal-card textarea {
+            width: 100%; padding: 12px 16px; margin-bottom: 12px; background: #1e1e2e;
+            border: 1px solid #333; border-radius: 16px; color: white; font-size: 14px; outline: none;
+        }
+        .server-row {
+            background: #1a1a2a; margin: 8px 0; padding: 14px; border-radius: 16px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+        }
+        button { background: #ff6b1a; border: none; padding: 10px 20px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; font-size: 13px; }
+        .btn-secondary { background: #333; }
+        .btn-danger { background: #dc2626; }
+
+        .mode-btn-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .mode-btn-row button { flex: 1; font-size: 12px; }
 
         .loading-state { text-align: center; padding: 30px 20px; }
         .spinner { width: 36px; height: 36px; border: 3px solid #222; border-top-color: #ff6b1a; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .error-box { background: rgba(239,68,68,0.1); padding: 18px; border-radius: 16px; color: #f87171; text-align: center; margin: 12px; }
+
+        /* Fullscreen overlay (simplificado pero funcional) */
+        .fullscreen-overlay {
+            position: fixed; inset: 0; z-index: 2000; background: #000; display: none; flex-direction: column;
+        }
+        .fullscreen-overlay.active { display: flex; }
+        .fs-video-wrap { flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
+        #fsVideo { width: 100%; height: 100%; object-fit: contain; }
+        .fs-controls-bar {
+            position: absolute; bottom: 20px; left: 0; right: 0; background: rgba(0,0,0,0.6); padding: 12px;
+            display: flex; justify-content: center; gap: 20px; backdrop-filter: blur(10px);
+        }
+        .fs-btn { background: #ff6b1a; border: none; color: white; padding: 8px 20px; border-radius: 30px; font-size: 14px; cursor: pointer; }
+        .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); border: none; color: white; font-size: 24px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #ff6b1a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #ff6b1a; }
     </style>
 </head>
 <body>
 
-<!-- MAIN INTERFAZ -->
+<!-- Header -->
 <div class="header">
     <div class="logo-area"><span class="logo-emoji">🦂</span><span class="logo-text">LUIS R</span><span class="logo-emoji">🦉</span></div>
     <div class="header-right"><span class="expiry-small" id="expiryBadge">--</span><button class="icon-btn-header" id="serverBtn">📁</button><button class="icon-btn-header" id="settingsBtn">⚙️</button></div>
 </div>
+
+<!-- Search -->
 <div class="search-bar-wrap"><input class="search-input" id="searchInput" type="text" placeholder="Buscar canal..."></div>
+
+<!-- Tabs -->
 <div class="nav-tabs" id="navTabs">
     <div class="nav-tab active" data-tab="live">📺 TV EN VIVO</div>
     <div class="nav-tab" data-tab="movies">🎬 PELÍCULAS</div>
     <div class="nav-tab" data-tab="series">📺 SERIES</div>
 </div>
-<div class="hero-banner" id="heroBanner">
+
+<!-- Hero -->
+<div class="hero-banner">
     <div class="hero-bg"><div class="hero-netflix-logo">NETFLIX</div></div>
     <div class="hero-content"><div class="hero-title">BIENVENIDO A LUIS R</div><div class="hero-sub">Agrega tus canales M3U8 favoritos</div></div>
     <button class="hero-fab" id="heroPlusBtn">+</button>
 </div>
+
+<!-- Section -->
 <div class="section-header"><div class="section-title">📺 MIS CANALES</div><button class="section-add-link" id="sectionAddBtn">Agregar ›</button></div>
 <div class="channel-list-section" id="channelListSection">
     <div class="empty-state" id="emptyState"><div class="empty-tv">📺</div><div class="empty-title">No tienes canales</div><div class="empty-sub">Pícale al botón + para agregar tu primer canal</div></div>
     <div id="categoriesContainer"></div>
 </div>
 <button class="global-fab" id="globalFab">+</button>
+
+<!-- Bottom nav -->
 <div class="bottom-nav">
     <button class="nav-btn active" data-nav="home"><span class="nav-btn-icon">🏠</span><span>INICIO</span></button>
     <button class="nav-btn" id="navLiveBtn"><span class="nav-btn-icon">📺</span><span>EN VIVO</span></button>
     <button class="nav-btn" id="navAddBtn"><span class="nav-btn-icon">+</span><span>AGREGAR</span></button>
-    <button class="nav-btn" data-nav="fav"><span class="nav-btn-icon">⭐</span><span>FAVS</span></button>
 </div>
 
-<!-- MINI PLAYER -->
+<!-- Mini player -->
 <div class="mini-player" id="miniPlayer">
     <div class="mini-player-top">
         <div class="mini-thumb"><video id="miniVideo" playsinline webkit-playsinline></video></div>
         <div class="mini-info"><div class="mini-title" id="miniTitle">Sin reproducción</div><div class="mini-status" id="miniStatus">⏸ En vivo</div></div>
-        <div class="mini-controls"><button class="mini-btn" id="miniPlayBtn">▶</button><button class="mini-btn expand" id="miniExpandBtn" title="Pantalla completa">⛶</button></div>
+        <div class="mini-controls"><button class="mini-btn" id="miniPlayBtn">▶</button><button class="mini-btn expand" id="miniExpandBtn">⛶</button></div>
     </div>
     <div class="mini-progress"><div class="mini-progress-fill" id="miniProgressFill"></div></div>
 </div>
 
-<!-- FULLSCREEN OVERLAY -->
+<!-- Fullscreen overlay (simple) -->
 <div class="fullscreen-overlay" id="fullscreenOverlay">
-    <div class="fs-app">
-        <div class="fs-video-wrap">
-            <video id="fsVideo" playsinline webkit-playsinline></video>
-            <div class="fs-overlay-controls" id="fsOverlayControls">
-                <div class="fs-top-bar"><div class="fs-now-playing" id="fsNowPlaying">Selecciona un canal</div><button class="fs-ov-btn" id="fsCloseBtn">✕</button></div>
-                <button class="fs-center-play" id="fsCenterPlay">▶</button>
-                <div class="fs-bottom-bar">
-                    <div class="fs-progress-row"><span class="fs-time-label" id="fsCurTime">00:00</span><div class="fs-progress-track" id="fsProgressTrack"><div class="fs-progress-fill" id="fsProgressFill"></div></div><span class="fs-time-label" id="fsDurTime">00:00</span></div>
-                    <div class="fs-controls-row">
-                        <button class="fs-ctrl-btn" id="fsRewindBtn">⏪ 10s</button>
-                        <button class="fs-ctrl-btn" id="fsPlayPauseBtn">▶ Play</button>
-                        <button class="fs-ctrl-btn" id="fsFwdBtn">10s ⏩</button>
-                        <div class="fs-vol-wrap"><span>🔊</span><input type="range" id="fsVolSlider" class="fs-vol-slider" min="0" max="1" step="0.01" value="0.8"></div>
-                        <button class="fs-ctrl-btn" id="fsFullBtn">⛶ Full</button>
-                    </div>
-                </div>
-            </div>
-            <div class="fs-prev-next"><button class="fs-pn-btn" id="fsPrevCh">▲</button><button class="fs-pn-btn" id="fsNextCh">▼</button></div>
-            <button class="fs-toggle-sidebar" id="fsToggleSidebarBtn">☰</button>
+    <div class="fs-video-wrap">
+        <video id="fsVideo" playsinline webkit-playsinline></video>
+        <div class="fs-controls-bar">
+            <button class="fs-btn" id="fsPlayPause">▶</button>
+            <button class="fs-btn" id="fsCloseFull">✕ Cerrar</button>
         </div>
-        <div class="fs-sidebar" id="fsSidebar">
-            <div class="fs-sidebar-header">
-                <div class="fs-sidebar-title"><span>🦉 LUIS R</span><button id="fsCloseSidebarBtn" style="background:none;border:none;color:#888;font-size:20px;">✕</button></div>
-                <div class="fs-sidebar-tabs"><div class="fs-stab active" data-tab="live">📺 TV</div><div class="fs-stab" data-tab="movies">🎬 Pelis</div><div class="fs-stab" data-tab="series">📺 Series</div></div>
-                <input class="fs-sidebar-search" id="fsSearchInput" type="text" placeholder="🔍 Buscar...">
-            </div>
-            <div class="fs-sidebar-body" id="fsSidebarBody"><div class="loading-state"><div class="spinner"></div>Cargando...</div></div>
-        </div>
+        <button class="fs-close" id="fsCloseBtn">✕</button>
     </div>
 </div>
 
 <script>
-// ===================== CONFIGURACIÓN INICIAL =====================
-let servers = [], currentServer = null, currentTab = 'live';
-let categoriesData = {}, streamsCache = {};
-let searchTerm = '', hlsPlayer = null, fullscreenHls = null;
-let allRenderedChannels = [];    // lista plana para reproducción (mini)
+// ===================== CONFIGURACIÓN Y SERVIDORES =====================
+let servers = [];
+let currentServer = null;
+let currentTab = 'live';
+let categoriesData = {};
+let streamsCache = {};
+let allChannels = [];      // lista plana de canales (para reproducción)
 let currentChannelIndex = -1;
-let serverExpiryDates = {}, favorites = [];
+let hlsPlayer = null;
+let fullscreenHls = null;
+let searchTerm = '';
+let serverExpiryDates = {};
 
-const listasExtras = [
-    { id:101, nombre:"RAFAEL MAZZILLI", m3uUrl:"http://latinchannel.tv:8080/get.php?username=rafael.mazzilli&password=mazzilli1402&type=m3u_plus", type:"m3u", active:false },
-    { id:102, nombre:"JENNI PAOLA", m3uUrl:"http://latinchannel.tv:8080/get.php?username=jenni.paola&password=paola1707&type=m3u_plus", type:"m3u", active:false },
-    { id:103, nombre:"CINEMA JULIO", m3uUrl:"http://latinchannel.tv:8080/get.php?username=cinema.julio&password=julio1987&type=m3u_plus", type:"m3u", active:false },
-    { id:104, nombre:"JUAN ROMANO", m3uUrl:"http://latinchannel.tv:8080/get.php?username=juan.romano&password=romano2204&type=m3u_plus", type:"m3u", active:false },
-    { id:105, nombre:"MIGUEL JESUS", m3uUrl:"http://latinchannel.tv:8080/get.php?username=miguel.jesus&password=jesus1707&type=m3u_plus", type:"m3u", active:false },
-    { id:106, nombre:"ANA VALENTINA", m3uUrl:"http://latinchannel.tv:8080/get.php?username=ana.valentina&password=valentina1905&type=m3u_plus", type:"m3u", active:false },
-    { id:107, nombre:"ALISON", m3uUrl:"http://latinchannel.tv:8080/get.php?username=alison&password=151108&type=m3u_plus", type:"m3u", active:false }
-];
-const defaultServersBase = [
-    { id:1, name:"MSTR TV", url:"http://mstrtv.com:25461", user:"Joseangeljaur", pass:"c91dea7b374135eb7eac31a468326e75", type:"xtream", active:true },
-    { id:2, name:"BSTV", url:"http://bstv.online:8080", user:"7876151421", pass:"7876151421", type:"xtream", active:false },
-    { id:3, name:"PLAY TV", url:"http://playtv44.com:8080", user:"MASTER", pass:"23423", type:"xtream", active:false },
-    { id:4, name:"TV LITE", url:"http://tvlite.xyz:8080", user:"claudiocalderon62725", pass:"M3zVt2nfwb", type:"xtream", active:false },
-    { id:5, name:"TECNOMOLLY", url:"http://app.tecnomolly.com:8080", user:"cesarjacobo2", pass:"gWVQ4n2UXZC4", type:"xtream", active:false }
+// Servidores de ejemplo (activo el primero)
+const defaultServers = [
+    { id: 1, name: "MSTR TV", url: "http://mstrtv.com:25461", user: "Joseangeljaur", pass: "c91dea7b374135eb7eac31a468326e75", type: "xtream", active: true },
+    { id: 2, name: "BSTV", url: "http://bstv.online:8080", user: "7876151421", pass: "7876151421", type: "xtream", active: false },
+    { id: 3, name: "PLAY TV", url: "http://playtv44.com:8080", user: "MASTER", pass: "23423", type: "xtream", active: false },
+    { id: 4, name: "TV LITE", url: "http://tvlite.xyz:8080", user: "claudiocalderon62725", pass: "M3zVt2nfwb", type: "xtream", active: false }
 ];
 
-function buildFullServers() { return [...defaultServersBase, ...listasExtras.map(e => ({ id:e.id, name:e.nombre, m3uUrl:e.m3uUrl, type:"m3u", active:false }))]; }
-
-function loadServers() {
-    try { const saved = localStorage.getItem('iptv_luisr_mobile_v1'); if(saved) { const d = JSON.parse(saved); servers = d.servers || []; serverExpiryDates = d.expiryDates || {}; favorites = d.favorites || []; } } catch(e) {}
-    if(!servers || !servers.length) { servers = buildFullServers(); const now = new Date(); servers.forEach(s => { const ex = new Date(now); ex.setFullYear(ex.getFullYear()+1); serverExpiryDates[s.id] = ex.toISOString(); }); saveData(); }
-    const active = servers.find(s => s.active); currentServer = active || servers[0]; if(currentServer && !currentServer.active) currentServer.active = true; saveData(); updateHeaderInfo(); loadCategories();
+function loadData() {
+    try {
+        const saved = localStorage.getItem('luisr_iptv_full');
+        if(saved) {
+            const data = JSON.parse(saved);
+            servers = data.servers || [];
+            serverExpiryDates = data.expiryDates || {};
+        }
+    } catch(e) {}
+    if(!servers.length) {
+        servers = JSON.parse(JSON.stringify(defaultServers));
+        const now = new Date();
+        servers.forEach(s => {
+            const ex = new Date(now);
+            ex.setFullYear(ex.getFullYear() + 1);
+            serverExpiryDates[s.id] = ex.toISOString();
+        });
+        saveData();
+    }
+    currentServer = servers.find(s => s.active) || servers[0];
+    updateBadge();
+    loadCategories();
 }
-function saveData() { localStorage.setItem('iptv_luisr_mobile_v1', JSON.stringify({ servers, expiryDates: serverExpiryDates, favorites })); }
-function updateHeaderInfo() { const expiry = serverExpiryDates[currentServer?.id] ? new Date(serverExpiryDates[currentServer.id]).toLocaleDateString() : '2027'; document.getElementById('expiryBadge').textContent = `📅 ${expiry}`; }
+function saveData() {
+    localStorage.setItem('luisr_iptv_full', JSON.stringify({ servers, expiryDates: serverExpiryDates }));
+}
+function updateBadge() {
+    if(currentServer && serverExpiryDates[currentServer.id]) {
+        const exp = new Date(serverExpiryDates[currentServer.id]).toLocaleDateString();
+        document.getElementById('expiryBadge').textContent = `📅 ${exp}`;
+    } else {
+        document.getElementById('expiryBadge').textContent = '📅 ∞';
+    }
+}
+function setActiveServer(id) {
+    servers = servers.map(s => ({ ...s, active: s.id === id }));
+    currentServer = servers.find(s => s.id === id);
+    saveData();
+    updateBadge();
+    loadCategories();
+}
+function deleteServer(id) {
+    if(servers.length <= 1) { alert("Debe quedar al menos un servidor"); return; }
+    servers = servers.filter(s => s.id !== id);
+    if(currentServer.id === id) setActiveServer(servers[0].id);
+    else saveData();
+    updateBadge();
+}
 
-function apiUrl(action, params='') { if(!currentServer || currentServer.type !== 'xtream') return ''; return `${currentServer.url}/player_api.php?username=${currentServer.user}&password=${currentServer.pass}&action=${action}${params}`; }
-async function fetchAPI(url) { try { const res = await fetch(url, { cache:'no-store' }); if(!res.ok) return null; return JSON.parse(await res.text()); } catch(e) { return null; } }
-async function parseM3U(m3uUrl) { try { const res = await fetch(m3uUrl); if(!res.ok) return null; const lines = (await res.text()).split('\n'); const byCat = {}; for(let i=0;i<lines.length;i++){ const l=lines[i].trim(); if(!l.startsWith('#EXTINF:')) continue; const name=(l.match(/#EXTINF:.*?,(.*)$/)||[])[1]||'Sin nombre'; const cat=(l.match(/group-title="([^"]*)"/)||['','General'])[1]||'General'; let urlLine=''; for(let j=i+1;j<lines.length;j++){ if(lines[j].trim() && !lines[j].trim().startsWith('#')){ urlLine=lines[j].trim(); break; } } if(urlLine && name!=='Sin nombre'){ if(!byCat[cat]) byCat[cat]=[]; byCat[cat].push({name,url:urlLine}); } } return byCat; } catch(e){ return null; } }
+// API helpers
+function apiUrl(action, params='') {
+    if(!currentServer || currentServer.type !== 'xtream') return '';
+    return `${currentServer.url}/player_api.php?username=${currentServer.user}&password=${currentServer.pass}&action=${action}${params}`;
+}
+async function fetchAPI(url) {
+    try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if(!res.ok) return null;
+        return await res.json();
+    } catch(e) { return null; }
+}
+async function parseM3U(m3uUrl) {
+    try {
+        const res = await fetch(m3uUrl);
+        if(!res.ok) return null;
+        const text = await res.text();
+        const lines = text.split('\n');
+        const categories = {};
+        for(let i=0; i<lines.length; i++) {
+            const line = lines[i].trim();
+            if(!line.startsWith('#EXTINF:')) continue;
+            const nameMatch = line.match(/#EXTINF:.*?,(.*)$/);
+            const name = nameMatch ? nameMatch[1] : 'Sin nombre';
+            const groupMatch = line.match(/group-title="([^"]*)"/);
+            const category = groupMatch ? groupMatch[1] : 'General';
+            let urlLine = '';
+            for(let j=i+1; j<lines.length; j++) {
+                if(lines[j].trim() && !lines[j].trim().startsWith('#')) {
+                    urlLine = lines[j].trim();
+                    break;
+                }
+            }
+            if(urlLine && name !== 'Sin nombre') {
+                if(!categories[category]) categories[category] = [];
+                categories[category].push({ name, url: urlLine });
+            }
+        }
+        return categories;
+    } catch(e) { return null; }
+}
 
+// Categorías y canales
 async function loadCategories() {
     const container = document.getElementById('categoriesContainer');
-    const emptyState = document.getElementById('emptyState');
-    container.innerHTML = '<div class="loading-state"><div class="spinner"></div><p style="color:#888;">Cargando contenido...</p></div>';
-    emptyState.style.display = 'none';
-    if(!currentServer) { emptyState.style.display = 'flex'; container.innerHTML=''; return; }
+    const empty = document.getElementById('emptyState');
+    container.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Cargando...</p></div>';
+    empty.style.display = 'none';
+    if(!currentServer) { empty.style.display = 'flex'; container.innerHTML = ''; return; }
+
     if(currentServer.type === 'm3u') {
         const parsed = await parseM3U(currentServer.m3uUrl);
         if(!parsed) { container.innerHTML = '<div class="error-box">Error al cargar M3U</div>'; return; }
@@ -303,22 +352,28 @@ async function loadCategories() {
         renderCategories(catList);
         return;
     }
+
     let endpoint = '';
     if(currentTab === 'live') endpoint = apiUrl('get_live_categories');
     else if(currentTab === 'movies') endpoint = apiUrl('get_vod_categories');
     else if(currentTab === 'series') endpoint = apiUrl('get_series_categories');
-    if(!endpoint) { container.innerHTML = '<div class="error-box">Sin conexión</div>'; return; }
+    if(!endpoint) { container.innerHTML = '<div class="error-box">No se pudo conectar</div>'; return; }
     const data = await fetchAPI(endpoint);
-    if(!data || !Array.isArray(data)) { container.innerHTML = '<div class="error-box">Error servidor</div>'; return; }
+    if(!data || !Array.isArray(data)) { container.innerHTML = '<div class="error-box">Error del servidor</div>'; return; }
     categoriesData[currentTab] = data;
     renderCategories(data);
 }
 
 function renderCategories(cats) {
-    if(!cats || !cats.length) { document.getElementById('categoriesContainer').innerHTML = '<div class="error-box">Sin categorías disponibles</div>'; return; }
+    if(!cats.length) { document.getElementById('categoriesContainer').innerHTML = '<div class="error-box">Sin categorías</div>'; return; }
     let html = '';
     for(const cat of cats) {
-        html += `<div class="category-block" data-cat-id="${cat.category_id}"><div class="cat-header" onclick="toggleCat(this)"><span>📁 ${escHtml(cat.category_name)}</span><span>▼</span></div><div class="cat-body"><div class="loading-state"><div class="spinner"></div></div></div></div>`;
+        html += `<div class="category-block" data-cat-id="${cat.category_id}">
+            <div class="cat-header" onclick="toggleCat(this)">
+                <span>📁 ${escapeHtml(cat.category_name)}</span><span>▼</span>
+            </div>
+            <div class="cat-body"><div class="loading-state"><div class="spinner"></div></div></div>
+        </div>`;
     }
     document.getElementById('categoriesContainer').innerHTML = html;
     if(searchTerm) filterChannels();
@@ -348,46 +403,52 @@ async function loadCatContent(categoryId, bodyDiv) {
     else if(currentTab === 'series') endpoint = apiUrl('get_series', `&category_id=${categoryId}`);
     if(!endpoint) return;
     const data = await fetchAPI(endpoint);
-    if(!data || !Array.isArray(data)) { bodyDiv.innerHTML = '<p style="padding:16px;color:#888;">Sin contenido</p>'; return; }
+    if(!data || !Array.isArray(data)) { bodyDiv.innerHTML = '<p style="padding:16px;">Sin contenido</p>'; return; }
     renderChannels(data, bodyDiv);
 }
 
 function renderChannels(items, container) {
     let html = '';
     for(const item of items) {
-        const name = escHtml(item.name || item.title || 'Sin nombre');
+        const name = escapeHtml(item.name || item.title || 'Sin nombre');
         let url = '', isM3u8 = false;
-        if(currentServer.type === 'm3u') { url = item.url; isM3u8 = url.includes('.m3u8'); }
-        else if(currentTab === 'live') { url = `${currentServer.url}/live/${encodeURIComponent(currentServer.user)}/${encodeURIComponent(currentServer.pass)}/${item.stream_id}.m3u8`; isM3u8 = true; }
-        else if(currentTab === 'movies') { const ext = item.container_extension || 'mp4'; url = `${currentServer.url}/movie/${encodeURIComponent(currentServer.user)}/${encodeURIComponent(currentServer.pass)}/${item.stream_id}.${ext}`; }
-        else if(currentTab === 'series') {
-            html += `<div class="ch-item" onclick='showSeriesEpisodes(${item.series_id},"${name.replace(/'/g,"\\'")}")'><div class="ch-icon">📺</div><span>${name}</span><span style="margin-left:auto;font-size:11px;">›</span></div>`;
+        if(currentServer.type === 'm3u') {
+            url = item.url;
+            isM3u8 = url.includes('.m3u8');
+        } else if(currentTab === 'live') {
+            url = `${currentServer.url}/live/${encodeURIComponent(currentServer.user)}/${encodeURIComponent(currentServer.pass)}/${item.stream_id}.m3u8`;
+            isM3u8 = true;
+        } else if(currentTab === 'movies') {
+            const ext = item.container_extension || 'mp4';
+            url = `${currentServer.url}/movie/${encodeURIComponent(currentServer.user)}/${encodeURIComponent(currentServer.pass)}/${item.stream_id}.${ext}`;
+        } else if(currentTab === 'series') {
+            html += `<div class="ch-item" onclick='showSeries(${item.series_id},"${name.replace(/'/g,"\\'")}")'><div class="ch-icon">📺</div><span>${name}</span><span style="margin-left:auto;">›</span></div>`;
             continue;
         }
-        const idx = allRenderedChannels.length;
-        allRenderedChannels.push({ url, name: item.name || item.title || 'Sin nombre', isM3u8 });
+        const idx = allChannels.length;
+        allChannels.push({ url, name, isM3u8 });
         html += `<div class="ch-item" data-idx="${idx}" onclick='playChannel(${idx})'><div class="ch-icon">${currentTab==='movies'?'🎬':'📡'}</div><span>${name}</span></div>`;
     }
-    container.innerHTML = html || '<p style="padding:16px;color:#888;">Sin contenido</p>';
+    container.innerHTML = html || '<p style="padding:16px;">Sin contenido</p>';
     if(searchTerm) filterChannels();
 }
 
-window.showSeriesEpisodes = async function(seriesId, seriesName) {
+window.showSeries = async function(seriesId, seriesName) {
     const container = document.getElementById('categoriesContainer');
     container.innerHTML = '<div class="loading-state"><div class="spinner"></div><p>Cargando episodios...</p></div>';
     const data = await fetchAPI(apiUrl('get_series_info', `&series_id=${seriesId}`));
-    if(!data || !data.episodes) { container.innerHTML = `<div class="error-box">Error episodios<br><button onclick="loadCategories()">Volver</button></div>`; return; }
-    let html = `<div style="padding:12px;"><button onclick="loadCategories()" style="background:#333;margin-bottom:12px;">◀ Volver</button><h3 style="font-size:16px;font-weight:800;">📺 ${escHtml(seriesName)}</h3>`;
+    if(!data || !data.episodes) { container.innerHTML = `<div class="error-box">Error<br><button onclick="loadCategories()">Volver</button></div>`; return; }
+    let html = `<div style="padding:12px;"><button onclick="loadCategories()" style="background:#333;">◀ Volver</button><h3 style="margin:12px 0;">📺 ${escapeHtml(seriesName)}</h3>`;
     const seasons = Object.keys(data.episodes).sort((a,b)=>parseInt(a)-parseInt(b));
     for(const sn of seasons) {
         const eps = data.episodes[sn];
-        html += `<div class="category-block" style="margin-bottom:10px;"><div class="cat-header" onclick="this.nextElementSibling.classList.toggle('open')"><span>🎬 Temporada ${sn} (${eps.length})</span><span>▼</span></div><div class="cat-body">`;
+        html += `<div class="category-block" style="margin-bottom:12px;"><div class="cat-header" onclick="this.nextElementSibling.classList.toggle('open')"><span>🎬 Temporada ${sn} (${eps.length})</span><span>▼</span></div><div class="cat-body">`;
         for(const ep of eps) {
-            const epName = escHtml(ep.title || `Episodio ${ep.episode_num}`);
+            const epName = escapeHtml(ep.title || `Episodio ${ep.episode_num}`);
             const ext = ep.container_extension || 'mp4';
             const videoUrl = `${currentServer.url}/series/${encodeURIComponent(currentServer.user)}/${encodeURIComponent(currentServer.pass)}/${ep.id}.${ext}`;
-            const idx = allRenderedChannels.length;
-            allRenderedChannels.push({ url: videoUrl, name: `${seriesName} - ${epName}`, isM3u8: false });
+            const idx = allChannels.length;
+            allChannels.push({ url: videoUrl, name: `${seriesName} - ${epName}`, isM3u8: false });
             html += `<div class="ch-item" onclick='playChannel(${idx})'><div class="ch-icon">🎞️</div><span>${epName}</span></div>`;
         }
         html += `</div></div>`;
@@ -396,12 +457,11 @@ window.showSeriesEpisodes = async function(seriesId, seriesName) {
     container.innerHTML = html;
 };
 
-// ===================== REPRODUCCIÓN (MINI Y FULLSCREEN) =====================
+// ===================== REPRODUCCIÓN =====================
 const miniVideo = document.getElementById('miniVideo');
-function destroyMiniHls() { if(hlsPlayer) { hlsPlayer.destroy(); hlsPlayer = null; } }
 window.playChannel = function(idx) {
     currentChannelIndex = idx;
-    const ch = allRenderedChannels[idx];
+    const ch = allChannels[idx];
     if(!ch) return;
     playStream(ch.url, ch.name, ch.isM3u8, false);
     document.querySelectorAll('.ch-item.playing').forEach(el => el.classList.remove('playing'));
@@ -409,29 +469,31 @@ window.playChannel = function(idx) {
     if(el) el.classList.add('playing');
 };
 
-function playStream(url, title, isM3u8, isFullscreen = false) {
+function playStream(url, title, isM3u8, isFullscreen) {
     const videoElem = isFullscreen ? document.getElementById('fsVideo') : miniVideo;
-    const playerVar = isFullscreen ? fullscreenHls : hlsPlayer;
-    if(playerVar) { if(isFullscreen) fullscreenHls.destroy(); else hlsPlayer.destroy(); if(isFullscreen) fullscreenHls = null; else hlsPlayer = null; }
-    videoElem.pause(); videoElem.removeAttribute('src'); videoElem.load();
+    if(!isFullscreen && hlsPlayer) { hlsPlayer.destroy(); hlsPlayer = null; }
+    if(isFullscreen && fullscreenHls) { fullscreenHls.destroy(); fullscreenHls = null; }
+    videoElem.pause();
+    videoElem.removeAttribute('src');
+    videoElem.load();
     videoElem.muted = false;
+
     if(!isFullscreen) {
         document.getElementById('miniTitle').textContent = title;
         document.getElementById('miniStatus').textContent = '▶ Reproduciendo';
         document.getElementById('miniPlayer').classList.add('visible');
-        document.getElementById('heroBanner').style.display = 'none';
-    } else {
-        document.getElementById('fsNowPlaying').textContent = title;
     }
+
     if(isM3u8 && Hls.isSupported()) {
         const hls = new Hls({ enableWorker: true, debug: false });
         hls.loadSource(url);
         hls.attachMedia(videoElem);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => { videoElem.play().catch(()=>{}); });
-        if(isFullscreen) fullscreenHls = hls; else hlsPlayer = hls;
+        hls.on(Hls.Events.MANIFEST_PARSED, () => { videoElem.play().catch(e=>console.log(e)); });
+        if(isFullscreen) fullscreenHls = hls;
+        else hlsPlayer = hls;
     } else {
         videoElem.src = url;
-        videoElem.play().catch(()=>{});
+        videoElem.play().catch(e=>console.log(e));
     }
 }
 
@@ -447,196 +509,124 @@ miniVideo.addEventListener('timeupdate', () => {
     }
 });
 
-// ===================== FULLSCREEN OVERLAY =====================
+// Fullscreen overlay
 const fsOverlay = document.getElementById('fullscreenOverlay');
 const fsVideo = document.getElementById('fsVideo');
-let fsChannels = [], fsCurrentIdx = -1, fsControlsTimeout = null;
-
-function showFullscreenPlayer() {
-    fsOverlay.classList.add('active');
-    if(currentChannelIndex >= 0 && allRenderedChannels[currentChannelIndex]) {
-        fsChannels = [...allRenderedChannels];
-        fsCurrentIdx = currentChannelIndex;
-        const ch = fsChannels[fsCurrentIdx];
-        if(ch) playStream(ch.url, ch.name, ch.isM3u8, true);
-    }
-    loadFullscreenSidebar();
-    setupFullscreenEvents();
-}
-
-function loadFullscreenSidebar() {
-    const body = document.getElementById('fsSidebarBody');
-    body.innerHTML = '<div class="loading-state"><div class="spinner"></div>Cargando biblioteca...</div>';
-    if(currentServer.type === 'm3u') {
-        parseM3U(currentServer.m3uUrl).then(parsed => {
-            if(parsed) {
-                const cats = Object.keys(parsed).map((n,idx) => ({ category_id: idx, category_name: n }));
-                renderFullscreenCats(cats, parsed);
-            } else body.innerHTML = '<div class="error-box">Error M3U</div>';
-        });
-        return;
-    }
-    let endpoint = '';
-    if(currentTab === 'live') endpoint = apiUrl('get_live_categories');
-    else if(currentTab === 'movies') endpoint = apiUrl('get_vod_categories');
-    else if(currentTab === 'series') endpoint = apiUrl('get_series_categories');
-    if(!endpoint) return;
-    fetchAPI(endpoint).then(data => {
-        if(data && Array.isArray(data)) renderFullscreenCats(data);
-        else body.innerHTML = '<div class="error-box">Error servidor</div>';
-    });
-}
-
-function renderFullscreenCats(cats, m3uCache = null) {
-    if(!cats.length) { document.getElementById('fsSidebarBody').innerHTML = '<div class="error-box">Sin categorías</div>'; return; }
-    let html = '';
-    for(const cat of cats) {
-        html += `<div class="fs-scat" data-cat-id="${cat.category_id}"><div class="fs-scat-header" onclick="toggleFsCat(this)"><span>📁 ${escHtml(cat.category_name)}</span><span>▼</span></div><div class="fs-scat-body"><div class="loading-state"><div class="spinner"></div></div></div></div>`;
-    }
-    document.getElementById('fsSidebarBody').innerHTML = html;
-    window.fsM3uCache = m3uCache;
-}
-
-window.toggleFsCat = async function(header) {
-    const scatDiv = header.parentElement;
-    const bodyDiv = scatDiv.querySelector('.fs-scat-body');
-    const wasOpen = bodyDiv.classList.contains('open');
-    bodyDiv.classList.toggle('open');
-    if(!wasOpen && bodyDiv.querySelector('.spinner')) {
-        const catId = scatDiv.getAttribute('data-cat-id');
-        if(currentServer.type === 'm3u' && window.fsM3uCache) {
-            const catName = categoriesData[currentTab]?.find(c => c.category_id == catId)?.category_name || '';
-            const channels = window.fsM3uCache[catName];
-            if(channels) renderFullscreenItems(channels, bodyDiv);
-            return;
-        }
-        let endpoint = '';
-        if(currentTab === 'live') endpoint = apiUrl('get_live_streams', `&category_id=${catId}`);
-        else if(currentTab === 'movies') endpoint = apiUrl('get_vod_streams', `&category_id=${catId}`);
-        else if(currentTab === 'series') endpoint = apiUrl('get_series', `&category_id=${catId}`);
-        if(!endpoint) return;
-        const data = await fetchAPI(endpoint);
-        if(data && Array.isArray(data)) renderFullscreenItems(data, bodyDiv);
-        else bodyDiv.innerHTML = '<p style="padding:12px;">Sin contenido</p>';
+document.getElementById('miniExpandBtn').onclick = () => {
+    if(currentChannelIndex >= 0 && allChannels[currentChannelIndex]) {
+        fsOverlay.classList.add('active');
+        const ch = allChannels[currentChannelIndex];
+        playStream(ch.url, ch.name, ch.isM3u8, true);
+    } else {
+        alert("Selecciona un canal primero");
     }
 };
-
-function renderFullscreenItems(items, container) {
-    let html = '';
-    for(const item of items) {
-        const name = escHtml(item.name || item.title || 'Sin nombre');
-        let url = '', isM3u8 = false;
-        if(currentServer.type === 'm3u') { url = item.url; isM3u8 = url.includes('.m3u8'); }
-        else if(currentTab === 'live') { url = `${currentServer.url}/live/${encodeURIComponent(currentServer.user)}/${encodeURIComponent(currentServer.pass)}/${item.stream_id}.m3u8`; isM3u8 = true; }
-        else if(currentTab === 'movies') { const ext = item.container_extension || 'mp4'; url = `${currentServer.url}/movie/${encodeURIComponent(currentServer.user)}/${encodeURIComponent(currentServer.pass)}/${item.stream_id}.${ext}`; }
-        else if(currentTab === 'series') {
-            html += `<div class="fs-sch-item" onclick='loadFsSeriesEps(${item.series_id},"${name.replace(/'/g,"\\'")}",this.closest(".fs-scat-body"))'><span>📺</span><span style="flex:1;">${name}</span><span style="font-size:11px;">›</span></div>`;
-            continue;
-        }
-        const idx = fsChannels.length;
-        fsChannels.push({ url, name, isM3u8 });
-        html += `<div class="fs-sch-item" data-fsidx="${idx}" onclick="playFsByIdx(${idx})"><span>${currentTab==='movies'?'🎬':'📡'}</span><span style="flex:1;">${name}</span></div>`;
-    }
-    container.innerHTML = html || '<p style="padding:12px;">Sin contenido</p>';
-    filterFsChannels();
-}
-
-window.loadFsSeriesEps = async function(seriesId, seriesName, container) {
-    container.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
-    const data = await fetchAPI(apiUrl('get_series_info', `&series_id=${seriesId}`));
-    if(!data || !data.episodes) { container.innerHTML = '<div class="error-box">Error episodios</div>'; return; }
-    let html = `<div style="padding:8px 12px;"><button onclick="this.parentElement.parentElement.innerHTML=''" style="background:#333;font-size:12px;">◀ Volver</button></div>`;
-    const seasons = Object.keys(data.episodes).sort((a,b)=>parseInt(a)-parseInt(b));
-    for(const sn of seasons) {
-        const eps = data.episodes[sn];
-        html += `<div style="padding:6px 12px;font-size:12px;font-weight:700;color:#888;">Temporada ${sn}</div>`;
-        for(const ep of eps) {
-            const epName = escHtml(ep.title || `Episodio ${ep.episode_num}`);
-            const ext = ep.container_extension || 'mp4';
-            const videoUrl = `${currentServer.url}/series/${encodeURIComponent(currentServer.user)}/${encodeURIComponent(currentServer.pass)}/${ep.id}.${ext}`;
-            const idx = fsChannels.length;
-            fsChannels.push({ url: videoUrl, name: `${seriesName} - ${epName}`, isM3u8: false });
-            html += `<div class="fs-sch-item" data-fsidx="${idx}" onclick="playFsByIdx(${idx})"><span>🎞️</span><span>${epName}</span></div>`;
-        }
-    }
-    container.innerHTML = html;
-};
-
-window.playFsByIdx = function(idx) {
-    fsCurrentIdx = idx;
-    const ch = fsChannels[idx];
-    if(ch) playStream(ch.url, ch.name, ch.isM3u8, true);
-    document.querySelectorAll('.fs-sch-item.playing').forEach(el => el.classList.remove('playing'));
-    const el = document.querySelector(`.fs-sch-item[data-fsidx="${idx}"]`);
-    if(el) el.classList.add('playing');
-};
-
-function filterFsChannels() {
-    const term = document.getElementById('fsSearchInput')?.value.toLowerCase() || '';
-    document.querySelectorAll('.fs-sch-item').forEach(el => {
-        const txt = el.querySelector('span:nth-child(2)')?.textContent || '';
-        el.style.display = txt.toLowerCase().includes(term) ? 'flex' : 'none';
-    });
-}
-document.getElementById('fsSearchInput')?.addEventListener('input', filterFsChannels);
 document.getElementById('fsCloseBtn').onclick = () => {
     fsOverlay.classList.remove('active');
     if(fullscreenHls) { fullscreenHls.destroy(); fullscreenHls = null; }
     fsVideo.pause();
 };
-document.getElementById('fsToggleSidebarBtn').onclick = () => {
-    const sb = document.getElementById('fsSidebar');
-    if(window.innerWidth <= 700) sb.classList.toggle('open');
-    else sb.classList.toggle('hidden');
+document.getElementById('fsCloseFull').onclick = () => document.getElementById('fsCloseBtn').click();
+document.getElementById('fsPlayPause').onclick = () => {
+    if(fsVideo.paused) fsVideo.play();
+    else fsVideo.pause();
 };
-document.getElementById('fsCloseSidebarBtn').onclick = () => document.getElementById('fsSidebar').classList.add('hidden');
 
-function setupFullscreenEvents() {
-    const ctrl = document.getElementById('fsOverlayControls');
-    const show = () => {
-        ctrl.classList.add('visible');
-        if(fsControlsTimeout) clearTimeout(fsControlsTimeout);
-        fsControlsTimeout = setTimeout(() => ctrl.classList.remove('visible'), 3500);
+// ===================== MODALES PARA AGREGAR SERVIDORES =====================
+function showAddServerModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-card">
+            <h3>➕ Agregar servidor / lista</h3>
+            <input id="newName" placeholder="Nombre (ej: Mi servidor)">
+            <div class="mode-btn-row">
+                <button id="modeXtreamBtn" style="background:#ff6b1a;">🔐 Xtream Codes</button>
+                <button id="modeM3uBtn" class="btn-secondary">🔗 Lista M3U</button>
+            </div>
+            <div id="xtreamFields">
+                <input id="xtreamUrl" placeholder="URL del servidor (http://ejemplo:8080)">
+                <input id="xtreamUser" placeholder="Usuario">
+                <input id="xtreamPass" type="password" placeholder="Contraseña">
+            </div>
+            <div id="m3uFields" style="display:none;">
+                <input id="m3uUrl" placeholder="URL completa de la lista M3U">
+            </div>
+            <button id="saveServerBtn">✅ Guardar</button>
+            <button class="btn-secondary" onclick="this.closest('.modal').remove()">Cancelar</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('modeXtreamBtn').onclick = () => {
+        document.getElementById('xtreamFields').style.display = 'block';
+        document.getElementById('m3uFields').style.display = 'none';
+        document.getElementById('modeXtreamBtn').style.background = '#ff6b1a';
+        document.getElementById('modeM3uBtn').style.background = '#333';
     };
-    document.querySelector('.fs-video-wrap').addEventListener('mousemove', show);
-    document.querySelector('.fs-video-wrap').addEventListener('touchstart', show);
-    show();
-    document.getElementById('fsPlayPauseBtn').onclick = () => fsVideo.paused ? fsVideo.play() : fsVideo.pause();
-    document.getElementById('fsCenterPlay').onclick = () => fsVideo.paused ? fsVideo.play() : fsVideo.pause();
-    document.getElementById('fsRewindBtn').onclick = () => fsVideo.currentTime = Math.max(0, fsVideo.currentTime - 10);
-    document.getElementById('fsFwdBtn').onclick = () => fsVideo.currentTime += 10;
-    document.getElementById('fsVolSlider').oninput = (e) => fsVideo.volume = e.target.value;
-    document.getElementById('fsFullBtn').onclick = () => { const el = document.querySelector('.fs-video-wrap'); if(!document.fullscreenElement) el.requestFullscreen?.(); else document.exitFullscreen(); };
-    document.getElementById('fsPrevCh').onclick = () => { if(fsCurrentIdx > 0) playFsByIdx(fsCurrentIdx-1); };
-    document.getElementById('fsNextCh').onclick = () => { if(fsCurrentIdx < fsChannels.length-1) playFsByIdx(fsCurrentIdx+1); };
-    fsVideo.addEventListener('timeupdate', () => {
-        if(fsVideo.duration) {
-            const pct = (fsVideo.currentTime / fsVideo.duration) * 100;
-            document.getElementById('fsProgressFill').style.width = pct + '%';
-            document.getElementById('fsCurTime').innerText = formatTime(fsVideo.currentTime);
-            document.getElementById('fsDurTime').innerText = formatTime(fsVideo.duration);
+    document.getElementById('modeM3uBtn').onclick = () => {
+        document.getElementById('xtreamFields').style.display = 'none';
+        document.getElementById('m3uFields').style.display = 'block';
+        document.getElementById('modeM3uBtn').style.background = '#ff6b1a';
+        document.getElementById('modeXtreamBtn').style.background = '#333';
+    };
+
+    document.getElementById('saveServerBtn').onclick = () => {
+        const name = document.getElementById('newName').value.trim();
+        if(!name) { alert("Ingresa un nombre"); return; }
+        const isXtream = document.getElementById('xtreamFields').style.display !== 'none';
+        const newId = Date.now();
+        let newServer;
+        if(isXtream) {
+            const url = document.getElementById('xtreamUrl').value.trim();
+            const user = document.getElementById('xtreamUser').value.trim();
+            const pass = document.getElementById('xtreamPass').value.trim();
+            if(!url || !user || !pass) { alert("Completa todos los campos"); return; }
+            newServer = { id: newId, name, url: url.replace(/\/+$/,''), user, pass, type: "xtream", active: false };
+        } else {
+            const m3u = document.getElementById('m3uUrl').value.trim();
+            if(!m3u) { alert("Ingresa la URL M3U"); return; }
+            newServer = { id: newId, name, m3uUrl: m3u, type: "m3u", active: false };
         }
-    });
-    function formatTime(s) { if(isNaN(s)) return '00:00'; const m = Math.floor(s/60), sec = Math.floor(s%60); return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+        servers.push(newServer);
+        const ex = new Date(); ex.setFullYear(ex.getFullYear()+1);
+        serverExpiryDates[newId] = ex.toISOString();
+        saveData();
+        setActiveServer(newId);
+        modal.remove();
+    };
 }
-document.getElementById('miniExpandBtn').onclick = showFullscreenPlayer;
 
-// ===================== EVENTOS DE PESTAÑAS Y BÚSQUEDA =====================
-function initTabEvents() {
-    const tabs = document.querySelectorAll('.nav-tab');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            currentTab = tab.getAttribute('data-tab');
-            allRenderedChannels = [];
-            loadCategories();
-        });
-    });
+function showServerManager() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    let serversHtml = '';
+    for(const s of servers) {
+        serversHtml += `
+            <div class="server-row">
+                <div><strong>${escapeHtml(s.name)}</strong><br><small>Expira: ${serverExpiryDates[s.id] ? new Date(serverExpiryDates[s.id]).toLocaleDateString() : '∞'}</small></div>
+                <div style="display:flex;gap:6px;">
+                    ${s.id === currentServer.id ? '<span style="color:#ff6b1a;">✅ Activo</span>' : `<button onclick="window.activateSrv(${s.id})">Activar</button>`}
+                    <button class="btn-danger" onclick="window.delSrv(${s.id})">🗑</button>
+                </div>
+            </div>
+        `;
+    }
+    modal.innerHTML = `
+        <div class="modal-card">
+            <h3>📡 MIS SERVIDORES</h3>
+            ${serversHtml}
+            <button id="addNewServerBtn">➕ Agregar nuevo</button>
+            <button class="btn-secondary" onclick="this.closest('.modal').remove()">Cerrar</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    window.activateSrv = (id) => { setActiveServer(id); modal.remove(); };
+    window.delSrv = (id) => { deleteServer(id); modal.remove(); setTimeout(showServerManager, 100); };
+    document.getElementById('addNewServerBtn').onclick = () => { modal.remove(); showAddServerModal(); };
 }
-initTabEvents();
 
-document.getElementById('searchInput').addEventListener('input', (e) => { searchTerm = e.target.value; filterChannels(); });
+// ===================== UTILITIES =====================
 function filterChannels() {
     const term = searchTerm.toLowerCase();
     document.querySelectorAll('.ch-item').forEach(item => {
@@ -644,19 +634,38 @@ function filterChannels() {
         item.style.display = txt.toLowerCase().includes(term) ? 'flex' : 'none';
     });
 }
+document.getElementById('searchInput').addEventListener('input', (e) => { searchTerm = e.target.value; filterChannels(); });
 
-// Botones auxiliares (modales simplificados)
-document.getElementById('serverBtn').onclick = () => alert("Gestor de servidores: puedes añadir listas Xtream o M3U.");
-document.getElementById('settingsBtn').onclick = () => alert("Ajustes: versión completa integrada.");
-document.getElementById('heroPlusBtn').onclick = () => alert("Agregar lista (funcionalidad completa disponible).");
-document.getElementById('sectionAddBtn').onclick = () => alert("Agregar lista - toca el botón + en la esquina.");
-document.getElementById('globalFab').onclick = () => alert("Agregar lista - puedes añadir servidores.");
-document.getElementById('navAddBtn').onclick = () => alert("Agregar lista - funcionalidad completa.");
+function escapeHtml(str) {
+    if(!str) return '';
+    return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;');
+}
 
-function escHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;'); }
+// Inicializar eventos de pestañas
+function initTabs() {
+    const tabs = document.querySelectorAll('.nav-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentTab = tab.getAttribute('data-tab');
+            allChannels = [];
+            loadCategories();
+        });
+    });
+}
+initTabs();
 
-// Iniciar la app
-loadServers();
+// Botones de agregar
+document.getElementById('heroPlusBtn').onclick = showAddServerModal;
+document.getElementById('sectionAddBtn').onclick = showAddServerModal;
+document.getElementById('globalFab').onclick = showAddServerModal;
+document.getElementById('navAddBtn').onclick = showAddServerModal;
+document.getElementById('serverBtn').onclick = showServerManager;
+document.getElementById('settingsBtn').onclick = () => alert("Ajustes: versión completa. Puedes gestionar servidores desde el botón 📁");
+
+// Iniciar
+loadData();
 </script>
 </body>
 </html>
