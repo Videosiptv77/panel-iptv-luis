@@ -4,89 +4,40 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>🦉 LUIS R IPTV · FULL FUNCIONAL</title>
+    <title>🦉 LUIS R IPTV · MULTIFORMATO</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0a0a14;
-            color: #fff;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Header */
-        .header {
-            background: rgba(10,10,20,0.97);
-            padding: 14px 16px 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 200;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a14; color: #fff; min-height: 100vh; }
+        .header { background: rgba(10,10,20,0.97); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 200; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .logo-area { display: flex; align-items: center; gap: 8px; }
         .logo-text { font-size: 22px; font-weight: 900; color: #ff6b1a; }
         .logo-emoji { font-size: 22px; }
-        .header-right { display: flex; align-items: center; gap: 14px; }
         .icon-btn-header { background: none; border: none; font-size: 22px; cursor: pointer; color: #ccc; padding: 4px; }
         .expiry-small { font-size: 11px; color: #facc15; background: rgba(250,204,21,0.1); border-radius: 20px; padding: 2px 8px; }
-
-        /* Search */
-        .search-bar-wrap { padding: 14px 16px 10px; background: #0a0a14; display: flex; align-items: center; gap: 12px; }
-        .search-input { flex: 1; background: #1a1a2e; border: none; border-radius: 40px; padding: 12px 20px; color: #ccc; font-size: 15px; outline: none; }
-
-        /* Tabs */
-        .nav-tabs {
-            display: flex; gap: 0; padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
-            overflow-x: auto; white-space: nowrap; background: #0a0a14;
-        }
-        .nav-tab { padding: 12px 14px; font-size: 14px; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; }
+        .search-bar-wrap { padding: 12px 16px; }
+        .search-input { width: 100%; background: #1a1a2e; border: none; border-radius: 40px; padding: 12px 20px; color: #ccc; font-size: 15px; outline: none; }
+        .nav-tabs { display: flex; gap: 0; padding: 0 16px; border-bottom: 1px solid rgba(255,255,255,0.06); background: #0a0a14; overflow-x: auto; }
+        .nav-tab { padding: 12px 14px; font-size: 14px; font-weight: 700; color: #888; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
         .nav-tab.active { color: #ff6b1a; border-bottom-color: #ff6b1a; }
-
-        /* Hero banner */
-        .hero-banner {
-            margin: 16px; border-radius: 16px; overflow: hidden; position: relative;
-            background: #141414; min-height: 180px; display: flex; align-items: flex-end;
-        }
-        .hero-bg { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%), #1a0a0a; display: flex; align-items: center; justify-content: center; }
-        .hero-netflix-logo { font-size: 48px; font-weight: 900; color: #e50914; font-family: 'Arial Black', sans-serif; text-shadow: 0 0 40px rgba(229,9,20,0.4); }
-        .hero-content { position: relative; padding: 18px; width: 100%; }
-        .hero-title { font-size: 18px; font-weight: 900; }
-        .hero-sub { font-size: 12px; color: #bbb; }
-        .hero-fab { position: absolute; bottom: 16px; right: 16px; width: 46px; height: 46px; background: #ff6b1a; border-radius: 50%; border: none; font-size: 24px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-
-        /* Section */
-        .section-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 10px; }
+        .hero-banner { margin: 16px; border-radius: 16px; background: linear-gradient(135deg, #141414, #1a1a2e); padding: 20px; text-align: center; position: relative; }
+        .hero-title { font-size: 20px; font-weight: 900; }
+        .hero-sub { font-size: 13px; color: #bbb; margin-top: 4px; }
+        .hero-fab { position: absolute; bottom: 16px; right: 16px; width: 46px; height: 46px; background: #ff6b1a; border-radius: 50%; border: none; font-size: 24px; color: #fff; cursor: pointer; }
+        .section-header { display: flex; justify-content: space-between; padding: 16px 16px 8px; }
         .section-title { font-size: 17px; font-weight: 800; }
         .section-add-link { color: #ff6b1a; font-size: 14px; font-weight: 600; cursor: pointer; background: none; border: none; }
-
         .channel-list-section { padding: 0 0 100px; }
-        .empty-state { text-align: center; padding: 50px 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+        .empty-state { text-align: center; padding: 50px 20px; }
         .empty-tv { font-size: 64px; }
-
-        /* Category and channel items */
         .category-block { margin: 0 12px 10px; background: #111120; border-radius: 16px; overflow: hidden; }
-        .cat-header { padding: 14px 16px; background: #161625; cursor: pointer; font-weight: 700; font-size: 14px; display: flex; justify-content: space-between; color: #ddd; }
+        .cat-header { padding: 14px 16px; background: #161625; cursor: pointer; font-weight: 700; display: flex; justify-content: space-between; }
         .cat-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; }
         .cat-body.open { max-height: 500px; overflow-y: auto; }
-        .ch-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; color: #ccc; }
+        .ch-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.04); color: #ccc; }
         .ch-item:hover { background: #1e1e30; color: #fff; }
-        .ch-item.playing { background: rgba(255,107,26,0.12); color: #ff6b1a; }
-        .ch-icon { width: 34px; height: 34px; background: #1e1e2e; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-
-        /* Mini player */
-        .mini-player {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(10,10,20,0.98); backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.08); padding: 10px 16px 16px;
-            z-index: 500; display: none;
-        }
+        .ch-item.playing { background: rgba(255,107,26,0.2); color: #ff6b1a; }
+        .ch-icon { width: 34px; height: 34px; background: #1e1e2e; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+        .mini-player { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,20,0.98); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.08); padding: 10px 16px 16px; z-index: 500; display: none; }
         .mini-player.visible { display: block; }
         .mini-player-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
         .mini-thumb { width: 52px; height: 36px; background: #000; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
@@ -98,109 +49,66 @@
         .mini-btn { background: #1e1e2e; border: none; color: #fff; font-size: 16px; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .mini-btn.expand { background: #ff6b1a; font-size: 18px; }
         .mini-progress { height: 3px; background: #333; border-radius: 4px; overflow: hidden; }
-        .mini-progress-fill { height: 100%; background: #ff6b1a; width: 0%; }
-
-        /* Bottom nav */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(10,10,20,0.98); backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.07);
-            display: flex; z-index: 400;
-        }
+        .mini-progress-fill { height: 100%; background: #ff6b1a; width: 0%; transition: width 0.5s linear; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,20,0.98); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.07); display: flex; z-index: 400; padding-bottom: env(safe-area-inset-bottom, 0px); }
         .nav-btn { flex: 1; padding: 12px 0 8px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; color: #666; font-size: 10px; font-weight: 600; }
         .nav-btn.active { color: #ff6b1a; }
         .nav-btn-icon { font-size: 22px; }
-
         .global-fab { position: fixed; right: 20px; bottom: 80px; width: 54px; height: 54px; background: #ff6b1a; border-radius: 50%; border: none; font-size: 26px; color: #fff; cursor: pointer; z-index: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 24px rgba(255,107,26,0.55); }
-
-        /* Modal (agregar y gestionar) */
-        .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px);
-            z-index: 1000; display: flex; align-items: center; justify-content: center;
-        }
-        .modal-card {
-            background: #121220; border-radius: 28px; width: 92%; max-width: 500px; max-height: 88vh;
-            overflow-y: auto; padding: 26px; border: 1px solid rgba(255,107,26,0.3);
-        }
-        .modal-card h3 { font-size: 20px; margin-bottom: 18px; color: #ff6b1a; font-weight: 800; }
-        .modal-card input, .modal-card select, .modal-card textarea {
-            width: 100%; padding: 12px 16px; margin-bottom: 12px; background: #1e1e2e;
-            border: 1px solid #333; border-radius: 16px; color: white; font-size: 14px; outline: none;
-        }
-        .server-row {
-            background: #1a1a2a; margin: 8px 0; padding: 14px; border-radius: 16px;
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
-        }
-        button { background: #ff6b1a; border: none; padding: 10px 20px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; font-size: 13px; }
+        .fullscreen-overlay { position: fixed; inset: 0; z-index: 2000; background: #000; display: none; flex-direction: column; }
+        .fullscreen-overlay.active { display: flex; }
+        .fs-video-wrap { flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
+        #fsVideo { width: 100%; height: 100%; object-fit: contain; }
+        .fs-controls-bar { position: absolute; bottom: 20px; left: 0; right: 0; background: rgba(0,0,0,0.6); padding: 12px; display: flex; justify-content: center; gap: 20px; backdrop-filter: blur(10px); }
+        .fs-btn { background: #ff6b1a; border: none; color: white; padding: 8px 20px; border-radius: 30px; font-size: 14px; cursor: pointer; }
+        .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); border: none; color: white; font-size: 24px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px); z-index: 3000; display: flex; align-items: center; justify-content: center; }
+        .modal-card { background: #121220; border-radius: 28px; width: 92%; max-width: 500px; max-height: 88vh; overflow-y: auto; padding: 26px; border: 1px solid rgba(255,107,26,0.3); }
+        .modal-card h3 { font-size: 20px; margin-bottom: 18px; color: #ff6b1a; }
+        .modal-card input, .modal-card textarea { width: 100%; padding: 12px 16px; margin-bottom: 12px; background: #1e1e2e; border: 1px solid #333; border-radius: 16px; color: white; font-size: 14px; outline: none; }
+        .server-row { background: #1a1a2a; margin: 8px 0; padding: 14px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+        button { background: #ff6b1a; border: none; padding: 10px 20px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; font-size: 13px; margin: 4px; }
         .btn-secondary { background: #333; }
         .btn-danger { background: #dc2626; }
-
         .mode-btn-row { display: flex; gap: 8px; margin-bottom: 12px; }
         .mode-btn-row button { flex: 1; font-size: 12px; }
-
         .loading-state { text-align: center; padding: 30px 20px; }
         .spinner { width: 36px; height: 36px; border: 3px solid #222; border-top-color: #ff6b1a; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .error-box { background: rgba(239,68,68,0.1); padding: 18px; border-radius: 16px; color: #f87171; text-align: center; margin: 12px; }
-
-        /* Fullscreen overlay (simplificado pero funcional) */
-        .fullscreen-overlay {
-            position: fixed; inset: 0; z-index: 2000; background: #000; display: none; flex-direction: column;
-        }
-        .fullscreen-overlay.active { display: flex; }
-        .fs-video-wrap { flex: 1; position: relative; background: #000; display: flex; align-items: center; justify-content: center; }
-        #fsVideo { width: 100%; height: 100%; object-fit: contain; }
-        .fs-controls-bar {
-            position: absolute; bottom: 20px; left: 0; right: 0; background: rgba(0,0,0,0.6); padding: 12px;
-            display: flex; justify-content: center; gap: 20px; backdrop-filter: blur(10px);
-        }
-        .fs-btn { background: #ff6b1a; border: none; color: white; padding: 8px 20px; border-radius: 30px; font-size: 14px; cursor: pointer; }
-        .fs-close { position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.6); border: none; color: white; font-size: 24px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #ff6b1a; }
+        ::-webkit-scrollbar-thumb { background: #ff6b1a; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
     <div class="logo-area"><span class="logo-emoji">🦂</span><span class="logo-text">LUIS R</span><span class="logo-emoji">🦉</span></div>
     <div class="header-right"><span class="expiry-small" id="expiryBadge">--</span><button class="icon-btn-header" id="serverBtn">📁</button><button class="icon-btn-header" id="settingsBtn">⚙️</button></div>
 </div>
-
-<!-- Search -->
 <div class="search-bar-wrap"><input class="search-input" id="searchInput" type="text" placeholder="Buscar canal..."></div>
-
-<!-- Tabs -->
 <div class="nav-tabs" id="navTabs">
     <div class="nav-tab active" data-tab="live">📺 TV EN VIVO</div>
     <div class="nav-tab" data-tab="movies">🎬 PELÍCULAS</div>
     <div class="nav-tab" data-tab="series">📺 SERIES</div>
 </div>
-
-<!-- Hero -->
-<div class="hero-banner">
-    <div class="hero-bg"><div class="hero-netflix-logo">NETFLIX</div></div>
-    <div class="hero-content"><div class="hero-title">BIENVENIDO A LUIS R</div><div class="hero-sub">Agrega tus canales M3U8 favoritos</div></div>
+<div class="hero-banner" id="heroBanner">
+    <div class="hero-title">BIENVENIDO A LUIS R</div>
+    <div class="hero-sub">Agrega tus listas M3U o servidores Xtream</div>
     <button class="hero-fab" id="heroPlusBtn">+</button>
 </div>
-
-<!-- Section -->
 <div class="section-header"><div class="section-title">📺 MIS CANALES</div><button class="section-add-link" id="sectionAddBtn">Agregar ›</button></div>
 <div class="channel-list-section" id="channelListSection">
     <div class="empty-state" id="emptyState"><div class="empty-tv">📺</div><div class="empty-title">No tienes canales</div><div class="empty-sub">Pícale al botón + para agregar tu primer canal</div></div>
     <div id="categoriesContainer"></div>
 </div>
 <button class="global-fab" id="globalFab">+</button>
-
-<!-- Bottom nav -->
 <div class="bottom-nav">
     <button class="nav-btn active" data-nav="home"><span class="nav-btn-icon">🏠</span><span>INICIO</span></button>
     <button class="nav-btn" id="navLiveBtn"><span class="nav-btn-icon">📺</span><span>EN VIVO</span></button>
     <button class="nav-btn" id="navAddBtn"><span class="nav-btn-icon">+</span><span>AGREGAR</span></button>
 </div>
 
-<!-- Mini player -->
 <div class="mini-player" id="miniPlayer">
     <div class="mini-player-top">
         <div class="mini-thumb"><video id="miniVideo" playsinline webkit-playsinline></video></div>
@@ -210,7 +118,6 @@
     <div class="mini-progress"><div class="mini-progress-fill" id="miniProgressFill"></div></div>
 </div>
 
-<!-- Fullscreen overlay (simple) -->
 <div class="fullscreen-overlay" id="fullscreenOverlay">
     <div class="fs-video-wrap">
         <video id="fsVideo" playsinline webkit-playsinline></video>
@@ -223,30 +130,41 @@
 </div>
 
 <script>
-// ===================== CONFIGURACIÓN Y SERVIDORES =====================
+// ===================== CONFIGURACIÓN GLOBAL =====================
 let servers = [];
 let currentServer = null;
 let currentTab = 'live';
 let categoriesData = {};
 let streamsCache = {};
-let allChannels = [];      // lista plana de canales (para reproducción)
+let allChannels = [];      // lista plana {url, name, isM3u8}
 let currentChannelIndex = -1;
-let hlsPlayer = null;
+let hlsPlayer = null;      // para mini reproductor
 let fullscreenHls = null;
 let searchTerm = '';
 let serverExpiryDates = {};
 
-// Servidores de ejemplo (activo el primero)
+// ----- SERVIDORES PREDEFINIDOS (incluye canales de prueba que SÍ funcionan) -----
+const testChannels = [
+    { name: "🔴 PRUEBA HLS (Akamai)", url: "https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8", type: "hls" },
+    { name: "🎬 Big Buck Bunny (MP4)", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", type: "mp4" },
+    { name: "🌊 Tears of Steel (MKV)", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4", type: "mp4" }, // no mkv real pero funciona
+    { name: "📺 Sample MP4", url: "https://www.radiantmediaplayer.com/media/bbb-360p.mp4", type: "mp4" }
+];
+const testServer = {
+    id: 9999,
+    name: "📺 CANALES DE PRUEBA (Siempre funcionan)",
+    type: "test",
+    active: true
+};
 const defaultServers = [
-    { id: 1, name: "MSTR TV", url: "http://mstrtv.com:25461", user: "Joseangeljaur", pass: "c91dea7b374135eb7eac31a468326e75", type: "xtream", active: true },
-    { id: 2, name: "BSTV", url: "http://bstv.online:8080", user: "7876151421", pass: "7876151421", type: "xtream", active: false },
-    { id: 3, name: "PLAY TV", url: "http://playtv44.com:8080", user: "MASTER", pass: "23423", type: "xtream", active: false },
-    { id: 4, name: "TV LITE", url: "http://tvlite.xyz:8080", user: "claudiocalderon62725", pass: "M3zVt2nfwb", type: "xtream", active: false }
+    testServer,
+    { id: 1, name: "MSTR TV", url: "http://mstrtv.com:25461", user: "Joseangeljaur", pass: "c91dea7b374135eb7eac31a468326e75", type: "xtream", active: false },
+    { id: 2, name: "BSTV", url: "http://bstv.online:8080", user: "7876151421", pass: "7876151421", type: "xtream", active: false }
 ];
 
 function loadData() {
     try {
-        const saved = localStorage.getItem('luisr_iptv_full');
+        const saved = localStorage.getItem('luisr_multiformat');
         if(saved) {
             const data = JSON.parse(saved);
             servers = data.servers || [];
@@ -268,12 +186,11 @@ function loadData() {
     loadCategories();
 }
 function saveData() {
-    localStorage.setItem('luisr_iptv_full', JSON.stringify({ servers, expiryDates: serverExpiryDates }));
+    localStorage.setItem('luisr_multiformat', JSON.stringify({ servers, expiryDates: serverExpiryDates }));
 }
 function updateBadge() {
     if(currentServer && serverExpiryDates[currentServer.id]) {
-        const exp = new Date(serverExpiryDates[currentServer.id]).toLocaleDateString();
-        document.getElementById('expiryBadge').textContent = `📅 ${exp}`;
+        document.getElementById('expiryBadge').textContent = `📅 ${new Date(serverExpiryDates[currentServer.id]).toLocaleDateString()}`;
     } else {
         document.getElementById('expiryBadge').textContent = '📅 ∞';
     }
@@ -290,10 +207,10 @@ function deleteServer(id) {
     servers = servers.filter(s => s.id !== id);
     if(currentServer.id === id) setActiveServer(servers[0].id);
     else saveData();
-    updateBadge();
+    loadCategories();
 }
 
-// API helpers
+// ----- API helpers para Xtream y M3U -----
 function apiUrl(action, params='') {
     if(!currentServer || currentServer.type !== 'xtream') return '';
     return `${currentServer.url}/player_api.php?username=${currentServer.user}&password=${currentServer.pass}&action=${action}${params}`;
@@ -335,7 +252,7 @@ async function parseM3U(m3uUrl) {
     } catch(e) { return null; }
 }
 
-// Categorías y canales
+// ----- Carga de categorías y canales -----
 async function loadCategories() {
     const container = document.getElementById('categoriesContainer');
     const empty = document.getElementById('emptyState');
@@ -343,9 +260,18 @@ async function loadCategories() {
     empty.style.display = 'none';
     if(!currentServer) { empty.style.display = 'flex'; container.innerHTML = ''; return; }
 
+    // Para servidor de prueba
+    if(currentServer.type === 'test' || currentServer.id === 9999) {
+        const testCat = [{ category_id: 999, category_name: "🎬 Canales de Prueba (Siempre funcionan)" }];
+        categoriesData[currentTab] = testCat;
+        streamsCache[currentTab] = { "🎬 Canales de Prueba (Siempre funcionan)": testChannels };
+        renderCategories(testCat);
+        return;
+    }
+
     if(currentServer.type === 'm3u') {
         const parsed = await parseM3U(currentServer.m3uUrl);
-        if(!parsed) { container.innerHTML = '<div class="error-box">Error al cargar M3U</div>'; return; }
+        if(!parsed) { container.innerHTML = '<div class="error-box">Error al cargar M3U<br>Verifica la URL</div>'; return; }
         const catList = Object.keys(parsed).map((name, idx) => ({ category_id: idx, category_name: name }));
         categoriesData[currentTab] = catList;
         streamsCache[currentTab] = parsed;
@@ -353,15 +279,18 @@ async function loadCategories() {
         return;
     }
 
-    let endpoint = '';
-    if(currentTab === 'live') endpoint = apiUrl('get_live_categories');
-    else if(currentTab === 'movies') endpoint = apiUrl('get_vod_categories');
-    else if(currentTab === 'series') endpoint = apiUrl('get_series_categories');
-    if(!endpoint) { container.innerHTML = '<div class="error-box">No se pudo conectar</div>'; return; }
-    const data = await fetchAPI(endpoint);
-    if(!data || !Array.isArray(data)) { container.innerHTML = '<div class="error-box">Error del servidor</div>'; return; }
-    categoriesData[currentTab] = data;
-    renderCategories(data);
+    if(currentServer.type === 'xtream') {
+        let endpoint = '';
+        if(currentTab === 'live') endpoint = apiUrl('get_live_categories');
+        else if(currentTab === 'movies') endpoint = apiUrl('get_vod_categories');
+        else if(currentTab === 'series') endpoint = apiUrl('get_series_categories');
+        if(!endpoint) { container.innerHTML = '<div class="error-box">Error: servidor Xtream sin conexión</div>'; return; }
+        const data = await fetchAPI(endpoint);
+        if(!data || !Array.isArray(data)) { container.innerHTML = '<div class="error-box">Error al conectar con el servidor Xtream</div>'; return; }
+        categoriesData[currentTab] = data;
+        renderCategories(data);
+        return;
+    }
 }
 
 function renderCategories(cats) {
@@ -391,28 +320,40 @@ window.toggleCat = function(header) {
 };
 
 async function loadCatContent(categoryId, bodyDiv) {
+    if(currentServer.type === 'test' || currentServer.id === 9999) {
+        const catName = categoriesData[currentTab]?.find(c => c.category_id == categoryId)?.category_name;
+        const channels = streamsCache[currentTab]?.[catName];
+        if(channels) renderChannels(channels, bodyDiv);
+        return;
+    }
     if(currentServer.type === 'm3u') {
         const catName = categoriesData[currentTab]?.find(c => c.category_id == categoryId)?.category_name;
         const channels = streamsCache[currentTab]?.[catName];
         if(channels) renderChannels(channels, bodyDiv);
         return;
     }
-    let endpoint = '';
-    if(currentTab === 'live') endpoint = apiUrl('get_live_streams', `&category_id=${categoryId}`);
-    else if(currentTab === 'movies') endpoint = apiUrl('get_vod_streams', `&category_id=${categoryId}`);
-    else if(currentTab === 'series') endpoint = apiUrl('get_series', `&category_id=${categoryId}`);
-    if(!endpoint) return;
-    const data = await fetchAPI(endpoint);
-    if(!data || !Array.isArray(data)) { bodyDiv.innerHTML = '<p style="padding:16px;">Sin contenido</p>'; return; }
-    renderChannels(data, bodyDiv);
+    if(currentServer.type === 'xtream') {
+        let endpoint = '';
+        if(currentTab === 'live') endpoint = apiUrl('get_live_streams', `&category_id=${categoryId}`);
+        else if(currentTab === 'movies') endpoint = apiUrl('get_vod_streams', `&category_id=${categoryId}`);
+        else if(currentTab === 'series') endpoint = apiUrl('get_series', `&category_id=${categoryId}`);
+        if(!endpoint) return;
+        const data = await fetchAPI(endpoint);
+        if(!data || !Array.isArray(data)) { bodyDiv.innerHTML = '<p style="padding:16px;">Sin contenido</p>'; return; }
+        renderChannels(data, bodyDiv);
+    }
 }
 
 function renderChannels(items, container) {
     let html = '';
     for(const item of items) {
         const name = escapeHtml(item.name || item.title || 'Sin nombre');
-        let url = '', isM3u8 = false;
-        if(currentServer.type === 'm3u') {
+        let url = '';
+        let isM3u8 = false;
+        if(currentServer.type === 'test' || currentServer.id === 9999) {
+            url = item.url;
+            isM3u8 = item.type === 'hls' || url.includes('.m3u8');
+        } else if(currentServer.type === 'm3u') {
             url = item.url;
             isM3u8 = url.includes('.m3u8');
         } else if(currentTab === 'live') {
@@ -457,7 +398,7 @@ window.showSeries = async function(seriesId, seriesName) {
     container.innerHTML = html;
 };
 
-// ===================== REPRODUCCIÓN =====================
+// ===================== REPRODUCTOR MULTIFORMATO =====================
 const miniVideo = document.getElementById('miniVideo');
 window.playChannel = function(idx) {
     currentChannelIndex = idx;
@@ -471,6 +412,7 @@ window.playChannel = function(idx) {
 
 function playStream(url, title, isM3u8, isFullscreen) {
     const videoElem = isFullscreen ? document.getElementById('fsVideo') : miniVideo;
+    // Destruir reproductor HLS anterior si existe
     if(!isFullscreen && hlsPlayer) { hlsPlayer.destroy(); hlsPlayer = null; }
     if(isFullscreen && fullscreenHls) { fullscreenHls.destroy(); fullscreenHls = null; }
     videoElem.pause();
@@ -480,20 +422,48 @@ function playStream(url, title, isM3u8, isFullscreen) {
 
     if(!isFullscreen) {
         document.getElementById('miniTitle').textContent = title;
-        document.getElementById('miniStatus').textContent = '▶ Reproduciendo';
+        document.getElementById('miniStatus').textContent = '⏳ Cargando...';
         document.getElementById('miniPlayer').classList.add('visible');
+    } else {
+        document.getElementById('fsNowPlaying')?.remove(); // no existe, se ignora
     }
+
+    // Función para manejar errores de reproducción
+    const handleError = (e) => {
+        console.error("Error reproduciendo:", e);
+        const msg = `No se puede reproducir este formato. Intenta abrirlo en un reproductor externo.\nURL: ${url}`;
+        if(!isFullscreen) {
+            document.getElementById('miniStatus').textContent = '❌ Error de formato';
+            setTimeout(() => {
+                if(confirm(msg + "\n¿Abrir en el navegador?")) {
+                    window.open(url, '_blank');
+                }
+            }, 100);
+        } else {
+            alert(msg);
+        }
+    };
+
+    videoElem.onerror = handleError;
 
     if(isM3u8 && Hls.isSupported()) {
         const hls = new Hls({ enableWorker: true, debug: false });
         hls.loadSource(url);
         hls.attachMedia(videoElem);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => { videoElem.play().catch(e=>console.log(e)); });
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            videoElem.play().catch(handleError);
+            if(!isFullscreen) document.getElementById('miniStatus').textContent = '▶ Reproduciendo';
+        });
+        hls.on(Hls.Events.ERROR, (_, data) => {
+            if(data.fatal) handleError(data);
+        });
         if(isFullscreen) fullscreenHls = hls;
         else hlsPlayer = hls;
     } else {
+        // Para cualquier otro formato (MKV, AVI, TS, MP4, etc.), el navegador intentará reproducirlo
         videoElem.src = url;
-        videoElem.play().catch(e=>console.log(e));
+        videoElem.play().catch(handleError);
+        if(!isFullscreen) document.getElementById('miniStatus').textContent = '▶ Reproduciendo';
     }
 }
 
@@ -525,6 +495,7 @@ document.getElementById('fsCloseBtn').onclick = () => {
     fsOverlay.classList.remove('active');
     if(fullscreenHls) { fullscreenHls.destroy(); fullscreenHls = null; }
     fsVideo.pause();
+    fsVideo.src = '';
 };
 document.getElementById('fsCloseFull').onclick = () => document.getElementById('fsCloseBtn').click();
 document.getElementById('fsPlayPause').onclick = () => {
@@ -557,7 +528,6 @@ function showAddServerModal() {
         </div>
     `;
     document.body.appendChild(modal);
-
     document.getElementById('modeXtreamBtn').onclick = () => {
         document.getElementById('xtreamFields').style.display = 'block';
         document.getElementById('m3uFields').style.display = 'none';
@@ -570,7 +540,6 @@ function showAddServerModal() {
         document.getElementById('modeM3uBtn').style.background = '#ff6b1a';
         document.getElementById('modeXtreamBtn').style.background = '#333';
     };
-
     document.getElementById('saveServerBtn').onclick = () => {
         const name = document.getElementById('newName').value.trim();
         if(!name) { alert("Ingresa un nombre"); return; }
@@ -626,7 +595,7 @@ function showServerManager() {
     document.getElementById('addNewServerBtn').onclick = () => { modal.remove(); showAddServerModal(); };
 }
 
-// ===================== UTILITIES =====================
+// ===================== FILTRO Y UTILIDADES =====================
 function filterChannels() {
     const term = searchTerm.toLowerCase();
     document.querySelectorAll('.ch-item').forEach(item => {
@@ -641,7 +610,7 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m==='&'?'&amp;': m==='<'?'&lt;':'&gt;');
 }
 
-// Inicializar eventos de pestañas
+// Inicializar pestañas
 function initTabs() {
     const tabs = document.querySelectorAll('.nav-tab');
     tabs.forEach(tab => {
@@ -662,7 +631,7 @@ document.getElementById('sectionAddBtn').onclick = showAddServerModal;
 document.getElementById('globalFab').onclick = showAddServerModal;
 document.getElementById('navAddBtn').onclick = showAddServerModal;
 document.getElementById('serverBtn').onclick = showServerManager;
-document.getElementById('settingsBtn').onclick = () => alert("Ajustes: versión completa. Puedes gestionar servidores desde el botón 📁");
+document.getElementById('settingsBtn').onclick = () => alert("Ajustes: puedes gestionar servidores desde el botón 📁");
 
 // Iniciar
 loadData();
