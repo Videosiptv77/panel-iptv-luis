@@ -294,7 +294,7 @@
             font-size: 18px;
         }
 
-        /* ========== PLAYER PREMIUM ========== */
+        /* ========== PLAYER PREMIUM MEJORADO (CONTROLES GRANDES) ========== */
         .player-area {
             flex: 1;
             background: #030303;
@@ -304,6 +304,7 @@
             flex-direction: column;
             border: 1px solid rgba(59,130,246,0.2);
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            position: relative;
         }
 
         .video-container {
@@ -318,12 +319,107 @@
         video {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: contain; /* No recorta el video */
+        }
+
+        /* Controles personalizados grandes y visibles */
+        .custom-controls {
+            background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 100%);
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-top: 1px solid #333;
+        }
+
+        .progress-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .progress-time {
+            font-size: 13px;
+            font-family: monospace;
+            color: #ccc;
+            min-width: 70px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #444;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #3b82f6;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .control-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .ctrl-btn {
+            background: #1e1e2a;
+            border: none;
+            color: white;
+            font-size: 24px;
+            padding: 10px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .ctrl-btn:hover {
+            background: #3b82f6;
+            transform: scale(1.05);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #1e1e2a;
+            padding: 5px 12px;
+            border-radius: 40px;
+        }
+
+        .volume-slider {
+            width: 100px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #444;
+            border-radius: 5px;
+            outline: none;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
         }
 
         .now-playing {
             background: linear-gradient(90deg, #0a0a0a, #111);
-            padding: 14px 24px;
+            padding: 10px 24px;
             font-size: 14px;
             color: #aaa;
             border-top: 1px solid #222;
@@ -469,6 +565,13 @@
             .platform-badges {
                 display: none;
             }
+            .ctrl-btn {
+                padding: 8px 14px;
+                font-size: 18px;
+            }
+            .volume-slider {
+                width: 60px;
+            }
         }
     </style>
 </head>
@@ -513,7 +616,27 @@
     </div>
     <div class="player-area">
         <div class="video-container">
-            <video id="video" controls autoplay playsinline webkit-playsinline muted></video>
+            <video id="video" playsinline webkit-playsinline></video>
+        </div>
+        <!-- Controles personalizados grandes -->
+        <div class="custom-controls">
+            <div class="progress-bar-container">
+                <span class="progress-time" id="currentTimeDisplay">00:00</span>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-time" id="durationDisplay">00:00</span>
+            </div>
+            <div class="control-buttons">
+                <button class="ctrl-btn" id="rewindBtn">⏪ 10s</button>
+                <button class="ctrl-btn" id="playPauseBtn">▶️ Play</button>
+                <button class="ctrl-btn" id="forwardBtn">10s ⏩</button>
+                <button class="ctrl-btn" id="fullscreenBtn">🖥️ Pantalla completa</button>
+                <div class="volume-control">
+                    <span>🔊</span>
+                    <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.8">
+                </div>
+            </div>
         </div>
         <div class="now-playing">
             <span>▶ AHORA REPRODUCIENDO:</span>
@@ -542,7 +665,7 @@
     // Fechas simuladas
     let serverExpiryDates = {};
     
-    // ========== LAS 7 LISTAS IPTV EXTRAÍDAS (exactamente como estaban) ==========
+    // ========== LAS 7 LISTAS IPTV EXTRAÍDAS ==========
     const listasExtras = [
         { id: 101, nombre: "RAFAEL MAZZILLI", m3uUrl: "http://latinchannel.tv:8080/get.php?username=rafael.mazzilli&password=mazzilli1402&type=m3u_plus", type: "m3u", active: false },
         { id: 102, nombre: "JENNI PAOLA", m3uUrl: "http://latinchannel.tv:8080/get.php?username=jenni.paola&password=paola1707&type=m3u_plus", type: "m3u", active: false },
@@ -562,7 +685,6 @@
         { id: 5, name: "TECNOMOLLY", url: "http://app.tecnomolly.com:8080", user: "cesarjacobo2", pass: "gWVQ4n2UXZC4", type: "xtream", active: false }
     ];
     
-    // Construir lista completa de servidores (originales + las 7 listas extra)
     function buildFullServers() {
         const all = [...defaultServersBase];
         for (let extra of listasExtras) {
@@ -598,7 +720,6 @@
             });
             saveFullData();
         }
-        // Asegurar que el primer servidor activo sea el primero de la lista
         const active = servers.find(s => s.active);
         currentServer = active || servers[0];
         if (currentServer && !currentServer.active) {
@@ -831,29 +952,112 @@
         container.innerHTML = html;
     };
     
+    // ========== CONTROLADOR DE VIDEO MEJORADO ==========
+    const video = document.getElementById('video');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const rewindBtn = document.getElementById('rewindBtn');
+    const forwardBtn = document.getElementById('forwardBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const currentTimeDisplay = document.getElementById('currentTimeDisplay');
+    const durationDisplay = document.getElementById('durationDisplay');
+    const currentTitleSpan = document.getElementById('currentTitle');
+    
+    let isPlaying = false;
+    
+    function formatTime(seconds) {
+        if(isNaN(seconds)) return "00:00";
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
+        if(hrs > 0) return `${hrs}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        return `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+    }
+    
+    function updateProgress() {
+        if(video.duration) {
+            const percent = (video.currentTime / video.duration) * 100;
+            progressFill.style.width = percent + '%';
+            currentTimeDisplay.textContent = formatTime(video.currentTime);
+            durationDisplay.textContent = formatTime(video.duration);
+        }
+    }
+    
+    video.addEventListener('timeupdate', updateProgress);
+    video.addEventListener('loadedmetadata', () => {
+        durationDisplay.textContent = formatTime(video.duration);
+    });
+    
+    playPauseBtn.addEventListener('click', () => {
+        if(video.paused) {
+            video.play();
+            playPauseBtn.innerHTML = '⏸️ Pausa';
+            isPlaying = true;
+        } else {
+            video.pause();
+            playPauseBtn.innerHTML = '▶️ Play';
+            isPlaying = false;
+        }
+    });
+    
+    rewindBtn.addEventListener('click', () => {
+        video.currentTime = Math.max(0, video.currentTime - 10);
+    });
+    
+    forwardBtn.addEventListener('click', () => {
+        video.currentTime = Math.min(video.duration, video.currentTime + 10);
+    });
+    
+    fullscreenBtn.addEventListener('click', () => {
+        const container = document.querySelector('.player-area');
+        if (!document.fullscreenElement) {
+            container.requestFullscreen().catch(err => console.log(err));
+        } else {
+            document.exitFullscreen();
+        }
+    });
+    
+    volumeSlider.addEventListener('input', (e) => {
+        video.volume = e.target.value;
+    });
+    
+    progressBar.addEventListener('click', (e) => {
+        const rect = progressBar.getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
+        video.currentTime = percent * video.duration;
+    });
+    
     window.playStreamModern = function(url, title, isM3u8) {
         if(parentalLock && !checkParentalUnlock()) return;
-        const video = document.getElementById('video');
-        const titleDiv = document.getElementById('currentTitle');
         if(hlsPlayer) { hlsPlayer.destroy(); hlsPlayer = null; }
         video.pause();
         video.removeAttribute('src');
         video.load();
-        titleDiv.innerHTML = `Cargando: ${title}...`;
-        video.muted = false;
-        // Mejora de audio: volumen por defecto alto
-        video.volume = 0.8;
+        currentTitleSpan.innerHTML = `Cargando: ${title}...`;
+        video.volume = volumeSlider.value;
+        
         if(isM3u8 && Hls.isSupported()) {
-            const hls = new Hls({ enableWorker: true, debug: false, maxBufferLength: 30, liveSyncDurationCount: 3 });
+            const hls = new Hls({ enableWorker: true, debug: false, maxBufferLength: 30 });
             hls.loadSource(url);
             hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => { video.play().catch(e=>titleDiv.innerHTML=`🔊 ${title}`); titleDiv.innerHTML = `▶️ ${title}`; });
-            hls.on(Hls.Events.ERROR, (e,d) => { if(d.fatal) titleDiv.innerHTML = `❌ Error en ${title}`; });
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                video.play().then(() => {
+                    playPauseBtn.innerHTML = '⏸️ Pausa';
+                    isPlaying = true;
+                }).catch(e => currentTitleSpan.innerHTML = `🔊 ${title}`);
+                currentTitleSpan.innerHTML = `▶️ ${title}`;
+            });
+            hls.on(Hls.Events.ERROR, (e,d) => { if(d.fatal) currentTitleSpan.innerHTML = `❌ Error en ${title}`; });
             hlsPlayer = hls;
         } else {
             video.src = url;
-            video.play().catch(e=>titleDiv.innerHTML=`🔊 ${title} (toca play)`);
-            titleDiv.innerHTML = `▶️ ${title}`;
+            video.play().then(() => {
+                playPauseBtn.innerHTML = '⏸️ Pausa';
+                isPlaying = true;
+            }).catch(e => currentTitleSpan.innerHTML = `🔊 ${title} (toca play)`);
+            currentTitleSpan.innerHTML = `▶️ ${title}`;
         }
     };
     
